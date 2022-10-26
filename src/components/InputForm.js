@@ -2,7 +2,7 @@ import { Text, View, ScrollView, Image, StatusBar, TextInput, SliderBase, Slider
 import React, { Component, useState, useEffect } from 'react'
 import { BiruKu } from '../utils/constant';
 
-const FormInput = props => {
+const InputForm = props => {
     return(
         <View>
             

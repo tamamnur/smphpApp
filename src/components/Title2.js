@@ -3,25 +3,30 @@ import React from 'react'
 import { BiruKu } from '../utils/constant';
 import { LogoForSignUp, LogoSmpHP } from '../assets';
 
-const Title = ({TxtTitle, placeholder, secureTextEntry}) => {
+const Title2 = ({TxtTitle, SubTitle}) => {
         return(
-          <View style={styles.container}>
+          <View >
                 <Text style={styles.TxtTitle}>{TxtTitle}</Text>
+                <Text style={styles.SubTitle}>{SubTitle}</Text>                
           </View>
         );
       };
 
-export default Title;
+export default Title2;
 
 const styles=StyleSheet.create({
   TxtTitle:{
-    marginTop: 35, 
-    marginEnd: 40,
-    marginLeft: 45,
-    marginBottom: 25,
+    marginTop: 25, 
     textAlign: 'center',
-    fontFamily: "Poppins-Black",
+    fontFamily: "Poppins-Bold",
     fontSize: 16,
     color: BiruKu
+  },
+  SubTitle:{ 
+      marginBottom: 8,
+      textAlign: 'center',
+      fontFamily: "Poppins-Italic",
+      fontSize: 13,
+      color: BiruKu
   }
 });

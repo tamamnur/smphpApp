@@ -63,7 +63,7 @@ const BottomTabNavigator = ({state, descriptors, navigation}) => {
       backgroundColor: '#E1E3EE',
       justifyContent: 'space-between',
       paddingHorizontal: 30,
-      paddingVertical: 20,
+      paddingVertical: 15,
       borderTopLeftRadius: 20,
       borderTopRightRadius: 20,
     },

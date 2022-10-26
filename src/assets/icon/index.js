@@ -20,6 +20,15 @@ import IconWiring from './Pab_Wiring.svg'
 import IconLayouting from './Pab_Layouting.svg'
 import IconAdd from './IconAdd.svg'
 import IconBack from './IconBack.svg'
+import LogoCubicle from './logoCubicle.svg'
+import LogoCubicleWT from './LogoCubicleWT.svg'
+import LogoAdd from './icon-Add.svg'
+import LogoAkunPage from './logoAkunPage.svg'
+import IconNewSPK from './iconNewSPK.svg'
+import IconNewSPG from './iconNewSPG.svg'
+import LogoSmpHP from './logoSmpHP.svg'
+import IconSearch from './IconSearch.svg'
+import IconCalendar from './calendar.svg'
 
 export { IconHomeActive, 
     IconHome, 
@@ -41,5 +50,14 @@ export { IconHomeActive,
     IconMekanik,
     IconWiring,
     IconAdd,
-    IconBack
+    IconBack,
+    LogoCubicle,
+    LogoCubicleWT,
+    LogoAdd,
+    LogoAkunPage,
+    IconNewSPG,
+    IconNewSPK,
+    LogoSmpHP,
+    IconSearch,
+    IconCalendar
  } 

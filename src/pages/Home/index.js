@@ -1,59 +1,35 @@
-import { StyleSheet, Text, View, Image, Dimensions } from 'react-native'
-import React, { Component } from 'react'
+import { StyleSheet, Text, View, Image, Dimensions, TouchableOpacity } from 'react-native'
+import React, { Component, useState, useEffect } from 'react'
 import {HeaderInformation, Layanan} from '../../components'
 import RecapProject from './recapProject';
 import { BiruKu } from '../../utils/constant';
 import Memo from './Memo';
+import { LogoAdd } from '../../assets';
+import { useNavigation } from '@react-navigation/native';
+ 
 
+const Home = () => { 
+  const navigation = useNavigation();
 
-class Home extends Component {
-  constructor(props) {
-    super(props);
-    this.state ={
-      layanan: 'shopdrawing'
-    }
-    }
-
-    clicklayanan(value) {
-      this.setState({
-        layanan:value
-      })
-    }
-
-  render() {
-    return (
-      <View style={styles.page}>
-             <View style={styles.Header}>
-             <Text style={styles.selamat}>Selamat Datang,</Text>
-             <View style={{marginBottom: -10, marginTop: -10}}>
-                <HeaderInformation /></View>
-              <RecapProject />
+  return (
+    <View style={styles.page}>
+      <View style={styles.Header}>
+        <Text style={styles.selamat}>Wellcome,</Text>
+          <View style={{marginBottom: -10, marginTop: -10}}>
+            <HeaderInformation /></View>
+            <RecapProject />
+            <TouchableOpacity style={styles.iconAdd}>
+                    {/* <LogoAdd onPress={() => navigation.navigate('SecuredNav')}/> */}
+                </TouchableOpacity>
               <Memo />
+              <TouchableOpacity style={{alignItems: 'flex-end', marginHorizontal: 14}}>
+                    {/* <Text onPress={() => navigation.navigate('MemoPage')}
+                    style={styles.seeMore}>See More . . .</Text> */}
+                </TouchableOpacity>
+              
             </View>
-{/* 
-            <View style={styles.layanan}>
-                <Layanan
-                 title="Shopdrawing" 
-                onPress={() => this.clicklayanan('shopdrawing')}
-                active={this.state.layanan === 'shopdrawing' ? true : false}
-                />
-                <Layanan
-                 title="Procurement" 
-                onPress={() => this.clicklayanan('procurement')}
-                active={this.state.layanan === 'procurement' ? true : false}
-                />
-                <Layanan
-                 title="Pabrikasi" 
-                onPress={() => this.clicklayanan('pabrikasi')}
-                active={this.state.layanan === 'pabrikasi' ? true : false}
-                />
-            </View> */}
-          </View>
-    )
-  }
-}
-
-   
+          </View>)
+};
 
 export default Home;
 
@@ -63,7 +39,6 @@ const windowWidth = Dimensions.get('window').width;
 const styles = StyleSheet.create({
   page: {
     flex: 1,
-    //backgroundColor: '#FFF'
   },
   Header:{
     paddingHorizontal: 15,
@@ -93,8 +68,20 @@ const styles = StyleSheet.create({
     fontSize: 22,
     marginLeft: 20,
     color: BiruKu
+  },
+
+  iconAdd:{
+    alignItems: 'flex-end',
+    marginHorizontal: 10,
+    marginBottom: 50,
+    marginTop: -60,
+    flex: 1
+  },
+  seeMore:{
+    fontFamily: 'Poppins-SemiBoldItalic',
+    fontSize: 13,
+    marginTop: -22,
+    color: '#BA0A3F',
+    elevation: 10
   }
-
-
-
 });

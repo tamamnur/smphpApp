@@ -1,42 +1,42 @@
 import { Text, View, StyleSheet, StatusBar, TextInput, SliderBase, SliderComponent } from 'react-native'
-import React, { Component, useState, useEffect } from 'react'
+import React from 'react';
 import { BiruKu } from '../utils/constant';
 
-const InputDataProject = ({label, placeholder}) => {
-  
+const Inputan = ({label}) => {
         return(
           <View style={styles.container}>
             <Text style={styles.label}>{label}</Text>
-                <TextInput placeholder={placeholder}style={styles.txtInput}/>
+                <TextInput style={styles.txtInput}/>
           </View>
         );
       };
 
-export default InputDataProject;
+export default Inputan;
 
 const styles=StyleSheet.create({
   container:{
     justifyContent: 'flex-end',    
     flexDirection: 'row',
-    marginHorizontal: 20,
   },
   label:{
     fontSize: 13,
     fontFamily: "Poppins-Regular",
-    marginBottom:5,
     color: BiruKu,
-    textAlignVertical: 'center',
-    textAlign: 'right'    
+    textAlignVertical: 'center'
   },
   txtInput:{
     borderWidth: 1,
     borderColor: BiruKu,
-    borderRadius: 5,    
-    height: 35,
-    padding: 10,
-    marginVertical: 8,
-    width: 240,
+    fontFamily: "Poppins-Regular",
+    fontSize: 12,
+    marginTop: 5,
+    marginBottom: 5,
     marginHorizontal: 10,
+    paddingLeft: 15,
+    paddingBottom: 2,
+    borderRadius: 5,
+    height: 30,
     width: 250,
+    textAlignVertical: 'bottom'
   }
 });

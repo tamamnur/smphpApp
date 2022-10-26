@@ -2,10 +2,13 @@ import { StyleSheet, Text, View } from 'react-native'
 import React, { useState, useEffect } from 'react'
 import { IconDefaultUser, IconUserSmall } from '../../assets'
 import { BiruKu } from '../../utils/constant'
+import moment from 'moment'
 
 const HeaderInformation = () => {
   const [currentDate, setcurrentDate] = useState('')
   const [currentDay, setcurrentDay] = useState('')
+  const [date] = useState(moment);
+
   useEffect(() => {
     var date = new Date().getDate()
     var month = new Date().getMonth()+1
@@ -30,7 +33,10 @@ const HeaderInformation = () => {
         </View>
       <View style={styles.waktu}>
         {/* <Text style={styles.hari}>{currentDay}</Text> */}
-        <Text style={styles.tanggal}>{currentDate}</Text>
+        {/* <Text style={styles.tanggal}>{currentDate}</Text> */}
+        {/* <Text style={styles.tanggal}>{moment}</Text> */}
+        <Text style={styles.tanggal}>{date.format("DD - MMMM - YYYY")}</Text>
+
       </View>
     </View> 
   )

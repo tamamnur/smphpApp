@@ -1,21 +1,38 @@
-import { View, Text, Image, StyleSheet, TouchableOpacity } from 'react-native'
-import React, { Component } from 'react'
-import { LogoForSignUp } from '../../assets'
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
+import React, { useState } from 'react'
+import { IconAdd, IconBack, LogoSmpHP } from '../../assets'
 import { BiruKu } from '../../utils/constant'
 import InputDataProject from '../../components/InputDataProject'
-import Button from '../../components/Button'
+import { useNavigation } from '@react-navigation/native'
 import Title from '../../components/Title'
-import PanelNameInput from './panelNameInput'
-import { navigation } from '@react-navigation/native-stack'
+import firestore from '@react-native-firebase/firestore';
 
-// const CreateProject = () => {
-  export default class CreateProject extends Component {
-  render(){
+const CreateProject = (props) => {
+  const navigation = useNavigation();
+
+  // const submitProject = async () => {
+  //   firestore()
+  //   .collection('Project')
+  //   .add({
+  //     projectId: projectId,
+  //     projectName: projectName,
+  //     customer: customer,
+  //     numberPO: numberPO,
+  //     datePO: datePO,
+  //   })
+  //   .then(()=>{
+  //     console.log('Project Added!')
+  //   })
+  //   .catch((error) =>{
+  //     console.log('Something', error);
+  //   })
+  // }
     return (
     <View style={styles.page}>
-      {/* <View style={{alignItems: 'flex-end', marginTop: 35, marginEnd: 40}}>
-        <Image source ={LogoForSignUp} /></View>
-        <Text style={styles.title}> NEW PROJECT</Text> */}
+      <View style={styles.header}>
+          <IconBack onPress={() => navigation.navigate('Home')} style={{marginTop: 10, marginLeft: 30}}/>
+          <LogoSmpHP style={{marginLeft: 180}}/>
+      </View>
         <Title TxtTitle="NEW PROJECT"/>
         <InputDataProject label="ProjectID"/>
         <InputDataProject label="Project Name"/>
@@ -23,36 +40,47 @@ import { navigation } from '@react-navigation/native-stack'
         <InputDataProject label="PO Number"/>
         <InputDataProject label="PO Date"/>
         
-        {/* <TouchableOpacity style={styles.btn} onPress={()=> this.props.navigation.navigate('NamePanelInput')}>
-          <Text Countinue/>
-        </TouchableOpacity> */}
+        <TouchableOpacity 
+          style={styles.btn} 
+          onPress={()=> 
+            // this.addData()
+          navigation.navigate('PanelNameInput')
+          // navigation.navigate('Project')
+          }>
+            
+          <Text style={{textAlign: 'center', color:'#FFF', fontFamily: 'Poppins-Bold', fontSize: 16}}>Continue</Text>
+        </TouchableOpacity>
         
-        <Button text="Continue" color={BiruKu} 
-        onPress={() => this.props.navigation.navigate('PanelNameInput')}
-        />
    </View>
   )
-}}
+}
 
-// export default CreateProject;
+export default CreateProject ()
+// ({
+//   mapPropsToValues: () => ({ projectId: '', projectName: '', customer: '', numberPO: '', datePO: ''}),
+//   validationSchema: (props) => object 
+// })
+
+
 
 const styles = StyleSheet.create({
   page:{
-    flex:1,
     marginTop: 20
     },
-  title:{
-    fontFamily: 'Poppins-Black',
-    fontSize: 16,
-    color: BiruKu,
-    textAlign: 'center',
-    marginTop: 50,
-    marginBottom: 25,
+  header:{
+    flexDirection: 'row',
   },
   btn:{
-    height: 50,
-    width: 100,
-    backgroundColor: 'gray',
-    borderRadius: 50
+    color: '#FFF',
+    backgroundColor: BiruKu,
+    marginTop: 35,
+    marginHorizontal: 55,
+    paddingHorizontal: 10,
+    paddingVertical: 14,
+    elevation: 10,
+    borderRadius: 10,
+    fontSize: 16,
+    fontFamily: 'Poppins-Bold',
+    textAlign: 'center'
   }
 })

@@ -2,8 +2,6 @@ import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-nati
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import React, { Component } from 'react'
 import { BiruKu } from '../../utils/constant'
-import CreateProject from './createProject'
-import { IconAdd } from '../../assets'
 
 const Project = (props) => {
     return(
@@ -11,7 +9,8 @@ const Project = (props) => {
             <TouchableOpacity 
             onPress={() => this.props.navigation.navigate('CreateProject')}>
                 <Text style={styles.projectName}>
-                    {props.projectName} </Text></TouchableOpacity>
+                    {props.projectName} </Text>
+            </TouchableOpacity>
             <Text style={styles.status}>
                 Status {props.status}</Text>
             <Text style={styles.update}>
@@ -23,12 +22,9 @@ const RecapProject = () => {
     return (
         <View style={styles.container}>
             <View style={styles.titleWrap}>
-                <Text style={styles.title}>Progress Terkini</Text>
+                <Text style={styles.title}>Last Progress</Text>
             </View>
-            <TouchableOpacity style={styles.iconAdd}>
-                <IconAdd />
-            </TouchableOpacity>
-            <ScrollView style={styles.select}>
+            <ScrollView>
                 <Project 
                 projectName="Sanbe Farma" 
                 status="Shopdrawing -- Submission"
@@ -38,10 +34,6 @@ const RecapProject = () => {
                 status="Shopdrawing -- Submission"
                 update="20-07-2022"/>
                 <Project 
-                projectName="Sanbe Farma" 
-                status="Shopdrawing -- Submission"
-                update="20-07-2022"/>
-                <Project 
                 projectName="Cluster Uptown Lippo Cikarang" 
                 status="Procurement -- Construction"
                 update="21-07-2022"/>
@@ -61,8 +53,7 @@ const RecapProject = () => {
                 projectName="Cluster Uptown Lippo Cikarang" 
                 status="Procurement -- Construction"
                 update="21-07-2022"/>
-
-            </ScrollView>
+                </ScrollView>
         </View>
     )
 }
@@ -95,11 +86,6 @@ const styles = StyleSheet.create({
         color: '#FFF',
         marginHorizontal: 20
     },
-    iconAdd:{
-        alignItems: 'flex-end',
-        marginHorizontal: 30,
-        marginTop: 8
-    },
     recap:{
         marginHorizontal: 15,
         marginVertical: 6
@@ -123,7 +109,6 @@ const styles = StyleSheet.create({
         textAlign: 'right',
         marginTop: -20,
         marginEnd: 10
-    }
-
+    },
 
 })

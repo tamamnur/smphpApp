@@ -1,11 +1,11 @@
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React from 'react'
-import { IconSD_Approv, IconSD_Pengajuan, IconSD_Revisi } from '../assets'
+import { IconAdd, IconSD_Approv, IconSD_Pengajuan, IconSD_Revisi } from '../assets'
 import { WarnaAbu, WarnaPutih } from '../utils/constant'
 
-const Drawing = ({title, active, onPress}) => {
+const SDrawing = ({title, active, onPress}) => {
     const Icon = () => {
-        if(title === "Pengajuan  Shopdrawing") return <IconSD_Pengajuan />;
+        if(title === "Pengajuan  Shopdrawing") return <IconAdd />;
         if(title === "Approval Shopdrawing") return <IconSD_Approv />;
         if(title === "Revisi Shopdrawing") return <IconSD_Revisi />;
         return <IconSD_Pengajuan />
@@ -20,7 +20,7 @@ const Drawing = ({title, active, onPress}) => {
   )
 }
 
-export default Drawing 
+export default SDrawing 
 
 const styles = StyleSheet.create({
 

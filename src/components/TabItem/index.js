@@ -53,7 +53,7 @@ const styles = StyleSheet.create({
     },
     text : {
         color: WarnaPutih,
-        fontSize: 16,
+        fontSize: 14,
         marginLeft: 5,
         fontFamily: "Poppins-Bold",
     }

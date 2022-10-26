@@ -1,32 +1,31 @@
-import { StyleSheet, Text, View, Image } from 'react-native'
+import { StyleSheet, Text, View, ScrollView } from 'react-native'
 import React,{ Component }from 'react'
-import { LogoForSignUp } from '../../assets'
+import { LogoSmpHP, IconBack } from '../../assets'
 import { BiruKu } from '../../utils/constant'
-import InputData from '../../components/TextInput'
+import InputData from '../../components/InputData'
 import Button from '../../components/Button'
 
 export default class ResetPassword extends Component {
     render(){
         return(
-            <View style={styles.pages}>
-                <View style={{alignItems: 'flex-end', marginTop: 55, marginEnd: 40}}>
-                    <Image source ={LogoForSignUp} /></View>                            
-                <Text style={styles.title}>
-                    RESET PASSWORD
-                </Text>
+            <ScrollView >
+                <View style={{flexDirection: 'row', marginHorizontal: 20, marginVertical: 30}}>
+                    <IconBack onPress={()=> this.props.navigation.navigate('Akun')}/>
+                    <LogoSmpHP style={{marginLeft: 200 }}/>
+                </View>
+                <Text style={styles.title}>RESET PASSWORD</Text>
+                
                 <InputData label="Fullname" />
                 <InputData label="Username" />
                 <InputData label="New Password"/>
                 <InputData label="Confirm New Password"/>
                 <Button text='Reset Password' color={BiruKu}/>
-            </View>
+            </ScrollView>
         )
     }
 }
 
 const styles = StyleSheet.create({
-    pages:{
-    },
     title:{
         fontFamily: 'Poppins-SemiBold',
         fontSize: 20,

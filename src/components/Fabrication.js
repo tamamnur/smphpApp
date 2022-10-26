@@ -1,12 +1,12 @@
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React from 'react'
-import { IconMekanik, IconLayouting, IconWiring } from './../assets'
-import { WarnaAbu, WarnaPutih  } from './../utils/constant'
+import { IconMekanik, IconLayouting, IconWiring } from '../assets'
+import { WarnaAbu, WarnaPutih  } from '../utils/constant'
 
-const Pabrikasi = ({title, active, onPress}) => {
+const Fabrication = ({title, active, onPress}) => {
     const Icon = () => {
         if(title === "Layouting") return <IconLayouting />;
-        if(title === "Mekanik") return <IconMekanik />;
+        if(title === "Mechanic") return <IconMekanik />;
         if(title === "Wiring") return <IconWiring />;
     }
     return (
@@ -19,7 +19,7 @@ const Pabrikasi = ({title, active, onPress}) => {
   )
 }
 
-export default Pabrikasi
+export default Fabrication
 
 const styles = StyleSheet.create({
     pilihan:active => ({

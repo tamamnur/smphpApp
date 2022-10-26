@@ -5,7 +5,6 @@ import { View, Text } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import Router from './router';
 
-
 function App() {
   return (
     <NavigationContainer>

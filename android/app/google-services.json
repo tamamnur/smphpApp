@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "431546938941",
+    "project_id": "smphpapp",
+    "storage_bucket": "smphpapp.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:431546938941:android:8319e8b55d7593e6e55c54",
+        "android_client_info": {
+          "package_name": "com.smphpapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "431546938941-3ai7dl2mibjtgp5jr728sppt9s1ct28o.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA46vRZrD1raAFRrmvTL6ARdL2sO6GP8wU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "431546938941-3ai7dl2mibjtgp5jr728sppt9s1ct28o.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

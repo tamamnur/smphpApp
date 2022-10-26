@@ -1,17 +1,49 @@
 import { StyleSheet, View, Image} from 'react-native'
-import React, {useEffect} from 'react'
-import { LogoForSplash } from '../../assets/img';
+import React, {useEffect, useState} from 'react'
+import { LogoCubicleWT } from '../../assets/icon';
+import auth from '@react-native-firebase/auth'
 
 const Splash = ({ navigation}) => {
-  useEffect(() => {
-    setTimeout( () => {
-      navigation.replace("Signup");
-    }, 300)
-  }, [navigation]);
+  // // useEffect(() => {
+  //   // setTimeout( () => {
+  //     navigation.replace("MainApp");
+  //     // navigation.replace("Login")
+  //   }, 1000)
+  // }, [navigation]);
 
+    const [initializing, setInitializing] = useState(true);
+    const [user, setUser] = useState();
+  
+    // Handle user state changes
+    function onAuthStateChanged(user) {
+      setUser(user);
+      if (initializing) setInitializing(false);
+    }
+  
+    useEffect(() => {
+      const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
+      return subscriber; // unsubscribe on unmount
+    }, []);
+  
+    
+    useEffect(() => {
+     if (initializing === false) {
+      if (user ) {
+        navigation.replace("SecuredNav");
+        // setTimeout( () => {
+        // }, 1000)
+      } else {
+        navigation.replace("PublicNav");
+        // setTimeout( () => {
+        // }, 1000)
+      }
+     }
+    }, [user, initializing] 
+    )
+  
   return (
     <View style={styles.background}>
-      <Image source={LogoForSplash} />
+      <LogoCubicleWT/>
     </View>
   )
 }

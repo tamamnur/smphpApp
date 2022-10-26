@@ -1,0 +1,17 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "name": "Nur",
+      "mail": "nur@mail.net",
+      "pass": "admin",
+      "divisi": "admin"
+    },
+    {
+      "id": 2
+    },
+    {
+      "id": 3
+    }
+  ]
+}
