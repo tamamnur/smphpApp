@@ -7,26 +7,14 @@ import { useNavigation } from '@react-navigation/native'
 import Title from '../../components/Title'
 import firestore from '@react-native-firebase/firestore';
 
+  // export default class CreateProject extends Component {
+    // constructor(props) {
+    //   super(props);
+    //   this.state={};
+    // }
 const CreateProject = (props) => {
   const navigation = useNavigation();
 
-  // const submitProject = async () => {
-  //   firestore()
-  //   .collection('Project')
-  //   .add({
-  //     projectId: projectId,
-  //     projectName: projectName,
-  //     customer: customer,
-  //     numberPO: numberPO,
-  //     datePO: datePO,
-  //   })
-  //   .then(()=>{
-  //     console.log('Project Added!')
-  //   })
-  //   .catch((error) =>{
-  //     console.log('Something', error);
-  //   })
-  // }
     return (
     <View style={styles.page}>
       <View style={styles.header}>
@@ -45,9 +33,7 @@ const CreateProject = (props) => {
           onPress={()=> 
             // this.addData()
           navigation.navigate('PanelNameInput')
-          // navigation.navigate('Project')
           }>
-            
           <Text style={{textAlign: 'center', color:'#FFF', fontFamily: 'Poppins-Bold', fontSize: 16}}>Continue</Text>
         </TouchableOpacity>
         
@@ -55,13 +41,7 @@ const CreateProject = (props) => {
   )
 }
 
-export default CreateProject ()
-// ({
-//   mapPropsToValues: () => ({ projectId: '', projectName: '', customer: '', numberPO: '', datePO: ''}),
-//   validationSchema: (props) => object 
-// })
-
-
+export default CreateProject;
 
 const styles = StyleSheet.create({
   page:{

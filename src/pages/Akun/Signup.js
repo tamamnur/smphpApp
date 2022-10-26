@@ -1,5 +1,5 @@
 
-import { Text, ScrollView, StyleSheet, View, Image } from 'react-native'
+import { Text, ScrollView, StyleSheet, View, Image, ToastAndroid } from 'react-native'
 import React, { useState, useEffect, Component, useContext } from 'react'
 import { IconBack, LogoForSignUp, LogoSmpHP } from '../../assets'
 import Button from '../../components/Button'
@@ -40,9 +40,9 @@ const Signup = (props) => {
         auth() 
             .createUserWithEmailAndPassword(email, password)
             .then(() => {
-                navigation.replace('Home');
+                navigation.replace('SecuredNav');
                 // console.log('User account created & signed in!');
-                alert('User account created & signed in!')
+                ToastAndroid.show('User account created & signed in!', ToastAndroid.SHORT)
             })
             .catch(error => {
                 if (error.code === 'auth/email-already-in-use') {
