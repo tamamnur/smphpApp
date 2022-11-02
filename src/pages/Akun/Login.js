@@ -15,15 +15,25 @@ const Login = (props) => {
   const [password,setPassword] = useState('drafter');
 
 const handleLogin = () => {
-  toastLoginSuccess()
   auth()
   .signInWithEmailAndPassword(email, password )
   .then(userCredentials => {
     const user = userCredentials.user;
     console.log('Login Success', user);
     navigation.replace('SecuredNav')
+    toastLoginSuccess()
   })
-  .catch(error => console.log(error))
+  .catch(error => {
+    if (error.code === 'auth/user-not-found') {
+      alert("Sorry, Email address didn't work, please try again", error);
+      }
+      else {
+      alert("Sorry, Password authentication didn't work, please try again", error);
+    // } if (error.code === 'Given-String-is-empty-or-null') {
+    } if (!valid) {
+      alert('Please field email and password correctly', error)
+    }
+    console.log(error)})
 }
 
 const toastLoginSuccess = () => {

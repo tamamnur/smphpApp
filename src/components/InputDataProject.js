@@ -2,12 +2,14 @@ import { Text, View, StyleSheet, StatusBar, TextInput, SliderBase, SliderCompone
 import React, { Component, useState, useEffect } from 'react'
 import { BiruKu } from '../utils/constant';
 
-const InputDataProject = ({label, placeholder}) => {
-  
+// const InputDataProject = ({label, placeholder}) => {
+  const InputDataProject = (props) => {
         return(
           <View style={styles.container}>
-            <Text style={styles.label}>{label}</Text>
-                <TextInput placeholder={placeholder}style={styles.txtInput}/>
+            <Text style={styles.label}>{props.label}</Text>
+                <TextInput placeholder={props.placeholder}style={styles.txtInput}
+                onChangeText={props.onChangeText}
+                />
           </View>
         );
       };

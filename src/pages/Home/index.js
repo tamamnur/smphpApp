@@ -19,12 +19,12 @@ const Home = () => {
             <HeaderInformation /></View>
             <RecapProject />
             <TouchableOpacity style={styles.iconAdd}>
-                    {/* <LogoAdd onPress={() => navigation.navigate('SecuredNav')}/> */}
+                    <LogoAdd onPress={() => navigation.navigate('CreateProject')}/>
                 </TouchableOpacity>
               <Memo />
               <TouchableOpacity style={{alignItems: 'flex-end', marginHorizontal: 14}}>
-                    {/* <Text onPress={() => navigation.navigate('MemoPage')}
-                    style={styles.seeMore}>See More . . .</Text> */}
+                    <Text onPress={() => navigation.navigate('MemoPage')}
+                    style={styles.seeMore}>See More . . .</Text>
                 </TouchableOpacity>
               
             </View>

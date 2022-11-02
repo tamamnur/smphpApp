@@ -6,38 +6,11 @@ import AxioDataAkun from './axiosDataAkun'
 import firestore from '@react-native-firebase/firestore'
 import { useNavigation } from '@react-navigation/native'
 import auth from '@react-native-firebase/auth'
-import Login from './Login'
-import handleLogin from './Login'
 
-
-// class User extends Component {
-//   constructor(props) {
-//     super(props);
-//     this.state ={};
-//   }
-  
-  // componentDidMount() {
-  //   this.getDataDoc(); 
-  // }
-  // getDataDoc = async () => {
-  //   const user = await firestore().collection('User').doc('user01').get();
-  //   console.log(user.data());
-    
-  // }
-  // dataUser = firestore().collection('User').doc('user01').get();
-
-  // render () {
   
   const User = (props) => {
     const navigation = useNavigation();
     
-    const toastLogout = () => {
-      ToastAndroid.show(`You're signed out!`,
-      ToastAndroid.SHORT)
-    }
-
-    // const {user} = useContext(Login)
-
     const confirmLogout = () => {
       Alert.alert(
         'Logout',
@@ -46,12 +19,12 @@ import handleLogin from './Login'
           {
             text: "Yes",
             onPress: () => {
-              toastLogout()
               auth()
               .signOut()
               .then(() => {
                 navigation.replace('PublicNav')
-                console.log('User signed out!')
+                // console.log('User signed out!')
+                ToastAndroid.show("User signed out!", ToastAndroid.SHORT);
               }
               );
             }

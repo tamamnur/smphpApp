@@ -5,24 +5,49 @@ import { BiruKu } from '../../utils/constant'
 import InputDataProject from '../../components/InputDataProject'
 import Title from '../../components/Title'
 import { useNavigation } from '@react-navigation/native';
+import firestore from '@react-native-firebase/firestore'
 
 const PanelNameInput = () => {
   const [formQty, setFormQty] = useState(1);
   const navigation = useNavigation();
 
   const forms = [...new Array(formQty)];
+  
+  const [pnameInput, setPnameInput] = useState();
+  
+  const onPnameInputChange = (value) => {
+    setPnameInput(value)
+  }
+  const handlePnameInput = async () => {
+    console.log(pnameInput)
+
+    const pnameInputCollection = await firestore().collection('pnameInput').add({
+      pnameInput: pnameInput
+    })
+    .then(() =>{
+      console.log('panel name created');
+    })
+    .catch((error) => {
+      console.log(error)
+    })
+    navigation.replace("SecuredNav")
+  }
 
   return (    
   <View style={styles.page}>
       <View style={styles.header}>
-          <IconBack onPress={() => navigation.navigate('CreateProject')} style={{marginTop: 10, marginLeft: 30}}/>
+          <IconBack onPress={'CreateProject'} style={{marginTop: 10, marginLeft: 30}}/>
           <LogoSmpHP style={{marginLeft: 180}}/>
       </View>
         <Title TxtTitle="PANEL NAMES INPUT"/>
-
         {
           forms.map((item, index) => {
-            return (<InputDataProject key={index.toString()} label="Panel Name"/>)
+            return (
+            <InputDataProject 
+              label="Panel Name"
+              key={index.toString()} 
+              onChangeText={onPnameInputChange}
+            />)
           })
         }
         
@@ -30,7 +55,8 @@ const PanelNameInput = () => {
           <IconAdd onPress={() => setFormQty((prev) => prev + 1)}/>
         </TouchableOpacity>
       
-        <TouchableOpacity style={styles.btn} onPress={()=> navigation.navigate('Home')}>
+        <TouchableOpacity style={styles.btn} onPress={handlePnameInput}>
+        {/* onPress={()=> navigation.navigate('Home')}> */}
           <Text style={{textAlign: 'center', color:'#FFF', fontFamily: 'Poppins-Bold', fontSize: 16}}>Create Project</Text>
         </TouchableOpacity>
         

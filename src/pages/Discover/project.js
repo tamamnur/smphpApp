@@ -18,6 +18,7 @@ export class Project extends Component {
     constructor(props) {
         super(props);
         this.getUser();
+        console.log(error)
         this.subscriber = firestore().collection('users').doc
         ('SKFKOHO9kh9kmHy9THax').onSnapshot(doc => {
             this.setState({

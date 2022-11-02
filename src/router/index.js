@@ -43,7 +43,9 @@ const SecuredNav = () => {
       <Stack.Screen name="SD_Submission" component={SD_Submission} options={{ headerShown: false}}/>
       <Stack.Screen name="SD_Approval" component={SD_Approval} options={{ headerShown: false}}/>
       <Stack.Screen name="SD_Revisi" component={SD_Revisi} options={{ headerShown: false}}/>
-    
+
+      <Stack.Screen name="Project" component={Project} options={{ headerShown: false}}/>
+
     </Stack.Navigator>
   )
 }

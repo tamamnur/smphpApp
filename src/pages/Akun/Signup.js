@@ -41,21 +41,15 @@ const Signup = (props) => {
             .createUserWithEmailAndPassword(email, password)
             .then(() => {
                 navigation.replace('SecuredNav');
-                // console.log('User account created & signed in!');
                 ToastAndroid.show('User account created & signed in!', ToastAndroid.SHORT)
             })
             .catch(error => {
                 if (error.code === 'auth/email-already-in-use') {
-                // console.log('That email address is already in use!');
                 alert('That email address is already in use!', error);
-                // alert('User account created & signed in!', error)
                 }
-
                 if (error.code === 'auth/invalid-email') {
-                // console.log('That email address is invalid!');
                 alert('That email address is invalid!');
                 }
-
                 console.error(error);
             });
         }
