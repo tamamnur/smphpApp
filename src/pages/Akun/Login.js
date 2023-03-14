@@ -5,14 +5,51 @@ import InputData from '../../components/InputData'
 import Button from '../../components/Button'
 import SignMenu from '../../components/SignMenu'
 import { BiruKu, WarnaPutih } from '../../utils/constant'
-// import { AuthContext } from '../../Config/AuthProvider'
 import { useNavigation } from '@react-navigation/native'
 import auth from '@react-native-firebase/auth'
 
+const isValidObjField = (obj) => {
+  return Object.values(obj).every(value => value.trim())
+} 
+
+const updateError = (error, stateUpdate) => {
+  stateUpdate(error)
+  setTimeout(() => {
+    stateUpdate('')
+  }, 3000) 
+}
+
+const isValidEmail = (value) => {
+  const regx = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/ ;
+  return regx.test(value)
+}
+
 const Login = (props) => {
   const navigation = useNavigation();
-  const [email, setEmail] = useState('drafter@mail.com');
-  const [password,setPassword] = useState('drafter');
+  // const [email, setEmail] = useState('drafter@mail.com');
+  // const [password,setPassword] = useState('drafter');
+
+  const [userInfo, setUserInfo] = useState({
+    email: '',
+    password: '',
+  })
+
+  const [error, setError] = useState('');
+  const {email, password} = userInfo;
+  const handleOnchangeText = (value, fieldName) => {
+    setUserInfo ({...userInfo, [fieldName]: value})
+  } 
+
+  const isValidForm = () => {
+    if(!isValidObjField(userInfo)) return updateError('Required all fields!', setError)
+    if(!email.trim() || email.length < 3 ) return updateError ('Invalid email or username', setError)
+    if(!isValidEmail(email)) return updateError('Invalid email or username', setError)    
+    if(!password.trim() || password.length < 5 ) return updateError ('Password is too short', setError)
+    return true;
+  }
+  const submitForm =()=> {
+    { isValidForm() ? handleLogin() : error} 
+  }
 
 const handleLogin = () => {
   auth()
@@ -25,14 +62,10 @@ const handleLogin = () => {
   })
   .catch(error => {
     if (error.code === 'auth/user-not-found') {
-      alert("Sorry, Email address didn't work, please try again", error);
-      }
-      else {
-      alert("Sorry, Password authentication didn't work, please try again", error);
-    // } if (error.code === 'Given-String-is-empty-or-null') {
-    } if (!valid) {
-      alert('Please field email and password correctly', error)
-    }
+      return updateError ("Sorry, Email address didn't work, please try again", setError)      
+      } else {
+      return updateError ("Sorry, Password authentication didn't work, please try again", setError);
+    } 
     console.log(error)})
 }
 
@@ -42,32 +75,32 @@ const toastLoginSuccess = () => {
     ToastAndroid.SHORT);
   }
   
-
   return (
     <ScrollView style={{flex: 1, backgroundColor: '#FFFFFF', width: 400}}>
       <StatusBar backgroundColor={WarnaPutih} barStyle="dark" />
       <View style={{justifyContent: 'center', alignItems: 'center', marginTop: 100, marginBottom: 20}}>
         <LogoCubicle/>
       </View>
-      
+          {error ? (
+              <Text style={{color: 'red', fontSize: 14, textAlign: 'center'}}>
+                {error} </Text> 
+          ) : null}
         <InputData 
           placeholder='Username' 
-          value={email}
-          onChangeText={text => setEmail(text)}
+          // value={email}
+          onChangeText={(value) => handleOnchangeText(value, "email")}
           />
         <InputData 
           placeholder='Password'
-          value={password}
-          onChangeText={text=> setPassword(text)}
+          // value={password} onChangeText={text=> setPassword(text)}
+          onChangeText={(value) => handleOnchangeText(value, "password")}
           secureTextEntry/>
 
         <TouchableOpacity onPress={() => navigation.navigate('ResetPassword')}>
           <Text style={styles.forgotPs}> Forgot Password ?</Text>
         </TouchableOpacity>
       <Button text="Sign In" color={BiruKu} 
-          onPress={handleLogin} 
-          // onPress={toastLoginSuccess}
-          // onPress={()=> {handleLogin} ({toastLoginSuccses}) }
+          onPress={submitForm} 
         />
       <View style={styles.wrapperSign}>
       </View>
@@ -77,7 +110,6 @@ const toastLoginSuccess = () => {
           <Text style={styles.signUp}>Sign Up
             </Text></TouchableOpacity>
     </ScrollView>
-
 
     );
 }

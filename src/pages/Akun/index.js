@@ -42,8 +42,28 @@ import auth from '@react-native-firebase/auth'
     const handleLogOut = () => {
       confirmLogout({
       })
-  
     }
+
+    // state = {
+    //   Name : { Name : ""},
+    //   Division : { Division : ""},
+    //   Username : { Username : ""},
+    // },
+
+    // constructor(props)
+    //   this.getUser();
+    //   this.subscriber = firestore().collection("User")
+    //   .doc("user01")
+    //   .onSnapshot(doc => {
+    //     this.setState({
+    //       User : {
+    //         Name : doc.data().fullname,
+    //         Division : doc.data().division,
+    //         Username : doc.data().username,
+    //       }
+    //     })
+    //   })
+
     return (
         <ScrollView>
           <View style={styles.LogoSmpHP}><LogoSmpHP /></View>
@@ -53,13 +73,11 @@ import auth from '@react-native-firebase/auth'
               <Text style={styles.left}>Division </Text>
               <Text style={styles.left}>Fullname </Text>
               <Text style={styles.left}>Username </Text>
-              <Text style={styles.left}>Password </Text>
           </View>
           <View>
-            <Text style={styles.right}>user.uid</Text>
+            <Text style={styles.right}>{User.Name}</Text>
             <Text style={styles.right}>Tamam Nur</Text>
             <Text style={styles.right}>tamam.nurq@gmail.com</Text>
-            <Text style={styles.right}><AxioDataAkun /></Text>
             
           </View>
         </View>

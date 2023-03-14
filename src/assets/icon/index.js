@@ -19,6 +19,7 @@ import IconMekanik from './Pab_Busbar.svg'
 import IconWiring from './Pab_Wiring.svg'
 import IconLayouting from './Pab_Layouting.svg'
 import IconAdd from './IconAdd.svg'
+import IconAdd2 from './icon-Add.svg'
 import IconBack from './IconBack.svg'
 import LogoCubicle from './logoCubicle.svg'
 import LogoCubicleWT from './LogoCubicleWT.svg'
@@ -29,6 +30,8 @@ import IconNewSPG from './iconNewSPG.svg'
 import LogoSmpHP from './logoSmpHP.svg'
 import IconSearch from './IconSearch.svg'
 import IconCalendar from './calendar.svg'
+import EditButton from './btnEdit.svg'
+import IconInput from './input.svg'
 
 export { IconHomeActive, 
     IconHome, 
@@ -50,6 +53,7 @@ export { IconHomeActive,
     IconMekanik,
     IconWiring,
     IconAdd,
+    IconAdd2,
     IconBack,
     LogoCubicle,
     LogoCubicleWT,
@@ -59,5 +63,7 @@ export { IconHomeActive,
     IconNewSPK,
     LogoSmpHP,
     IconSearch,
-    IconCalendar
+    IconCalendar,
+    EditButton,
+    IconInput
  } 

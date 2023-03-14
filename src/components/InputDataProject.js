@@ -9,6 +9,8 @@ import { BiruKu } from '../utils/constant';
             <Text style={styles.label}>{props.label}</Text>
                 <TextInput placeholder={props.placeholder}style={styles.txtInput}
                 onChangeText={props.onChangeText}
+                value={props.value}
+                ref={props.ref}
                 />
           </View>
         );
@@ -23,7 +25,7 @@ const styles=StyleSheet.create({
     marginHorizontal: 20,
   },
   label:{
-    fontSize: 13,
+    fontSize: 14,
     fontFamily: "Poppins-Regular",
     marginBottom:5,
     color: BiruKu,
@@ -37,8 +39,8 @@ const styles=StyleSheet.create({
     height: 35,
     padding: 10,
     marginVertical: 8,
-    width: 240,
     marginHorizontal: 10,
     width: 250,
+    fontSize: 15
   }
 });

@@ -1,7 +1,6 @@
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React, { Component } from 'react'
 import { BiruKu } from '../../utils/constant'
-import moment from 'moment'
 
 const MemoIndex = (props) => {
     return (

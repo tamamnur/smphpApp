@@ -1,47 +1,62 @@
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
 import React, { useState } from 'react'
-import { IconAdd, IconBack, LogoSmpHP } from '../../assets'
+import {IconBack, LogoSmpHP } from '../../assets'
 import { BiruKu } from '../../utils/constant'
 import InputDataProject from '../../components/InputDataProject'
 import { useNavigation } from '@react-navigation/native'
 import Title from '../../components/Title'
-import firestore, { firebase } from '@react-native-firebase/firestore';
-import Project from '../Discover/project'
+import firestore from '@react-native-firebase/firestore';
 import PickedDateFull from '../../components/pickedDateFull'
+
+const isValidObjField = (obj) => {
+  return Object.values(obj).every(value => value.trim())
+} 
+
+const updateError = (error, stateUpdate) => {
+  stateUpdate(error)
+  setTimeout(() => {
+    stateUpdate('')
+  }, 3000) 
+}
 
 const CreateProject = (props) => {
   const navigation = useNavigation();
-  const [projectId, setProjectId] = useState();
-  const [projectName, setProjectName] = useState();
-  const [customer, setCustomer] = useState();
-  const [numberPO, setNumberPO] = useState();
+  const text = useState('Choose date!')
   const [datePO, setDatePO] = useState();
 
-  const ref = firestore().collection('Project')
-
-  const onProjectIdChange = (value) => {
-      setProjectId(value)
-  }
-  const onProjectNameChange = (value) => {
-      setProjectName(value)
-  }
-  const onCustomerChange = (value) => {
-      setCustomer(value)
-  }
-  const onNumberPOChange = (value) => {
-      setNumberPO(value)
-  }
   const onDatePOChange = (value) => {
     setDatePO(value)
-    console.log(value)
   }
-  
+  const [projectInfo, setProjectInfo] = useState({
+    projectId: '',
+    projectName: '',
+    customer: '',
+    numberPO: ''
+  })
+
+  const [error, setError] = useState('');
+  const {projectId, projectName, customer, numberPO} = projectInfo;
+  const handleOnchangeText = (value, fieldName) => {
+    setProjectInfo ({...projectInfo, [fieldName]: value})
+  } 
+
+  const isValidForm = () => {
+    if(!isValidObjField(projectInfo)) return updateError('Required all fields!', setError)
+    if(!projectName.trim() || projectName.length < 3 ) return updateError ('Invalid name of project', setError)
+    if(!customer.trim() || customer.length < 3 ) return updateError ('Invalid customer name', setError)
+    if(!numberPO.trim() || numberPO.length < 2 ) return updateError ('Invalid number PO', setError)
+    return true;
+  }
+  const submitForm =()=> {
+    { isValidForm() ? handleCreateProject() : error} 
+  }
+
   const handleCreateProject = async ()=>{
-    console.log(projectId)
-    console.log(projectName)
-    console.log(customer)
-    console.log(numberPO)
-    console.log(datePO)
+      console.log(projectId)
+      console.log(projectName)
+      console.log(customer)
+      console.log(numberPO)
+      console.log(datePO)
     
     const projectCollection = await firestore()
     .collection('Project')
@@ -52,9 +67,12 @@ const CreateProject = (props) => {
       numberPO: numberPO,
       datePO: firestore.Timestamp.fromDate(datePO),
     })
-    .then(() => {
+    .then((response) => {
       console.log('Project Created');
-      navigation.navigate('PanelNameInput')
+
+      navigation.navigate('PanelNameInput', {
+        ProjectId: response.id, 
+      })
     })
     .catch((error) => {
       console.log(error)
@@ -68,24 +86,27 @@ const CreateProject = (props) => {
           <LogoSmpHP style={{marginLeft: 180}}/>
       </View>
         <Title TxtTitle="NEW PROJECT"/>
-        <InputDataProject label="ProjectID" onChangeText={onProjectIdChange}/>
-        <InputDataProject label="Project Name" onChangeText={onProjectNameChange}/>
-        <InputDataProject label="Customer" onChangeText={onCustomerChange}/>
-        <InputDataProject label="PO Number" onChangeText={onNumberPOChange}/>
+          {error ? (
+            <Text style={{color: 'red', fontSize: 14, textAlign: 'center'}}>
+              {error} 
+          </Text> 
+          ) : null}
+        <InputDataProject label="Number SO" onChangeText={(value) => handleOnchangeText(value, 'projectId')}/>
+        <InputDataProject label="Project Name" onChangeText={(value) => handleOnchangeText(value, 'projectName')}/>
+        <InputDataProject label="Customer" onChangeText={(value) => handleOnchangeText(value, 'customer')}/>
+        <InputDataProject label="PO Number" onChangeText={(value) => handleOnchangeText(value, 'numberPO')}/>
         <View style={styles.container}>
-            <Text style={styles.label}>P?O Date</Text>
+            <Text style={styles.label}>PO Date</Text>
                 <Text style={styles.txtInput} onChangeText={onDatePOChange}>
                   <PickedDateFull onChangeText={onDatePOChange}/> 
                 </Text>
-        </View>
-        
+        </View>      
         <TouchableOpacity 
           style={styles.btn} 
-          onPress={handleCreateProject}
+          onPress={submitForm}
           >
           <Text style={{textAlign: 'center', color:'#FFF', fontFamily: 'Poppins-Bold', fontSize: 16}}>Continue</Text>
-        </TouchableOpacity>
-        
+        </TouchableOpacity>       
    </View>
   )
 }
@@ -125,7 +146,6 @@ const styles = StyleSheet.create({
     textAlignVertical: 'center',
     textAlign: 'right'    
   },
-
   txtInput:{
     borderWidth: 1,
     borderColor: BiruKu,
@@ -137,5 +157,4 @@ const styles = StyleSheet.create({
     marginHorizontal: 10,
     width: 250,
   }
-
 })

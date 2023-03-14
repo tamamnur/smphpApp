@@ -21,7 +21,10 @@ import MemoPage from '../pages/Home/MemoPage'
 import MemoCreate from '../pages/Home/MemoCreate'
 import Project from '../pages/Discover/project'
 import { AuthContext } from '../Config/AuthProvider';
-
+import ProjectDetails from '../pages/Home/projectDetails';
+import ProjectStatus from '../pages/Home/projectStatus';
+import ProjectDetailsEdit from '../pages/Home/projectDetailsEdit';
+import FormShopdrawing from '../pages/Discover/FormShopdrawing';
 
 
 const Stack = createNativeStackNavigator();
@@ -44,7 +47,11 @@ const SecuredNav = () => {
       <Stack.Screen name="SD_Approval" component={SD_Approval} options={{ headerShown: false}}/>
       <Stack.Screen name="SD_Revisi" component={SD_Revisi} options={{ headerShown: false}}/>
 
-      <Stack.Screen name="Project" component={Project} options={{ headerShown: false}}/>
+      <Stack.Screen name="ProjectDetails" component={ProjectDetails} options={{ headerShown: false}}/>
+      <Stack.Screen name="ProjectDetailsEdit" component={ProjectDetailsEdit} options={{ headerShown: false}}/>
+      <Stack.Screen name="ProjectStatus" component={ProjectStatus} options={{ headerShown: false}}/>
+
+      <Stack.Screen name="FormShopdrawing" component={FormShopdrawing} options={{ headerShown: false}}/>
 
     </Stack.Navigator>
   )

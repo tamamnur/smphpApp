@@ -1,213 +1,211 @@
-import { StyleSheet, Text, View, Image, ScrollView, TouchableOpacity } from 'react-native'
-import React, { Component } from 'react'
-import { LogoSmpHP, IconNewSPG, IconNewSPK } from '../../assets';
+import { StyleSheet, Text, View, Image, ScrollView, TouchableOpacity } from 'react-native';
+import React, {Component} from 'react';
+import {LogoSmpHP, IconNewSPG, IconNewSPK, IconAdd, IconInput} from '../../assets';
 import SDrawing from '../../components/SDrawing';
 import Procurement from '../../components/Procurement';
 import Fabrication from '../../components/Fabrication';
-import { BiruKu, WarnaAbu, WarnaHijau, WarnaPutih } from '../../utils/constant';
+import {BiruKu, WarnaAbu, WarnaHijau, WarnaPutih} from '../../utils/constant';
+import { useNavigation } from '@react-navigation/native';
+
+const Input = (props) => {
+  const navigation = useNavigation();
+  return(
+    <TouchableOpacity onPress={props.onPress}>
+      <View style={{flexDirection: 'row', marginTop: 8, alignSelf: 'center', marginBottom: -15}}>
+        <View>
+          <IconInput/>
+        </View>
+        <View>
+        <Text style={{fontFamily: 'Poppins-Medium', fontSize: 14, color: BiruKu, marginLeft: 5, marginTop: 3}}>
+          {props.title}
+        </Text>
+        </View>
+      </View>
+    </TouchableOpacity>
+  )
+};
 
 class Discover extends Component {
   constructor(props) {
     super(props);
-    this.state ={
-      drawing: 'pengajuan',
-      procurement: 'konstruksi',
-      Fabrication: 'layouting'
-    }}
+    this.state = {
+       
+    };
+  }
 
-    clickDrawing(value) {
-      this.setState({
-        drawing:value
-      })
-    }
-
-    clickProcurement(value) {
-      this.setState({
-        procurement:value
-      })
-    }
-
-    clickPabrikasi(value) {
-      this.setState({
-        pabrikasi:value
-      })
-    }
-  
-  render () {
+  render() {
     return (
       <ScrollView>
-        <View style={styles.LogoSmpHP}><LogoSmpHP /></View>
+        <View style={styles.LogoSmpHP}>
+          {/* <LogoSmpHP /> */}
+        </View>
         <Text style={styles.BigTitle}>Production Monitoring </Text>
         <View style={styles.SPGK}>
-            <TouchableOpacity style={styles.SPG}>
-              <IconNewSPG onPress={() => this.props.navigation.navigate('CreateSPG')}/>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.SPK}>
-              <IconNewSPK onPress={() => this.props.navigation.navigate('CreateSPK')}/>
-            </TouchableOpacity>
+         
         </View>
-          <View style={styles.Wrapper}>
+        <View style={styles.Wrapper}>
           <View style={styles.groupTitle}>
-            <Text style={styles.Progress}>Shopdrawing Progress 
-            {/* <Text style={styles.smp}> Shopdrawing
-              </Text> */}
-              </Text>    
+            <Text style={styles.Progress}>
+              Shopdrawing Progress
+            </Text>
           </View>
 
           <View style={styles.SDWrapp}>
-            <TouchableOpacity >
+            <TouchableOpacity>
               <SDrawing
-                title="Pengajuan Shopdrawing" 
-                // onPress={() => this.clickDrawing('Pengajuan Shopdrawing')}
+                title="Submission"
                 onPress={() => this.props.navigation.navigate('SD_Submission')}
-                active={this.state.drawing === 'Pengajuan Shopdrawing' ? true : false}
-                /></TouchableOpacity>
-            <TouchableOpacity >
-              <SDrawing 
-                title="Approval Shopdrawing"
-                onPress={() => this.props.navigation.navigate('SD_Revisi')} 
-                // onPress={() => this.clickDrawing('Approval Shopdrawing')}
-                active={this.state.drawing === 'Approval Shopdrawing' ? true : false}
-                /></TouchableOpacity>
-              <TouchableOpacity >
-                <SDrawing
-                  title="Revisi Shopdrawing" 
-                  onPress={() => this.props.navigation.navigate('SD_Approval')}
-                  // onPress={() => this.clickDrawing('Revisi Shopdrawing')}
-                  active={this.state.drawing === 'Revisi Shopdrawing' ? true : false}
-                  /></TouchableOpacity>
-            </View>
-            </View>
+              />
+            </TouchableOpacity>
+            <TouchableOpacity>
+              <SDrawing
+                title="Approval"
+                onPress={() => this.props.navigation.navigate('SD_Revisi')}
+              />
+            </TouchableOpacity>
+            <TouchableOpacity>
+              <SDrawing
+                title="Revision"
+                onPress={() => this.props.navigation.navigate('SD_Approval')}
+              />
+            </TouchableOpacity>
+          </View>
+            <Input 
+              title="Input Progress"
+              onPress={()=> this.props.navigation.navigate('FormShopdrawing')}
+            />
+        </View>
 
-          <View style={styles.Wrapper}>
+        <View style={styles.Wrapper}>
           <View style={styles.groupTitle}>
-            <Text style={styles.Progress}>Material Procurement 
-            {/* <Text style={styles.smp}> Material              </Text> */}
-            </Text>    
+            <Text style={styles.Progress}>Material Procurement</Text>
           </View>
 
           <View style={styles.POWrapp}>
             <Procurement
-              title="Konstruksi" 
+              title="Konstruksi"
               onPress={() => this.props.navigation.navigate('SD_Approval')}
               // onPress={() => this.clickProcurement('Konstruksi')}
               active={this.state.procurement === 'Konstruksi' ? true : false}
-              />
+            />
             <Procurement
               title="Busbar Cu"
-              onPress={() => this.props.navigation.navigate('SD_Approval')} 
+              onPress={() => this.props.navigation.navigate('SD_Approval')}
               // onPress={() => this.clickProcurement('Busbar Cu')}
               active={this.state.procurement === 'Busbar Cu' ? true : false}
-              />
+            />
             <Procurement
-              title="Komponen" 
+              title="Komponen"
               onPress={() => this.clickProcurement('Komponen')}
               active={this.state.procurement === 'Komponen' ? true : false}
-              />
-            </View>
-            </View>
+            />
+          </View>
+          <Input 
+              title="Input Progress"
+              onPress={()=> this.props.navigation.navigate('FormShopdrawing')}
+            />
+        </View>
 
-          <View style={styles.Wrapper}>          
+        <View style={styles.Wrapper}>
           <View style={styles.groupTitle}>
-            <Text style={styles.Progress}> Fabrication Progress 
-            {/* <Text style={styles.smp}> Pabrikasi              </Text> */}
-            </Text>    
+            <Text style={styles.Progress}> Fabrication Progress</Text>
           </View>
           <View style={styles.PabWrapp}>
             <TouchableOpacity>
               <Fabrication
-                title="Layouting" 
+                title="Layouting"
                 onPress={() => this.clickProcurement('Layouting')}
                 active={this.state.procurement === 'Layouting' ? true : false}
-                />
+              />
             </TouchableOpacity>
             <Fabrication
-              title="Mechanic" 
+              title="Mechanic"
               onPress={() => this.clickProcurement('Set. Busbar')}
               active={this.state.procurement === 'Set. Busbar' ? true : false}
-              />
+            />
             <Fabrication
-              title="Wiring" 
+              title="Wiring"
               onPress={() => this.clickProcurement('Wiring')}
               active={this.state.procurement === 'Wiring' ? true : false}
-              />
-            </View>
-          </View>  
-
+            />
+          </View>
+          <Input 
+              title="Input Progress"
+              onPress={()=> this.props.navigation.navigate('FormShopdrawing')}
+            />
+        </View>
       </ScrollView>
-      )
-    }
-  }     
+    );
+  }
+}
 
-
-  export default Discover;
+export default Discover;
 
 const styles = StyleSheet.create({
-  groupTitle:{
+  groupTitle: {
     paddingTop: 5,
     paddingHorizontal: 20,
     marginLeft: -10,
-
   },
-  Progress:{
+  Progress: {
     color: '#324A5E',
     fontSize: 17,
     textAlign: 'left',
     fontFamily: 'Poppins-Regular',
-    fontWeight: 'bold'
+    fontWeight: 'bold',
   },
-  smp:{
+  smp: {
     fontSize: 17,
     fontWeight: 'bold',
-    fontFamily: 'Acme-Regular'
+    fontFamily: 'Acme-Regular',
   },
-  SDWrapp:{
+  SDWrapp: {
     flexDirection: 'row',
   },
 
-  POWrapp:{
+  POWrapp: {
     flexDirection: 'row',
     marginHorizontal: -2,
-    marginTop: -10 
+    marginTop: -10,
   },
-  PabWrapp:{
+  PabWrapp: {
     flexDirection: 'row',
     marginHorizontal: 10,
-    paddingRight:10,
-    marginTop: -10
+    paddingRight: 10,
+    marginTop: -10,
   },
-  Wrapper:{
+  Wrapper: {
     backgroundColor: '#D4D6D3',
     marginTop: 15,
     marginHorizontal: 20,
     paddingBottom: 20,
     borderRadius: 20,
   },
-  LogoSmpHP:{
-    marginTop:30, 
-    marginBottom:10,
+  LogoSmpHP: {
+    marginTop: 30,
+    marginBottom: 10,
     marginHorizontal: 20,
     flex: 2,
-    alignItems: 'flex-end'
+    alignItems: 'flex-end',
   },
-  BigTitle:{
+  BigTitle: {
     marginHorizontal: 20,
-    marginBottom: 10,
+    // marginBottom: 5,
     textAlign: 'center',
     fontSize: 24,
     fontFamily: 'Acme-Regular',
-    color: BiruKu    
+    color: BiruKu,
   },
-  SPGK:{
+  SPGK: {
     flex: 2,
     flexDirection: 'row',
     marginVertical: 8,
-    alignItems: 'center'
+    alignItems: 'center',
   },
-  SPG:{
-    marginLeft: 85
+  SPG: {
+    marginLeft: 85,
   },
-  SPK:{
-    marginHorizontal: 20
-  }
-})
+  SPK: {
+    // marginHorizontal: 20,
+  },
+});

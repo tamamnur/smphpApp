@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, TouchableOpacity } from 'react-native'
+import { StyleSheet, Text, View, TouchableOpacity, ScrollView } from 'react-native'
 import React, {useState, useNavigation} from 'react'
 import InputDataProject from './InputDataProject'
 import { IconAdd } from '../assets'
@@ -10,7 +10,7 @@ const InputPanelNames = (props) => {
     const forms = [...new Array(formQty)];
     
     return (
-        <View style={styles.wrapper}>
+        <ScrollView style={styles.wrapper}>
             {
             forms.map((item, index) => {
                 return (
@@ -24,7 +24,7 @@ const InputPanelNames = (props) => {
                 <IconAdd onPress={() => setFormQty((prev) => prev + 1)}/>
             </TouchableOpacity>
             
-        </View>
+        </ScrollView>
     )
     }
 

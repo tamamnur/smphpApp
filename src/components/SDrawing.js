@@ -5,9 +5,9 @@ import { WarnaAbu, WarnaPutih } from '../utils/constant'
 
 const SDrawing = ({title, active, onPress}) => {
     const Icon = () => {
-        if(title === "Pengajuan  Shopdrawing") return <IconAdd />;
-        if(title === "Approval Shopdrawing") return <IconSD_Approv />;
-        if(title === "Revisi Shopdrawing") return <IconSD_Revisi />;
+        if(title === "Submission") return <IconSD_Pengajuan />;
+        if(title === "Approval") return <IconSD_Approv />;
+        if(title === "Revision") return <IconSD_Revisi />;
         return <IconSD_Pengajuan />
     }
     return (
@@ -43,6 +43,6 @@ const styles = StyleSheet.create({
     icon:{
         alignItems: 'center',
         marginTop: -35,
-
+        marginHorizontal: 10
     }
 })

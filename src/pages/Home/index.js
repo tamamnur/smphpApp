@@ -26,7 +26,6 @@ const Home = () => {
                     <Text onPress={() => navigation.navigate('MemoPage')}
                     style={styles.seeMore}>See More . . .</Text>
                 </TouchableOpacity>
-              
             </View>
           </View>)
 };

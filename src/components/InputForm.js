@@ -1,32 +1,45 @@
-import { Text, View, ScrollView, Image, StatusBar, TextInput, SliderBase, SliderComponent } from 'react-native'
-import React, { Component, useState, useEffect } from 'react'
-import { BiruKu } from '../utils/constant';
+import {Text, View, StyleSheet, TextInput} from 'react-native';
+import React from 'react';
+import {BiruKu} from '../utils/constant';
 
 const InputForm = props => {
-    return(
-        <View>
-            
-            <Text style={{fontWeight: 'bold', color: BiruKu}}>
-            {props.text}</Text>
+  return (
+    <View style={styles.container}>
+      <View>
+        <Text style={styles.label}>{props.label} </Text>
+      </View>
+      <View>
+        <TextInput
+          style={styles.style_values}
+          onChangeText={props.onChangeText}
+        />
+      </View>
+    </View>
+  );
+};
 
-            <TextInput value={props.email} 
-          style={{backgroundColor: '#EDEDED', 
-          borderRadius:5,
-          borderWidth: 1.5,
-          borderColor: BiruKu,
-          marginHorizontal: 35,
-          marginTop: -20,
-          paddingHorizontal: 15,
-          paddingVertical: 8,
-          elevation: 9,
-          fontSize: 12
-        }}
-          onChangeTect ={text => props.setEmail(text)}
-          secureTextEntry={props.secureTextEntry}
-          />  
-        </View>
-
-    );
-}
-
-export default FormInput;
+export default InputForm;
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    marginHorizontal: 20,
+  },
+  label: {
+    fontFamily: 'Poppins-Medium',
+    fontSize: 13,
+    marginBottom: 13,
+    padding: 10,
+    color: BiruKu
+  },
+  style_values: {
+    fontFamily: 'Poppins-SemiBold',
+    fontSize: 16,
+    borderWidth: 1.5,
+    borderColor: BiruKu,
+    borderRadius: 5,
+    marginBottom: 15,
+    height: 45,
+    width: 230,
+    padding: 10,
+    color: BiruKu  },
+});

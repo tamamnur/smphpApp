@@ -7,36 +7,43 @@ import Title from '../../components/Title'
 import { useNavigation } from '@react-navigation/native';
 import firestore from '@react-native-firebase/firestore'
 
-const PanelNameInput = () => {
+const PanelNameInput = ({route}) => {
+  const {ProjectId} = route.params;
+
   const [formQty, setFormQty] = useState(1);
   const navigation = useNavigation();
 
   const forms = [...new Array(formQty)];
   
-  const [pnameInput, setPnameInput] = useState();
-  
-  const onPnameInputChange = (value) => {
-    setPnameInput(value)
-  }
-  const handlePnameInput = async () => {
-    console.log(pnameInput)
+  const [pnameInput, setPnameInput] = useState([]);
 
-    const pnameInputCollection = await firestore().collection('pnameInput').add({
-      pnameInput: pnameInput
+  const onPnameInputChange = (value,index) => {
+    const PanelName = pnameInput.slice()
+    PanelName[index] = value;
+    setPnameInput(PanelName)
+  }
+
+  const handlePnameInput = async () => {
+       
+    const batch = firestore().batch();
+    
+    pnameInput.forEach((item, index) => {
+      batch.set(firestore().doc(`Project/${ProjectId}/PanelName/${index+1}`), {pnameInput:item});
     })
-    .then(() =>{
-      console.log('panel name created');
+    
+    batch.commit().then(response => {
+      console.log('pname input was successfull');
+    }).catch(err => {
+      console.error(err);
     })
-    .catch((error) => {
-      console.log(error)
-    })
+
     navigation.replace("SecuredNav")
   }
 
   return (    
   <View style={styles.page}>
       <View style={styles.header}>
-          <IconBack onPress={'CreateProject'} style={{marginTop: 10, marginLeft: 30}}/>
+          {/* <IconBack onPress={'CreateProject'} style={{marginTop: 10, marginLeft: 30}}/> */}
           <LogoSmpHP style={{marginLeft: 180}}/>
       </View>
         <Title TxtTitle="PANEL NAMES INPUT"/>
@@ -45,9 +52,10 @@ const PanelNameInput = () => {
             return (
             <InputDataProject 
               label="Panel Name"
-              key={index.toString()} 
-              onChangeText={onPnameInputChange}
-            />)
+              key={index.toString()}
+              
+              onChangeText={(value)=>{onPnameInputChange(value,index)}}
+              />)
           })
         }
         
