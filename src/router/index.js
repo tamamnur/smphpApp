@@ -25,7 +25,12 @@ import ProjectDetails from '../pages/Home/projectDetails';
 import ProjectStatus from '../pages/Home/projectStatus';
 import ProjectDetailsEdit from '../pages/Home/projectDetailsEdit';
 import FormShopdrawing from '../pages/Discover/FormShopdrawing';
-
+import FormProcurement from '../pages/Discover/FormProcurement';
+import FormFabrication from '../pages/Discover/FormFabrication';
+import PanelNameEdit from '../pages/Home/PanelNameEdit';
+import FormDelivery from '../pages/Discover/FormDelivery';
+import ProjectStatusAgain from '../pages/Home/projectStatusAgain';
+import ProfileEdit from '../pages/Akun/profileEdit';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -48,10 +53,16 @@ const SecuredNav = () => {
       <Stack.Screen name="SD_Revisi" component={SD_Revisi} options={{ headerShown: false}}/>
 
       <Stack.Screen name="ProjectDetails" component={ProjectDetails} options={{ headerShown: false}}/>
-      <Stack.Screen name="ProjectDetailsEdit" component={ProjectDetailsEdit} options={{ headerShown: false}}/>
       <Stack.Screen name="ProjectStatus" component={ProjectStatus} options={{ headerShown: false}}/>
+      <Stack.Screen name="ProjectStatusAgain" component={ProjectStatusAgain} options={{ headerShown: false}}/>
 
+      <Stack.Screen name="ProjectDetailsEdit" component={ProjectDetailsEdit} options={{ headerShown: false}}/>
+      <Stack.Screen name="PanelNameEdit" component={PanelNameEdit} options={{ headerShown: false}}/>
+      
       <Stack.Screen name="FormShopdrawing" component={FormShopdrawing} options={{ headerShown: false}}/>
+      <Stack.Screen name="FormProcurement" component={FormProcurement} options={{ headerShown: false}}/>
+      <Stack.Screen name="FormFabrication" component={FormFabrication} options={{ headerShown: false}}/>
+      <Stack.Screen name="FormDelivery" component={FormDelivery} options={{ headerShown: false}}/>
 
     </Stack.Navigator>
   )
@@ -100,6 +111,7 @@ const Router = () => {
       
         <Stack.Screen name="Signup" component={Signup} options={{ headerShown: false}}/>
         <Stack.Screen name="ResetPassword" component={ResetPassword}options={{ headerShown: false}}/>
+        <Stack.Screen name="Profile Edit" component={ProfileEdit}options={{ headerShown: false}}/>
 
         {/* <Stack.Screen name="Project" component={Project} options={{ headerShown: false}}/> */}
     </Stack.Navigator>

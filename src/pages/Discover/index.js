@@ -6,6 +6,7 @@ import Procurement from '../../components/Procurement';
 import Fabrication from '../../components/Fabrication';
 import {BiruKu, WarnaAbu, WarnaHijau, WarnaPutih} from '../../utils/constant';
 import { useNavigation } from '@react-navigation/native';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const Input = (props) => {
   const navigation = useNavigation();
@@ -40,9 +41,6 @@ class Discover extends Component {
           {/* <LogoSmpHP /> */}
         </View>
         <Text style={styles.BigTitle}>Production Monitoring </Text>
-        <View style={styles.SPGK}>
-         
-        </View>
         <View style={styles.Wrapper}>
           <View style={styles.groupTitle}>
             <Text style={styles.Progress}>
@@ -102,7 +100,7 @@ class Discover extends Component {
           </View>
           <Input 
               title="Input Progress"
-              onPress={()=> this.props.navigation.navigate('FormShopdrawing')}
+              onPress={()=> this.props.navigation.navigate('FormProcurement')}
             />
         </View>
 
@@ -114,26 +112,41 @@ class Discover extends Component {
             <TouchableOpacity>
               <Fabrication
                 title="Layouting"
-                onPress={() => this.clickProcurement('Layouting')}
+                // onPress={() => this.clickProcurement('Layouting')}
                 active={this.state.procurement === 'Layouting' ? true : false}
               />
             </TouchableOpacity>
             <Fabrication
               title="Mechanic"
-              onPress={() => this.clickProcurement('Set. Busbar')}
+              // onPress={() => this.clickProcurement('Set. Busbar')}
               active={this.state.procurement === 'Set. Busbar' ? true : false}
             />
             <Fabrication
               title="Wiring"
-              onPress={() => this.clickProcurement('Wiring')}
+              // onPress={() => this.clickProcurement('Wiring')}
               active={this.state.procurement === 'Wiring' ? true : false}
             />
           </View>
           <Input 
               title="Input Progress"
-              onPress={()=> this.props.navigation.navigate('FormShopdrawing')}
+              onPress={()=> this.props.navigation.navigate('FormFabrication')}
             />
         </View>
+        <View style={styles.Wrapper}>
+          <View style={styles.groupTitle}>
+            <Text style={styles.Progress}> Delivery</Text>
+          </View>
+          <View style={{flexDirection: 'row',alignSelf: 'center', marginVertical: -10}}>
+            <TouchableOpacity onPress={()=> this.props.navigation.navigate('FormDelivery')}>
+              <View style={{marginLeft: 40}}>
+                <MaterialCommunityIcons name='truck-delivery-outline' color={'blue'} size={35}/>
+              </View>
+              <Text style={{color: 'blue', fontFamily: 'Poppins-Medium', fontSize: 14, paddingHorizontal: 10,}}>
+                    Input Progress</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+        
       </ScrollView>
     );
   }
@@ -166,17 +179,17 @@ const styles = StyleSheet.create({
   POWrapp: {
     flexDirection: 'row',
     marginHorizontal: -2,
-    marginTop: -10,
+    marginTop: -15,
   },
   PabWrapp: {
     flexDirection: 'row',
     marginHorizontal: 10,
     paddingRight: 10,
-    marginTop: -10,
+    marginTop: -15,
   },
   Wrapper: {
     backgroundColor: '#D4D6D3',
-    marginTop: 15,
+    marginTop:  3,
     marginHorizontal: 20,
     paddingBottom: 20,
     borderRadius: 20,
@@ -190,7 +203,7 @@ const styles = StyleSheet.create({
   },
   BigTitle: {
     marginHorizontal: 20,
-    // marginBottom: 5,
+    marginBottom: 5,
     textAlign: 'center',
     fontSize: 24,
     fontFamily: 'Acme-Regular',

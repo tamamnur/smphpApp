@@ -10,17 +10,17 @@ const Division = (props) => {
     <View style={styles.area}>
       <Picker style={styles.picked}
         selectedValue={division} 
-        onValueChange={(label, index)=>{
+        onValueChange={(label, value)=>{
           setDivision(label)
           props.onValueChange(label)
           }}>
-            <Picker.Item label="---" value ="" />
-            <Picker.Item label="Admin" value ="admin" />
-            <Picker.Item label="Drafter" value ="drafter" />
-            <Picker.Item label="Logistics" value ="logistik" />
-            <Picker.Item label="Production" value ="produksi" />
-            <Picker.Item label="Sales" value ="sales" />
-            <Picker.Item label="Direktur" value ="direktur" />
+            <Picker.Item label="---" />
+            <Picker.Item label="Admin" value ="Admin" />
+            <Picker.Item label="Drafter" value ="Drafter" />
+            <Picker.Item label="Logistics" value ="Logistik" />
+            <Picker.Item label="Production" value ="Produksi" />
+            <Picker.Item label="Sales" value ="Sales" />
+            <Picker.Item label="Direktur" value ="Direktur" />
       </Picker>
     </View>
   )

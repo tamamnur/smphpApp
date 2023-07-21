@@ -6,11 +6,9 @@ import { BiruKu } from '../../utils/constant';
 import Memo from './Memo';
 import { LogoAdd } from '../../assets';
 import { useNavigation } from '@react-navigation/native';
- 
 
 const Home = () => { 
-  const navigation = useNavigation();
-
+  const navigation = useNavigation(); 
   return (
     <View style={styles.page}>
       <View style={styles.Header}>
@@ -72,9 +70,9 @@ const styles = StyleSheet.create({
   iconAdd:{
     alignItems: 'flex-end',
     marginHorizontal: 10,
-    marginBottom: 50,
-    marginTop: -60,
-    flex: 1
+    marginBottom: 6,
+    marginTop: -40,
+    // flex: 2
   },
   seeMore:{
     fontFamily: 'Poppins-SemiBoldItalic',

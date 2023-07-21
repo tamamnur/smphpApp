@@ -1,10 +1,14 @@
-import { Text, StyleSheet, View, TouchableOpacity, ScrollView, ActivityIndicator, } from 'react-native';
-import React, {Component, useState} from 'react';
-import {IconBack, LogoSmpHP} from '../../assets';
-import {BiruKu} from '../../utils/constant';
-import {useNavigation} from '@react-navigation/native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  ScrollView,
+  TouchableOpacity,
+  ActivityIndicator,
+} from 'react-native';
+import React, {useEffect, useState} from 'react';
 import firestore from '@react-native-firebase/firestore';
-import Icon from 'react-native-vector-icons/AntDesign';
+import { IconBack, LogoSmpHP } from '../../assets';
 
 const Status = props => {
   const navigation = useNavigation();
@@ -25,11 +29,8 @@ const Status = props => {
           <Text style={styles.TableNo}>{props.nomorPanel}</Text>
           <View style={styles.TablePanelName}>
             <TouchableOpacity onPress={() => setTogglePanel(!togglePanel)}>
-              <View> 
+              <View>
                 <Text style={styles.tPanelName}>{props.panelName}</Text>
-              </View>
-              <View style={{width: 30, marginLeft: 185, marginTop: -22}}>                
-                <Icon name={togglePanel ? 'shrink' : 'swap'} color={BiruKu} size={16}/>
               </View>
             </TouchableOpacity>
           </View>
@@ -37,10 +38,16 @@ const Status = props => {
         </View>
       </View>
       {togglePanel && (
-        <View style={{ borderColor: BiruKu, borderWidth: 1, marginLeft: 20, marginRight: 25, paddingBottom: 10, }}>
-          <View style={{width: 220, marginLeft: 20, marginBottom: 3, marginTop: 5}}>
+        <View
+          style={{
+            backgroundColor: '#D8D8D8',
+            marginLeft: 20,
+            marginRight: 25,
+            paddingBottom: 10,
+          }}>
+          <View style={{width: 220, marginLeft: 20, marginBottom: 3}}>
             <TouchableOpacity onPress={() => setToggleSD(!toggleSD)}>
-              <Text style={styles.headerStatus}><Icon name={toggleSD ? 'right' : 'down'} color={BiruKu}/>   Shopdrawing</Text>
+              <Text style={styles.headerStatus}>{'\u2B15'} Shopdrawing</Text>
             </TouchableOpacity>
             {toggleSD && (
               <View style={{flexDirection: 'row', width: 220}}>
@@ -60,19 +67,26 @@ const Status = props => {
 
           <View style={{width: 220, marginLeft: 20, marginBottom: 2}}>
             <TouchableOpacity onPress={() => setTogglePO(!togglePO)}>
-              <Text style={styles.headerStatus}><Icon name={togglePO ? 'right' : 'down'} color={BiruKu}/>   Procurement</Text>
+              <Text style={styles.headerStatus}>{'\u2B15'} Procurement</Text>
             </TouchableOpacity>
             {togglePO && (
               <View>
                 <TouchableOpacity onPress={() => setTogglePOBox(!togglePOBox)}>
-                  <Text style={styles.status}><Icon name={togglePOBox ? 'right' : 'down'} color={BiruKu}/>   Construction</Text>
+                  <Text style={styles.status}>{'\u2B16'} Construction</Text>
                 </TouchableOpacity>
                 {togglePOBox && (
-                  <View style={{ flexDirection: 'row', width: 220, marginBottom: 5}}>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      width: 220,
+                      marginBottom: 5,
+                    }}>
                     <View>
                       <Text style={styles.statusPO}>{'\u2B25'} Date Order</Text>
                       <Text style={styles.statusPO}>{'\u2B25'} Schedule</Text>
-                      <Text style={styles.statusPO}>{'\u2B25'} Realization</Text>
+                      <Text style={styles.statusPO}>
+                        {'\u2B25'} Realization
+                      </Text>
                     </View>
                     <View style={{marginLeft: -10}}>
                       <Text style={styles.update}>{props.datePO_Const}</Text>
@@ -82,14 +96,21 @@ const Status = props => {
                   </View>
                 )}
                 <TouchableOpacity onPress={() => setTogglePOCu(!togglePOCu)}>
-                  <Text style={styles.status}><Icon name={togglePOCu ? 'right' : 'down'} color={BiruKu}/>   Busbar Cu</Text>
+                  <Text style={styles.status}>{'\u2B16'} Busbar Cu</Text>
                 </TouchableOpacity>
                 {togglePOCu && (
-                  <View style={{ flexDirection: 'row', width: 220, marginBottom: 5}}>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      width: 220,
+                      marginBottom: 5,
+                    }}>
                     <View>
                       <Text style={styles.statusPO}>{'\u2B25'} Date Order</Text>
                       <Text style={styles.statusPO}>{'\u2B25'} Schedule</Text>
-                      <Text style={styles.statusPO}>{'\u2B25'} Realization</Text>
+                      <Text style={styles.statusPO}>
+                        {'\u2B25'} Realization
+                      </Text>
                     </View>
                     <View style={{marginLeft: -10}}>
                       <Text style={styles.update}>{props.datePO_Busbar}</Text>
@@ -98,15 +119,23 @@ const Status = props => {
                     </View>
                   </View>
                 )}
-                <TouchableOpacity onPress={() => setTogglePOComp(!togglePOComp)}>
-                  <Text style={styles.status}><Icon name={togglePOComp ? 'right' : 'down'} color={BiruKu}/>   Component</Text>
+                <TouchableOpacity
+                  onPress={() => setTogglePOComp(!togglePOComp)}>
+                  <Text style={styles.status}>{'\u2B16'} Component</Text>
                 </TouchableOpacity>
                 {togglePOComp && (
-                  <View style={{ flexDirection: 'row', width: 220, marginBottom: 3, }}>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      width: 220,
+                      marginBottom: 3,
+                    }}>
                     <View>
                       <Text style={styles.statusPO}>{'\u2B25'} Date Order</Text>
                       <Text style={styles.statusPO}>{'\u2B25'} Schedule</Text>
-                      <Text style={styles.statusPO}>{'\u2B25'} Realization</Text>
+                      <Text style={styles.statusPO}>
+                        {'\u2B25'} Realization
+                      </Text>
                     </View>
                     <View style={{marginLeft: -10}}>
                       <Text style={styles.update}>{props.datePO_Comp}</Text>
@@ -121,15 +150,21 @@ const Status = props => {
 
           <View style={{width: 220, marginLeft: 20, marginBottom: 3}}>
             <TouchableOpacity onPress={() => setToggleFAB(!toggleFAB)}>
-              <Text style={styles.headerStatus}><Icon name={toggleFAB ? 'right' : 'down'} color={BiruKu}/>   Fabrication</Text>
+              <Text style={styles.headerStatus}>{'\u2B15'} Fabrication</Text>
             </TouchableOpacity>
             {toggleFAB && (
               <View>
-                <TouchableOpacity onPress={() => setToggleFABLay(!toggleFABLay)}>
-                  <Text style={styles.status}><Icon name={toggleFABLay ? 'right' : 'down'} color={BiruKu}/>   Layouting</Text>
+                <TouchableOpacity
+                  onPress={() => setToggleFABLay(!toggleFABLay)}>
+                  <Text style={styles.status}>{'\u2B16'} Layouting</Text>
                 </TouchableOpacity>
                 {toggleFABLay && (
-                  <View style={{ flexDirection: 'row', width: 220, marginBottom: 3, }}>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      width: 220,
+                      marginBottom: 3,
+                    }}>
                     <View>
                       <Text style={styles.statusPO}>{'\u2B25'} Start</Text>
                       <Text style={styles.statusPO}>{'\u2B25'} Finish</Text>
@@ -140,11 +175,13 @@ const Status = props => {
                     </View>
                   </View>
                 )}
-                <TouchableOpacity onPress={() => setToggleFABMec(!toggleFABMec)}>
-                  <Text style={styles.status}><Icon name={toggleFABMec ? 'right' : 'down'} color={BiruKu}/>   Mechanical</Text>
+                <TouchableOpacity
+                  onPress={() => setToggleFABMec(!toggleFABMec)}>
+                  <Text style={styles.status}>{'\u2B16'} Mechanical</Text>
                 </TouchableOpacity>
                 {toggleFABMec && (
-                  <View style={{flexDirection: 'row', width: 220, marginBottom: 3}}>
+                  <View
+                    style={{flexDirection: 'row', widt: 220, marginBottom: 3}}>
                     <View>
                       <Text style={styles.statusPO}>{'\u2B25'} Start</Text>
                       <Text style={styles.statusPO}>{'\u2B25'} Finish</Text>
@@ -155,12 +192,13 @@ const Status = props => {
                     </View>
                   </View>
                 )}
-                <TouchableOpacity onPress={() => setToggleFABWir(!toggleFABWir)}>
-                  <Text style={styles.status}><Icon name={toggleFABWir ? 'right' : 'down'} color={BiruKu}/>   Wiring</Text>
+                <TouchableOpacity
+                  onPress={() => setToggleFABWir(!toggleFABWir)}>
+                  <Text style={styles.status}>{'\u2B16'} Wiring</Text>
                 </TouchableOpacity>
                 {toggleFABWir && (
                   <View
-                    style={{flexDirection: 'row', width: 220, marginBottom: 3}}>
+                    style={{flexDirection: 'row', widt: 220, marginBottom: 3}}>
                     <View>
                       <Text style={styles.statusPO}>{'\u2B25'} Start</Text>
                       <Text style={styles.statusPO}>{'\u2B25'} Finish</Text>
@@ -187,31 +225,19 @@ const Status = props => {
 };
 
 const FormatDate = date => {
-  const monthString = (month) =>  {
-    const monthName = [ 'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul','Ags', 'Sep', 'Okt', 'Nov', 'Des'];
-    return monthName[month-1]
-  };
-  const getMonth = (date.getMonth()+1);
-  const month = monthString(getMonth)
-
   return (
-    date.getDate() + '-' +month+ '-' +date.getFullYear()
+    date.getDate() + '-' + (date.getMonth() + 1) + '-' + date.getFullYear()
   );
 };
-
-class ProjectStatus extends Component {
-  state = {
-    Monitoring: {Monitoring: ''},
-    Project: {ProjectName: ''},
-    ListPanel: [],
-    id: '',
-    isLoading: true,
-  };
-  constructor(props) {
-    super(props);
-    this.subscriber = firestore()
+const ProjectStatusAgain = ({navigation}) => {
+  const [loading, setLoading] = useState(true);
+  const [content, setContent] = useState([]);
+  useEffect(() => {
+    const ContentFirebase = [];
+    const subscriber = firestore()
       .collection('Project')
-      .doc(props.route.params.id)
+    //   .doc(this.props.route.params.id)
+      .doc('project00')
       .onSnapshot(async doc => {
         const panelName = await doc.ref.collection('PanelName').get();
         const PanelNames = panelName.docs.map(async item => {
@@ -310,226 +336,89 @@ class ProjectStatus extends Component {
             }
 
             const Result = {
-              SubmissionDate: SubmissionDate ? FormatDate(SubmissionDate.toDate()) : '   ------',
-              RevisionDate: RevisionDate ? FormatDate(RevisionDate.toDate()) : '   ------',
-              ApprovalDate: ApprovalDate ? FormatDate(ApprovalDate.toDate()) : '   ------',
+              SubmissionDate: SubmissionDate
+                ? FormatDate(SubmissionDate.toDate())
+                : '   ------',
+              RevisionDate: RevisionDate
+                ? FormatDate(RevisionDate.toDate())
+                : '   ------',
+              ApprovalDate: ApprovalDate
+                ? FormatDate(ApprovalDate.toDate())
+                : '   ------',
               ConstPO: ConstPO ? FormatDate(ConstPO.toDate()) : '   ------',
-              ConstSched: ConstSched ? FormatDate(ConstSched.toDate()) : '   ------',
-              ConstReali: ConstReali ? FormatDate(ConstReali.toDate()) : '   ------',
+              ConstSched: ConstSched
+                ? FormatDate(ConstSched.toDate())
+                : '   ------',
+              ConstReali: ConstReali
+                ? FormatDate(ConstReali.toDate())
+                : '   ------',
               BusbarPO: BusbarPO ? FormatDate(BusbarPO.toDate()) : '   ------',
-              BusbarSched: BusbarSched ? FormatDate(BusbarSched.toDate()) : '   ------',
-              BusbarReali: BusbarReali ? FormatDate(BusbarReali.toDate()) : '   ------',
-              ComponentPO: ComponentPO ? FormatDate(ComponentPO.toDate()) : '   ------',
-              ComponentSched: ComponentSched ? FormatDate(ComponentSched.toDate()) : '   ------',
-              ComponentReali: ComponentReali ? FormatDate(ComponentReali.toDate()) : '   ------',
-              LayoutingStart: LayoutStart ? FormatDate(LayoutStart.toDate()) : '   ------',
-              LayoutingFinish: LayoutFinish ? FormatDate(LayoutFinish.toDate()) : '   ------',
-              MechanicStart: MechStart ? FormatDate(MechStart.toDate()) : '   ------',
-              MechanicFinish: MechFinish ? FormatDate(MechFinish.toDate()) : '   ------',
-              WiringStart: WiringStart ? FormatDate(WiringStart.toDate()) : '   ------',
-              WiringFinish: WiringFinish ? FormatDate(WiringFinish.toDate()) : '   ------',
-              SentPanel: SentPanel ? FormatDate(SentPanel.toDate()) : '   ------',
+              BusbarSched: BusbarSched
+                ? FormatDate(BusbarSched.toDate())
+                : '   ------',
+              BusbarReali: BusbarReali
+                ? FormatDate(BusbarReali.toDate())
+                : '   ------',
+              ComponentPO: ComponentPO
+                ? FormatDate(ComponentPO.toDate())
+                : '   ------',
+              ComponentSched: ComponentSched
+                ? FormatDate(ComponentSched.toDate())
+                : '   ------',
+              ComponentReali: ComponentReali
+                ? FormatDate(ComponentReali.toDate())
+                : '   ------',
+              LayoutingStart: LayoutStart
+                ? FormatDate(LayoutStart.toDate())
+                : '   ------',
+              LayoutingFinish: LayoutFinish
+                ? FormatDate(LayoutFinish.toDate())
+                : '   ------',
+              MechanicStart: MechStart
+                ? FormatDate(MechStart.toDate())
+                : '   ------',
+              MechanicFinish: MechFinish
+                ? FormatDate(MechFinish.toDate())
+                : '   ------',
+              WiringStart: WiringStart
+                ? FormatDate(WiringStart.toDate())
+                : '   ------',
+              WiringFinish: WiringFinish
+                ? FormatDate(WiringFinish.toDate())
+                : '   ------',
+              SentPanel: SentPanel
+                ? FormatDate(SentPanel.toDate())
+                : '   ------',
             };
+            // console.log(Result);
             return {id: item.id, ...item.data(), monitoring: Result};
           }
+          // console.log(item);
+          console.log(panelName)
           return {id: item.id, ...item.data(), monitoring: null};
         });
         this.setState({
           Project: {ProjectName: doc.data().projectName},
           ListPanel: await Promise.all(PanelNames),
-          isLoading: false,
         });
         // console.log('Panels',PanelNames)
-      });
+    });
+    // console.log('Panels',PanelNames)
+    //   console.log('why',subscriber)
     // this.setState({id: props.route.params.id});
-  }
-
-  render() {
-    return (
-      <View>
-        <View
-          style={{flexDirection: 'row', marginTop: 30, marginHorizontal: 30}}>
-          <IconBack onPress={() => this.props.navigation.navigate('Home')} />
-          <LogoSmpHP style={{marginLeft: 180}} />
-        </View>
-        {this.state.isLoading ? (
-          <View style={{marginTop: 20}}>
-            <View style={{paddingBottom: 80}}>
-              <ActivityIndicator />
-            </View>
-            <ActivityIndicator size={'large'} />
-          </View>
-        ) : (
-          <View>
-            <Text style={styles.title}>{this.state.Project.ProjectName}</Text>
-            <Text style={styles.subtitle}>Project Status</Text>
-            <View style={{flexDirection: 'row', marginHorizontal: 20}}>
-              <Text style={styles.headTableNo}>No.</Text>
-              <Text style={styles.headTablePanelName}>Panel Name</Text>
-              <Text style={styles.headTableStatus}>Status</Text>
-            </View>
-            <ScrollView style={{marginBottom: 50, height: 570}}>
-              {this.state.ListPanel.map(item => {
-                return (
-                  <Status
-                    key={item.id}
-                    nomorPanel={item.id}
-                    panelName={item.pnameInput}
-                    status="Progres"
-                    dateSD_Submit={item.monitoring?.SubmissionDate}
-                    dateSD_Rev={item.monitoring?.RevisionDate}
-                    dateSD_Approv={item.monitoring?.ApprovalDate}
-                    datePO_Const={item.monitoring?.ConstPO}
-                    datePO_Busbar={item.monitoring?.BusbarPO}
-                    datePO_Comp={item.monitoring?.ComponentPO}
-                    sched_Busbar={item.monitoring?.BusbarSched}
-                    sched_Comp={item.monitoring?.ComponentSched}
-                    sched_Const={item.monitoring?.ConstSched}
-                    realztn_Busbar={item.monitoring?.BusbarReali}
-                    realztn_Comp={item.monitoring?.ComponentReali}
-                    realztn_Const={item.monitoring?.ConstReali}
-                    start_layout={item.monitoring?.LayoutingStart}
-                    start_mech={item.monitoring?.MechanicStart}
-                    start_wiring={item.monitoring?.WiringStart}
-                    finish_layout={item.monitoring?.LayoutingFinish}
-                    finish_mech={item.monitoring?.MechanicFinish}
-                    finish_wiring={item.monitoring?.WiringFinish}
-                    sentPanel={item.monitoring?.SentPanel}
-                  />
-                );
-              })}
-            </ScrollView>
-          </View>
-        )}
+  });
+  return (
+    <View style={{flex: 1}}>
+      <View style={{flexDirection: 'row', marginTop: 30, marginHorizontal: 30}}>
+        <IconBack onPress={() => navigation.navigate('Home')} />
+        <LogoSmpHP style={{marginLeft: 180}} />
       </View>
-    );
-  }
-}
+      <ActivityIndicator />
+      <Text>projectStatusAgain</Text>
+    </View>
+  );
+};
 
-export default ProjectStatus;
+export default ProjectStatusAgain;
 
-const styles = StyleSheet.create({
-  title: {
-    marginTop: 8,
-    marginBottom: -5,
-    textAlign: 'center',
-    fontFamily: 'Poppins-Bold',
-    fontSize: 15,
-    color: BiruKu,
-  },
-  subtitle: {
-    marginBottom: 3,
-    textAlign: 'center',
-    fontFamily: 'Poppins-Italic',
-    fontSize: 13,
-    color: BiruKu,
-  },
-  headTableNo: {
-    fontFamily: 'Poppins-Medium',
-    fontSize: 12,
-    marginVertical: 2,
-    paddingVertical: 5,
-    color: BiruKu,
-    borderWidth: 1,
-    borderColor: BiruKu,
-    width: 30,
-    height: 30,
-    textAlign: 'center',
-  },
-  headTablePanelName: {
-    fontFamily: 'Poppins-Medium',
-    fontSize: 12,
-    marginVertical: 2,
-    paddingLeft: 10,
-    color: BiruKu,
-    borderWidth: 1,
-    borderColor: BiruKu,
-    width: 220,
-    height: 30,
-    textAlignVertical: 'center',
-    textAlign: 'center',
-  },
-  headTableStatus: {
-    fontFamily: 'Poppins-Medium',
-    fontSize: 12,
-    marginVertical: 2,
-    marginRight: 3,
-    color: BiruKu,
-    borderWidth: 1,
-    borderColor: BiruKu,
-    width: 98,
-    height: 30,
-    textAlignVertical: 'center',
-    textAlign: 'center',
-  },
-  TableNo: {
-    fontFamily: 'Poppins-Medium',
-    fontSize: 11,
-    marginVertical: 2,
-    paddingVertical: 5,
-    color: BiruKu,
-    borderWidth: 1,
-    borderColor: BiruKu,
-    width: 30,
-    height: 30,
-    textAlign: 'center',
-  },
-  TablePanelName: {
-    flexDirection:'row',
-    paddingLeft: 10,
-    marginVertical: 2,
-    borderWidth: 1,
-    borderColor: BiruKu,
-    width: 220,
-    height: 30,
-  },
-  tPanelName: {
-    fontFamily: 'Poppins-Medium',
-    fontSize: 12,
-    marginVertical: 5,
-    color: BiruKu,
-  },
-  TableStatus: {
-    fontFamily: 'Poppins-Italic',
-    fontSize: 11,
-    marginVertical: 2,
-    marginRight: 3,
-    color: BiruKu,
-    borderWidth: 1,
-    borderColor: BiruKu,
-    width: 98,
-    height: 30,
-    textAlignVertical: 'center',
-    textAlign: 'center',
-  },
-  headerStatus: {
-    fontFamily: 'Poppins-Medium',
-    fontSize: 11,
-    color: BiruKu,
-    borderBottomWidth: 1,
-    borderBottomColor: BiruKu,
-    marginLeft: 25,
-    marginRight: 25,
-    marginBottom: 5,
-  },
-  update: {
-    fontFamily: 'Poppins-Medium',
-    fontSize: 10,
-    textAlign: 'right',
-    color: BiruKu,
-    paddingVertical: 1,
-    marginLeft: 140,
-  },
-  status: {
-    fontFamily: 'Poppins-Medium',
-    fontSize: 11,
-    color: BiruKu,
-    marginLeft: 35,
-  },
-  statusPO: {
-    fontFamily: 'Poppins-Medium',
-    fontSize: 11,
-    color: BiruKu,
-    marginLeft: 50,
-  },
-});
+const styles = StyleSheet.create({});

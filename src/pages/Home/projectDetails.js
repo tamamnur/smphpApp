@@ -1,12 +1,6 @@
-import {
-  Text,
-  StyleSheet,
-  View,
-  TouchableOpacity,
-  ScrollView,
-} from 'react-native';
+import { Text, StyleSheet, View, ScrollView, ActivityIndicator, } from 'react-native';
 import React, {Component, useState, useEffect} from 'react';
-import {IconAdd, IconBack, LogoSmpHP, EditButton, IconAdd2} from '../../assets';
+import {IconBack, LogoSmpHP, EditButton, } from '../../assets';
 import {BiruKu} from '../../utils/constant';
 import {useNavigation} from '@react-navigation/native';
 import firestore from '@react-native-firebase/firestore';
@@ -20,6 +14,7 @@ const Panel = props => {
     </View>
   );
 };
+
 class ProjectDetails extends Component {
   state = {
     Project: {ProjectName: ''},
@@ -30,17 +25,26 @@ class ProjectDetails extends Component {
     DatePO2: {DatePO2: ''},
     ListPanel: [],
     id: '',
+    isLoading: true,
   };
   constructor(props) {
     super(props);
     this.subcsriber = firestore()
       .collection('Project')
       .doc(props.route.params.id)
-      .onSnapshot(doc => {
-        // console.log(doc.data().datePO.toDate().toLocaleDateString('en-IN'));
+      .onSnapshot(async doc => {
         const FirebaseDate = doc.data().datePO.toDate();
-        const FormatDate =FirebaseDate.getDate()+'/'+(FirebaseDate.getMonth()+1)+'/'+FirebaseDate.getFullYear();
-        const refProject = firestore().collection('Project').doc();
+        const monthString = (month) =>  {
+          const monthName = [ 'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul','Ags', 'Sep', 'Okt', 'Nov', 'Des'];
+          return monthName[month-1]
+        };
+        const getMonth = (FirebaseDate.getMonth()+1);
+        const month = monthString(getMonth)
+        const FormatDate = FirebaseDate.getDate() +'-'+month+ '-' + FirebaseDate.getFullYear();
+        const panelName = await doc.ref.collection('PanelName').get();
+        const PanelNames = panelName.docs.map(item => ({
+          id: item.id, ...item.data(),
+        }));
         this.setState({
           Project: {
             ProjectName: doc.data().projectName,
@@ -49,73 +53,15 @@ class ProjectDetails extends Component {
             NumberPO: doc.data().numberPO,
             DatePO: FormatDate,
           },
+          ListPanel: PanelNames,
+          isLoading: false,
         });
+        console.log(
+          panelName.docs.map(item => ({id: item.id, ...item.data()})),
+        );
       });
     this.setState({id: props.route.params.id});
   }
-  getPanel() {
-    const InitiationFirebase = async () => {
-      const FBProject = await firestore().collection('Project').get();
-      const projectRef = FBProject.docs.map(async doc => {
-        const panelName = await doc.ref.collection('PanelName').get();
-        const Panels = panelName.docs.map(panelDoc => {
-          return {
-            id: panelDoc,
-            ...panelDoc.data(),
-          };
-        });
-        return {
-          id: doc.id,
-          ...doc.data(),
-          Panels: Panels,
-        };
-      });
-      setProjectList(await Promise.all(projectRef));
-    };
-    InitiationFirebase();
-  }
-
-  // getPanel = async () => {
-  //   const refProject = firestore().collection('Project/1xNSpe5oM4ujMoZQWgPX');
-  //   const panelName = await refProject.collection('PanelName').get();
-  //   panelName.forEach(doc => {
-  //     console.log(doc.id);
-  //     this.setState({
-  //       ListPanel: [
-  //         ...this.state.ListPanel,
-  //         {
-  //           id: doc.id,
-  //           ...doc.data(),
-  //         },
-  //       ],
-  //     });
-  //     console.log(ListPanel);
-  //   });
-  //   console.log(panelName);
-  // };
-
-  //   useEffect(() => {
-  //     const InitiationFirebase = async () => {
-  //       const FBProject = await firestore().collection('Project').get();
-  //       const projectRef = FBProject.docs.map(async doc => {
-  //         const panelName = await doc.ref.collection('PanelName').get();
-  //         const Panels = panelName.docs.map(panelDoc => {
-  //           return {
-  //             id: panelDoc,
-  //             ...panelDoc.data(),
-  //           };
-  //         });
-  //         return {
-  //           id: doc.id,
-  //           ...doc.data(),
-  //           Panels: Panels,
-  //         };
-  //       });
-  //       setProjectList(await Promise.all(projectRef));
-  //     };
-  //     InitiationFirebase();
-  //   }, []);
-  // }
 
   render() {
     return (
@@ -125,88 +71,68 @@ class ProjectDetails extends Component {
           <IconBack onPress={() => this.props.navigation.navigate('Home')} />
           <LogoSmpHP style={{marginLeft: 180}} />
         </View>
-        <Text style={styles.title}>{this.state.Project.ProjectName}</Text>
-        <Text style={styles.subtitle}>"Project Details"</Text>
-        <View
-          style={{
-            marginVertical: 2,
-            marginHorizontal: 30,
-            alignItems: 'flex-end',
-          }}>
-          <EditButton
-            onPress={() => this.props.navigation.navigate('ProjectDetailsEdit')}
-          />
-        </View>
-        <View style={styles.projectId}>
+        {this.state.isLoading ? (
+          <View style={{marginTop: 50}}>
+            <ActivityIndicator size={'large'} />
+          </View>
+        ) : (
           <View>
-            <Text style={styles.left}>Number SO</Text>
-            <Text style={styles.left}>Customer</Text>
-            <Text style={styles.left}>Number PO</Text>
-            <Text style={styles.left}>Date PO</Text>
-          </View>
-          <View>
-            <Text style={styles.right}>{this.state.Project.ProjectId}</Text>
-            <Text style={styles.right}>{this.state.Project.Customer}</Text>
-            <Text style={styles.right}>{this.state.Project.NumberPO}</Text>
-            <Text style={styles.right}>{this.state.Project.DatePO}</Text>
-          </View>
-        </View>
-        <ScrollView>
-          <View style={{flexDirection: 'row'}}>
-            <View>
-              <Text style={styles.pnameTitle}>Panel Name's :</Text>
+            <Text style={styles.title}>{this.state.Project.ProjectName}</Text>
+            <Text style={styles.subtitle}>"Project Details"</Text>
+            <View style={{ marginVertical: 2, marginHorizontal: 30, alignItems: 'flex-end', }}>
+              <EditButton onPress={() => this.props.navigation.navigate('ProjectDetailsEdit')}/>
             </View>
-            <View
-              style={{
-                marginVertical: 12,
-                marginHorizontal: 180,
-                alignItems: 'flex-end',
-              }}>
-              <EditButton onPress={''} />
+            <View style={styles.projectId}>
+              <View>
+                <Text style={styles.left}>Number SO</Text>
+                <Text style={styles.left}>Customer</Text>
+                <Text style={styles.left}>Number PO</Text>
+                <Text style={styles.left}>Date PO</Text>
+              </View>
+              <View>
+                <Text style={styles.right}>{this.state.Project.ProjectId}</Text>
+                <Text style={styles.right}>{this.state.Project.Customer}</Text>
+                <Text style={styles.right}>{this.state.Project.NumberPO}</Text>
+                <Text style={styles.right}>{this.state.Project.DatePO}</Text>
+              </View>
             </View>
+            <View style={{flexDirection: 'row'}}>
+              <View> 
+                <Text style={styles.pnameTitle}>Panel Name's :</Text> 
+              </View>
+              <View style={{ marginVertical: 12, marginHorizontal: 180, alignItems: 'flex-end', }}>
+                <EditButton onPress={() => this.props.navigation.navigate('PanelNameEdit') } />
+              </View>
+            </View>
+            <ScrollView style={{marginBottom: 50}}>
+              {this.state.ListPanel.map(item => {
+                return (
+                  <Panel
+                    key={item.id}
+                    pnomor={item.id}
+                    pname={item.pnameInput}
+                  />
+                );
+              })}
+            </ScrollView>
           </View>
-          <ScrollView style={{marginBottom: 20, borderBottomWidth: 2}}>
-            {this.state.ProjectDetails.Panels.map(item => {
-              // console.log(item);
-              <Panel 
-              pname={item.pnameInput}/>
-            })}
-          </ScrollView>
-
-          {/* <Panel pnomor="0" pname={this.state.Project.ProjectName} /> */}
-          <Panel pnomor="1" pname="LVMDP" />
-          <Panel pnomor="2" pname="CAPACITOR BANK 120KVAR" />
-          <Panel pnomor="3" pname="MDP" />
-
-          <TouchableOpacity style={styles.CreateSPGWrapp}>
-            <Text>Create SPG</Text>
-            <IconAdd
-              onPress={() => this.props.navigation.navigate('CreateSPG')}
-            />
-            <Text>Create SPG</Text>
-            <IconAdd2
-              onPress={() => this.props.navigation.navigate('CreateSPG')}
-            />
-          </TouchableOpacity>
-        </ScrollView>
+        )}
       </View>
     );
   }
 }
-
 export default ProjectDetails;
 
 const styles = StyleSheet.create({
   title: {
     marginTop: 8,
-    marginBottom: 2,
+    marginBottom: -5,
     textAlign: 'center',
     fontFamily: 'Poppins-Bold',
     fontSize: 18,
     color: BiruKu,
   },
   subtitle: {
-    marginBottom: 3,
     textAlign: 'center',
     fontFamily: 'Poppins-Regular',
     fontSize: 14,
@@ -247,9 +173,10 @@ const styles = StyleSheet.create({
   },
   pname: {
     fontFamily: 'Poppins-Medium',
-    fontSize: 13,
+    fontSize: 11,
     marginVertical: 2,
     marginHorizontal: 2,
+    paddingTop: 2,
     paddingLeft: 10,
     color: BiruKu,
     borderWidth: 1,
@@ -258,7 +185,8 @@ const styles = StyleSheet.create({
   },
   pnomor: {
     fontFamily: 'Poppins-Medium',
-    fontSize: 12,
+    fontSize: 11,
+    paddingTop: 2,
     marginVertical: 2,
     marginLeft: 20,
     color: BiruKu,
@@ -266,8 +194,5 @@ const styles = StyleSheet.create({
     borderColor: BiruKu,
     width: 30,
     textAlign: 'center',
-  },
-  CreateSPGWrapp: {
-    alignItems: 'center',
-  },
+  }
 });

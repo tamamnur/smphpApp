@@ -24,9 +24,10 @@ const styles=StyleSheet.create({
   },
   SubTitle:{ 
       marginBottom: 8,
+      marginTop: -5,
       textAlign: 'center',
-      fontFamily: "Poppins-Italic",
-      fontSize: 13,
+      fontFamily: "Poppins-SemiBold",
+      fontSize: 14,
       color: BiruKu
   }
 });

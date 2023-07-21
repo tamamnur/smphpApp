@@ -7,7 +7,6 @@ import Button from '../../components/Button'
 import Title from '../../components/Title'
 import { Picker } from '@react-native-picker/picker'
 import InputData from '../../components/InputData'
-import DateInput from '../../components/DateInput'
 import Division from '../../components/Division'
 
 export default class MemoCreate extends Component {

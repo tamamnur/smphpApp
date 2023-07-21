@@ -1,4 +1,4 @@
-import { StyleSheet, View, Image} from 'react-native'
+import { StyleSheet, View} from 'react-native'
 import React, {useEffect, useState} from 'react'
 import { LogoCubicleWT } from '../../assets/icon';
 import auth from '@react-native-firebase/auth'

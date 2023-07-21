@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, ToastAndroid } from 'react-native'
 import React, { useState } from 'react'
 import {IconBack, LogoSmpHP } from '../../assets'
 import { BiruKu } from '../../utils/constant'
@@ -8,9 +8,14 @@ import Title from '../../components/Title'
 import firestore from '@react-native-firebase/firestore';
 import PickedDateFull from '../../components/pickedDateFull'
 
-const isValidObjField = (obj) => {
-  return Object.values(obj).every(value => value.trim())
-} 
+// const isValidObjField = obj => {
+//   return Object.values(obj).every(value => {
+//     if (value) {
+//       console.log(value);
+//       return value.trim();
+//     }
+//   });
+// };
 
 const updateError = (error, stateUpdate) => {
   stateUpdate(error)
@@ -21,7 +26,6 @@ const updateError = (error, stateUpdate) => {
 
 const CreateProject = (props) => {
   const navigation = useNavigation();
-  const text = useState('Choose date!')
   const [datePO, setDatePO] = useState();
 
   const onDatePOChange = (value) => {
@@ -41,10 +45,11 @@ const CreateProject = (props) => {
   } 
 
   const isValidForm = () => {
-    if(!isValidObjField(projectInfo)) return updateError('Required all fields!', setError)
+    // if(!isValidObjField(projectInfo)) return updateError('Required all fields!', setError)
     if(!projectName.trim() || projectName.length < 3 ) return updateError ('Invalid name of project', setError)
     if(!customer.trim() || customer.length < 3 ) return updateError ('Invalid customer name', setError)
-    if(!numberPO.trim() || numberPO.length < 2 ) return updateError ('Invalid number PO', setError)
+    // if(!numberPO.trim() || numberPO.length < 2 ) return updateError ('Invalid number PO', setError)
+    if(!datePO) return updateError ('Invalid date PO', setError)
     return true;
   }
   const submitForm =()=> {
@@ -52,12 +57,8 @@ const CreateProject = (props) => {
   }
 
   const handleCreateProject = async ()=>{
-      console.log(projectId)
-      console.log(projectName)
-      console.log(customer)
-      console.log(numberPO)
-      console.log(datePO)
-    
+      console.log(projectId, projectName, customer, numberPO, datePO)
+
     const projectCollection = await firestore()
     .collection('Project')
     .add({
@@ -69,7 +70,7 @@ const CreateProject = (props) => {
     })
     .then((response) => {
       console.log('Project Created');
-
+      ToastAndroid.show('Project Created, Continue to adding Panel Names', ToastAndroid.SHORT)
       navigation.navigate('PanelNameInput', {
         ProjectId: response.id, 
       })
@@ -87,10 +88,35 @@ const CreateProject = (props) => {
       </View>
         <Title TxtTitle="NEW PROJECT"/>
           {error ? (
-            <Text style={{color: 'red', fontSize: 14, textAlign: 'center'}}>
+            <Text style={{color: 'red', fontSize: 13, textAlign: 'center', marginVertical:10}}>
               {error} 
           </Text> 
           ) : null}
+      <View>
+        <View style={{flexDirection: 'row', marginHorizontal: 8}}>
+          <View>
+            <Text style={styles.left}> SO Number</Text>
+            <Text style={styles.left}> Project Name</Text>
+            <Text style={styles.left}> Customer</Text>
+            <Text style={styles.left}> PO Number</Text>
+            <Text style={styles.left}> PO Date</Text>
+          </View>
+          <View>
+            <TextInput style={styles.right}
+              onChangeText={(value) => handleOnchangeText(value, 'projectId')}/>
+            <TextInput style={styles.right}
+              onChangeText={(value) => handleOnchangeText(value, 'projectName')}/>
+            <TextInput style={styles.right}
+              onChangeText={(value) => handleOnchangeText(value, 'customer')}/>
+            <TextInput style={styles.right}
+              onChangeText={(value) => handleOnchangeText(value, 'numberPO')}/>
+            <Text style={styles.right} onChangeText={onDatePOChange}>
+                <PickedDateFull onChangeText={onDatePOChange}/> 
+            </Text>
+          </View>
+      </View>
+      </View>
+{/* 
         <InputDataProject label="Number SO" onChangeText={(value) => handleOnchangeText(value, 'projectId')}/>
         <InputDataProject label="Project Name" onChangeText={(value) => handleOnchangeText(value, 'projectName')}/>
         <InputDataProject label="Customer" onChangeText={(value) => handleOnchangeText(value, 'customer')}/>
@@ -99,8 +125,11 @@ const CreateProject = (props) => {
             <Text style={styles.label}>PO Date</Text>
                 <Text style={styles.txtInput} onChangeText={onDatePOChange}>
                   <PickedDateFull onChangeText={onDatePOChange}/> 
+                  {/* <PickedDateShort onChangeText={onDatePOChange}/>  
                 </Text>
         </View>      
+          */}
+                  
         <TouchableOpacity 
           style={styles.btn} 
           onPress={submitForm}
@@ -119,6 +148,27 @@ const styles = StyleSheet.create({
     },
   header:{
     flexDirection: 'row',
+  },
+  left: {
+    fontFamily: 'Poppins-Medium',
+    fontSize: 14,
+    marginTop: 2,
+    marginBottom: 25,
+    paddingVertical: 5,
+    color: BiruKu,
+  },
+  right: {
+    fontFamily: 'Poppins-Medium',
+    fontSize: 14,
+    borderWidth: 1,
+    borderColor: BiruKu,
+    borderRadius: 5,
+    marginBottom: 20,
+    marginLeft: 5,
+    height: 40,
+    width: 250,
+    padding: 7,
+    color: BiruKu,
   },
   btn:{
     color: '#FFF',

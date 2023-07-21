@@ -34,7 +34,8 @@
     "react-native-select-dropdown": "^3.2.1",
     "react-native-svg": "^12.3.0",
     "react-native-svg-transformer": "^1.0.0",
-    "react-native-table-component": "^1.2.2"
+    "react-native-table-component": "^1.2.2",
+    "react-native-vector-icons": "^9.2.0"
   },
   "devDependencies": {
     "@babel/core": "7.12.9",

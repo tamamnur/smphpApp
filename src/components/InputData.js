@@ -12,7 +12,9 @@ const InputData = (props) => {
               onChangeText={props.onChangeText}
               placeholder={props.placeholder} 
               secureTextEntry={props.secureTextEntry}
-              style={styles.txtInput}/>
+              style={styles.txtInput}
+              value={props.value}
+            />
           </View>
         );
       };
@@ -35,7 +37,7 @@ const styles=StyleSheet.create({
   txtInput:{
     borderWidth: 1,
     borderColor: BiruKu,
-    padding: 10,
+    padding: 8,
     fontFamily: "Poppins-Regular",
     marginBottom: 5,
     borderRadius: 5,

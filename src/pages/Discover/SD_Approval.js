@@ -14,7 +14,7 @@ const CONTENT = {
     ],
   };
 
-export default class SD_Submission extends Component {
+export default class SD_Approval extends Component {
     constructor(props) {
         super(props);
     }

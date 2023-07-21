@@ -1,13 +1,4 @@
-import {
-  View,
-  Text,
-  TextInput,
-  StyleSheet,
-  TouchableOpacity,
-  ToastAndroid,
-  ScrollView,
-  ActivityIndicator,
-} from 'react-native';
+import {View,Text,TextInput,StyleSheet,TouchableOpacity,ToastAndroid,ScrollView,} from 'react-native';
 import React, {useEffect, useMemo, useState} from 'react';
 import {IconBack, LogoSmpHP} from '../../assets';
 import {BiruKu} from '../../utils/constant';
@@ -15,7 +6,6 @@ import {useNavigation} from '@react-navigation/native';
 import Title from '../../components/Title';
 import firestore from '@react-native-firebase/firestore';
 import PickedDateFull from '../../components/pickedDateFull';
-import StagesSD from '../../components/StagesSD';
 import CheckBox from '@react-native-community/checkbox';
 
 const isValidObjField = obj => {
@@ -31,91 +21,56 @@ const updateError = (error, stateUpdate) => {
   stateUpdate(error);
   setTimeout(() => {
     stateUpdate('');
-  }, 3000);
+  }, 1000);
 };
 
-const FormShopdrawing = props => {
+const FormDelivery = props => {
   const navigation = useNavigation();
   const [date, setDate] = useState();
-  const [isLoading, setIsLoading] = useState(true);
+  const [selectedDate, setSelectedDate] = useState();
   const [ProjectList, setProjectList] = useState([]);
-  const [isPanelAvailabel, setIsPanelAvailable] = useState(false);
+  const [panelSelected, setPanelSelected] = useState(false);
   const onDateChange = value => {
     setDate(value);
   };
-  const [shopdrawingInfo, setShopdrawingInfo] = useState({
+  const [deliveryInfo, setDeliveryInfo] = useState({
     projectId: '',
     FSProjectId: '',
     projectName: '',
-    stages: '',
     customer: '',
     projectsList: [],
     Panels: [],
   });
 
   const [error, setError] = useState('');
-  const {projectId, projectName, stages, customer} = shopdrawingInfo;
-  const handleOnchangeText = async (value, fieldName) => {
-    setShopdrawingInfo({...shopdrawingInfo, [fieldName]: value});
-    if (fieldName === 'stages') {
-      shopdrawingInfo.Panels.forEach(async item => {
-        if (item.MonitoringID) {
-          const MonitoringID = item.MonitoringID.substring(1);
-          // console.log(MonitoringID)
-          const _Data = await firestore()
-            .collection(MonitoringID + '/Shopdrawing')
-            .doc(value)
-            .get();
-          const isExist = _Data.exists;
-          console.log(item.pnameInput, isExist);
-          setShopdrawingInfo(prev => ({
-            ...prev,
-            Panels: prev.Panels.map(panel => {
-              if (panel.pnameInput === item.pnameInput) {
-                return {...panel, stageExist: isExist};
-              }
-              setIsLoading(true);
-              return panel;
-            }),
-          }));
-        } else {
-          setShopdrawingInfo(prev => ({
-            ...prev,
-            Panels: prev.Panels.map(panel => {
-              if (panel.pnameInput === item.pnameInput) {
-                return {...panel, stageExist: false};
-              }
-              return panel;
-            }),
-          }));
-        }
-        setIsLoading(false);
-      });
-    }
+  const {projectId, projectName, stages, stagesFABDetail, customer} =
+    deliveryInfo;
+  const handleOnchangeText = (value, fieldName) => {
+    setDeliveryInfo({...deliveryInfo, [fieldName]: value});
   };
   const isValidForm = () => {
+    // if (!isValidObjField(deliveryInfo))
+    //   return updateError('Required all fields!', setError);
     if (!projectName.trim() || projectName.length === 0)
       return updateError('Invalid name of project', setError);
-    if (!stages.trim() || stages.length === 0)
-      return updateError('Required to choice Stages of Shopdrawing', setError);
-    if (!date)
+    if (!date === 0)
       return updateError('Required to choice Date of Proccess!', setError);
+    // if (value.selected === null )
+    //   return updateError('Panel Has Not Been Selected')
     return true;
   };
   const submitForm = () => {
     if (isValidForm()) {
-      handleFormShopdrawing();
+      handleFormdelivery();
     } else {
       error;
     }
   };
 
-  const handleFormShopdrawing = async () => {
-    let panelSelected = false;
-    shopdrawingInfo.Panels.forEach(async value => {
+  const handleFormdelivery = async () => {
+    console.log(deliveryInfo);
+    deliveryInfo.Panels.forEach(async value => {
       if (value.selected === true) {
-        panelSelected = true;
-        // console.log(value);
         let MonitoringID = null;
         if (value.MonitoringID) {
           MonitoringID = value.MonitoringID.split('/')[2];
@@ -123,40 +78,28 @@ const FormShopdrawing = props => {
           const newMonitoring = await firestore()
             .collection('Monitoring')
             .add({
-              ProjectID: '/Project/' + shopdrawingInfo.FSProjectId,
+              ProjectID: '/Project/' + deliveryInfo.FSProjectId,
             });
           MonitoringID = newMonitoring.id;
         }
-        const Shopdrawing = firestore()
+        const Delivery = firestore()
           .collection('Monitoring')
           .doc(MonitoringID)
-          .collection('Shopdrawing');
-        if (shopdrawingInfo.stages === 'Approval') {
-          await Shopdrawing.doc('Approval').set({
-            DateApprove: firestore.Timestamp.fromDate(date),
+          .collection('Sent');
+          Delivery.doc('Sent').set({
+            sent: firestore.Timestamp.fromDate(date)
           });
-        }
-        if (shopdrawingInfo.stages === 'Revision') {
-          await Shopdrawing.doc('Revision').set({
-            DateRevisi: firestore.Timestamp.fromDate(date),
-          });
-        }
-        if (shopdrawingInfo.stages === 'Submission') {
-          await Shopdrawing.doc('Submission').set({
-            DateSubmit: firestore.Timestamp.fromDate(date),
-          });
-        }
 
         await firestore()
           .collection('Project')
-          .doc(shopdrawingInfo.FSProjectId)
+          .doc(deliveryInfo.FSProjectId)
           .collection('PanelName')
           .doc(value.id)
           .set({
             pnameInput: value.pnameInput,
             MonitoringID: '/Monitoring/' + MonitoringID,
           });
-        setShopdrawingInfo(prev => ({
+        setDeliveryInfo(prev => ({
           ...prev,
           Panels: prev.Panels.map(panelItem => {
             if (panelItem.id === value.id) {
@@ -168,21 +111,8 @@ const FormShopdrawing = props => {
             return panelItem;
           }),
         }));
-        ToastAndroid.show('Data Added', ToastAndroid.SHORT)
-        if (stages === 'Submission') {
-          navigation.navigate('SD_Submission')
-        }
-        if (stages === 'Revision') {
-          navigation.navigate('SD_Revisi')
-        }
-        if (stages === 'Approval') {
-          navigation.navigate('SD_Approval')
-        }
       }
     });
-    if (!panelSelected) {
-      return updateError('You have not selected any Panel', setError);
-    }
   };
 
   const Panel = props => {
@@ -218,19 +148,13 @@ const FormShopdrawing = props => {
             selected: false,
           };
         });
-        // console.log('Panel',Panels)
         return {
           id: doc.id,
           ...doc.data(),
           Panels: Panels,
         };
       });
-      const projectList = await Promise.all(projectRef);
-      setProjectList(projectList);
-      // setProjectList(await Promise.all(projectRef));
-      // const isDataAvailable = projectList.some(project => project.Panels.length > 0)
-      // setIsPanelAvailable(isDataAvailable)
-      setIsLoading(false);
+      setProjectList(await Promise.all(projectRef));
     };
     InitiationFirebase();
   }, []);
@@ -241,7 +165,7 @@ const FormShopdrawing = props => {
         return value.projectName === projectName;
       });
       if (MatchProject) {
-        setShopdrawingInfo(prev => ({
+        setDeliveryInfo(prev => ({
           ...prev,
           projectId: MatchProject.projectId,
           FSProjectId: MatchProject.id,
@@ -249,7 +173,7 @@ const FormShopdrawing = props => {
           Panels: MatchProject.Panels,
         }));
       } else {
-        setShopdrawingInfo(prev => ({
+        setDeliveryInfo(prev => ({
           ...prev,
           projectId: '',
           Panels: [],
@@ -258,15 +182,6 @@ const FormShopdrawing = props => {
       }
     }
   }, [ProjectList, projectName]);
-
-  const AllPanelsExistMessage = () => {
-    if (shopdrawingInfo.Panels.every(item => item.stageExist)) {
-      return (
-        <Text style={styles.unvailable}>Data nama panel tidak tersedia.</Text>
-      );
-    }
-    return null;
-  };
 
   return (
     <View style={styles.page}>
@@ -277,19 +192,18 @@ const FormShopdrawing = props => {
         />
         <LogoSmpHP style={{marginLeft: 180}} />
       </View>
-      <Title TxtTitle="SHOP DRAWING" />
+      <Title TxtTitle="D E L I V E R Y   P A N E L S" />
       {error ? (
-        <Text style={{ color: 'red', fontSize: 13, textAlign: 'center', marginBottom: 10, marginTop: -20, }}>
+        <Text style={{color: 'red',fontSize: 13,textAlign: 'center',marginBottom: 10,marginTop: -20}}>
           {error}
         </Text>
       ) : null}
       <View>
-        <View style={{flexDirection: 'row', marginHorizontal: 20}}>
+        <View style={styles.container}>
           <View>
             <Text style={styles.left}>Project Name </Text>
             <Text style={styles.left}>Customer </Text>
             <Text style={styles.left}>Number SO </Text>
-            <Text style={styles.left}>Stages </Text>
             <Text style={styles.left}>Date </Text>
           </View>
           <View>
@@ -300,11 +214,6 @@ const FormShopdrawing = props => {
             />
             <Text style={styles.right}>{customer}</Text>
             <Text style={styles.right}>{projectId}</Text>
-            <View style={{width: 250}}>
-              <StagesSD
-                onValueChange={value => handleOnchangeText(value, 'stages')}
-              />
-            </View>
             <Text style={styles.txtInput} onChangeText={onDateChange}>
               <PickedDateFull onChangeText={onDateChange} />
             </Text>
@@ -320,7 +229,6 @@ const FormShopdrawing = props => {
                 fullname.includes(searchTerm) &&
                 fullname !== searchTerm
               );
-              // console.log(projectName);
             }).map(item => (
               <TouchableOpacity
                 onPress={() => {
@@ -332,44 +240,33 @@ const FormShopdrawing = props => {
           </View>
         ) : null}
       </View>
+
       <ScrollView style={{marginTop: 5}}>
-        {isLoading ? (
-          <View style={{marginTop: 30}}>
-            <ActivityIndicator color={BiruKu} />
-          </View>
-        ) : (
-          <View>
-            <View style={styles.wrappPanelTitle}>
-              <Text style={{ fontFamily: 'Poppins-Medium', color: BiruKu, fontSize: 13, }}>
-                Panel Name
-              </Text>
-            </View>
-            {shopdrawingInfo.Panels.filter(item => !item.stageExist).map(
-              item => (
-                <Panel
-                  key={item.id}
-                  pname={item.pnameInput}
-                  value={item.selected}
-                  onValueChange={value =>
-                    setShopdrawingInfo(prev => ({
-                      ...prev,
-                      Panels: prev.Panels.map(panelItem => {
-                        if (panelItem.id === item.id) {
-                          return {
-                            ...panelItem,
-                            selected: value,
-                          };
-                        }
-                        return panelItem;
-                      }),
-                    }))
+        <View style={styles.wrappPanelTitle}>
+          <Text style={{fontFamily: 'Poppins-Medium', color: BiruKu}}>
+            Panel Name
+          </Text>
+        </View>
+        {deliveryInfo.Panels.map(item => (
+          <Panel
+            pname={item.pnameInput}
+            value={item.selected}
+            onValueChange={value =>
+              setDeliveryInfo(prev => ({
+                ...prev,
+                Panels: prev.Panels.map(panelItem => {
+                  if (panelItem.id === item.id) {
+                    return {
+                      ...panelItem,
+                      selected: value,
+                    };
                   }
-                />
-              ),
-            )}
-            <AllPanelsExistMessage />
-          </View>
-        )}
+                  return panelItem;
+                }),
+              }))
+            }
+          />
+        ))}
       </ScrollView>
       <TouchableOpacity style={styles.btn} onPress={submitForm}>
         <Text
@@ -386,7 +283,7 @@ const FormShopdrawing = props => {
   );
 };
 
-export default FormShopdrawing;
+export default FormDelivery;
 
 const styles = StyleSheet.create({
   page: {
@@ -409,17 +306,8 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   container: {
-    justifyContent: 'flex-end',
     flexDirection: 'row',
     marginHorizontal: 20,
-  },
-  label: {
-    fontSize: 14,
-    fontFamily: 'Poppins-Regular',
-    marginBottom: 5,
-    color: BiruKu,
-    textAlignVertical: 'center',
-    textAlign: 'right',
   },
   txtInput: {
     borderWidth: 1,
@@ -428,7 +316,7 @@ const styles = StyleSheet.create({
     height: 33,
     padding: -10,
     marginVertical: 4,
-    fontSize: 13,
+    fontSize: 30,
     marginLeft: 5,
     width: 250,
   },
@@ -480,8 +368,7 @@ const styles = StyleSheet.create({
     marginRight: 30,
     marginLeft: 20,
     marginBottom: 5,
-    paddingRight: 20,
-    paddingLeft: -20,
+    marginHorizontal: 20,
   },
   left: {
     fontFamily: 'Poppins-Medium',
@@ -502,15 +389,5 @@ const styles = StyleSheet.create({
     width: 250,
     padding: 7,
     color: BiruKu,
-  },
-  unvailable: {
-    fontFamily: 'Poppins-Italic',
-    fontSize: 12,
-    textAlign: 'center',
-    color: BiruKu,
-    marginHorizontal: 30,
-    padding: 10,
-    borderWidth: 1,
-    borderColor: BiruKu,
   },
 });

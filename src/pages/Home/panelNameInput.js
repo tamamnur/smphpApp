@@ -8,6 +8,7 @@ import { useNavigation } from '@react-navigation/native';
 import firestore from '@react-native-firebase/firestore'
 
 const PanelNameInput = ({route}) => {
+  const [errorText, setErroText] = useState('');
   const {ProjectId} = route.params;
 
   const [formQty, setFormQty] = useState(1);
@@ -18,32 +19,35 @@ const PanelNameInput = ({route}) => {
   const [pnameInput, setPnameInput] = useState([]);
 
   const onPnameInputChange = (value,index) => {
+    if(pnameInput.some(item => item.trim() === '')) {
+      setErroText('Please fill in all panel names');
+      return;
+    }   
     const PanelName = pnameInput.slice()
     PanelName[index] = value;
     setPnameInput(PanelName)
   }
 
   const handlePnameInput = async () => {
-       
+    
     const batch = firestore().batch();
-    
     pnameInput.forEach((item, index) => {
-      batch.set(firestore().doc(`Project/${ProjectId}/PanelName/${index+1}`), {pnameInput:item});
+      batch.set(firestore().doc(`Project/${ProjectId}/PanelName/${index+1}`),
+      {pnameInput:item});
     })
-    
-    batch.commit().then(response => {
-      console.log('pname input was successfull');
-    }).catch(err => {
+    try {
+      await batch.commit();
+        console.log('pname input was successfull');
+        navigation.replace("SecuredNav")
+    } 
+    catch (err)  {
       console.error(err);
-    })
-
-    navigation.replace("SecuredNav")
+    }
   }
 
   return (    
   <View style={styles.page}>
       <View style={styles.header}>
-          {/* <IconBack onPress={'CreateProject'} style={{marginTop: 10, marginLeft: 30}}/> */}
           <LogoSmpHP style={{marginLeft: 180}}/>
       </View>
         <Title TxtTitle="PANEL NAMES INPUT"/>
@@ -62,6 +66,12 @@ const PanelNameInput = ({route}) => {
         <TouchableOpacity style={styles.iconAdd}>
           <IconAdd onPress={() => setFormQty((prev) => prev + 1)}/>
         </TouchableOpacity>
+
+        {errorText !== '' && (
+          <Text style={{color: 'red', textAlign:'center', marginVertical: 10}}>
+            {errorText}
+          </Text>
+        )}
       
         <TouchableOpacity style={styles.btn} onPress={handlePnameInput}>
         {/* onPress={()=> navigation.navigate('Home')}> */}

@@ -66,13 +66,13 @@ const handleLogin = () => {
       } else {
       return updateError ("Sorry, Password authentication didn't work, please try again", setError);
     } 
-    console.log(error)})
+    })
 }
 
 const toastLoginSuccess = () => {
   ToastAndroid.show(
     "Login Success !", 
-    ToastAndroid.SHORT);
+    ToastAndroid.LONG);
   }
   
   return (
@@ -87,12 +87,10 @@ const toastLoginSuccess = () => {
           ) : null}
         <InputData 
           placeholder='Username' 
-          // value={email}
           onChangeText={(value) => handleOnchangeText(value, "email")}
           />
         <InputData 
           placeholder='Password'
-          // value={password} onChangeText={text=> setPassword(text)}
           onChangeText={(value) => handleOnchangeText(value, "password")}
           secureTextEntry/>
 
@@ -117,7 +115,6 @@ const toastLoginSuccess = () => {
 export default Login;
 
  const styles = StyleSheet.create({
-  // wrapperSign:{ marginHorizontal: 60, marginTop: 10,},
   forgotPs:{
     fontSize: 14, fontFamily: 'Poppins-Regular', color: BiruKu, 
     marginHorizontal: 60, marginTop: 5, marginBottom: -10,

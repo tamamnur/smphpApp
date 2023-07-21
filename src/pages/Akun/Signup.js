@@ -4,13 +4,11 @@ import React, { useState, useEffect, Component, useContext } from 'react'
 import { IconBack, LogoForSignUp, LogoSmpHP } from '../../assets'
 import Button from '../../components/Button'
 import { BiruKu } from '../../utils/constant'
-import { Picker } from '@react-native-picker/picker' 
-import CheckBox, { CheckBoxComponent }  from '@react-native-community/checkbox'
 import InputData from '../../components/InputData'
 import Division from '../../components/Division'
-import auth from '@react-native-firebase/auth'
 import { useNavigation } from '@react-navigation/native'
-import { AuthContext } from './AuthProvider'
+import auth from '@react-native-firebase/auth'
+import firestore from '@react-native-firebase/firestore'
 
 const isValidObjField = (obj) => {
     return Object.values(obj).every(value => value.trim())
@@ -30,45 +28,25 @@ const isValidObjField = (obj) => {
 
 const Signup = (props) => {
     const navigation = useNavigation();
-    // const [toggleCheckBox, setToggleCheckBox] = useState(false);
-    
-    const [division, setDivision] = useState();
-    // const [name, setName] = useState();
-    // const [email, setEmail] = useState();
-    // const [password, setPassword] = useState();
-
-    // const onNameChange = (value) => {
-    //     setName(value)
-    // }
-
-    // const onEmailChange = (value) => {
-    //     setEmail(value)
-    // }
-    // const onPasswordChange = (value) => {
-    //     setPassword(value)
-    // }
-
-    const onDivisionChange = (value) => {
-        (value) => handleOnchangeText(value, 'division')
-    }
-
     const [regisInfo, setRegisInfo] = useState({
-        division: '',
-        fullname: '',
         email: '',
         password: '',
-        confirmPassword: ''
+        confirmPassword: '',
+        displayName: '',
+        division: '',
       })
     
       const [error, setError] = useState('');
-      const { fullname, email, password, confirmPassword} = regisInfo;
+      const { division, displayName, email, password, confirmPassword} = regisInfo;
       const handleOnchangeText = (value, fieldName) => {
-        setRegisInfo ({...regisInfo, [fieldName]: value})
+        setRegisInfo (prevState => ({
+            ...prevState, [fieldName]: value
+        }))
       } 
     
       const isValidForm = () => {
         if(!isValidObjField(regisInfo)) return updateError('Required all fields!', setError)
-        if(!fullname.trim() || fullname.length < 4 ) return updateError ('Invalid fullname', setError)
+        if(!displayName.trim() || displayName.length < 4 ) return updateError ('Invalid fullname', setError)
         if(!isValidEmail(email)) return updateError('Invalid email', setError)    
         if(!email.trim() || email.length < 4 ) return updateError ('Invalid email', setError)
         if(!password.trim() || password.length < 6 ) return updateError ('Password is too short', setError)
@@ -83,9 +61,19 @@ const Signup = (props) => {
     const handleSignup = () => {
         auth() 
             .createUserWithEmailAndPassword(email, password)
+            .then((userCredential) => {
+                const user = userCredential.user;
+                user.updateProfile({
+                    displayName: displayName,
+                    division: division
+                })
+                return firestore().collection('User').doc(user.uid).set({
+                    division: regisInfo.division
+                })
+            })
             .then(() => {
                 navigation.replace('SecuredNav');
-                ToastAndroid.show('User account created & signed in!', ToastAndroid.SHORT)
+                ToastAndroid.show('User account created & signed in!', ToastAndroid.TOP)
             })
             .catch(error => {
                 if (error.code === 'auth/email-already-in-use') {
@@ -93,7 +81,6 @@ const Signup = (props) => {
                 }
                 if (error.code === 'auth/invalid-email') {
                     return updateError ("That's email address is invalid")
-                // alert('That email address is invalid!');
                 }
                 console.error(error);
             });
@@ -102,35 +89,18 @@ const Signup = (props) => {
     return (
       <ScrollView >
         <View style={{flexDirection: 'row', marginVertical: 30, marginHorizontal: 30}}>
-            {/* <IconBack onPress={()=> navigation.navigate('Login')}/> */}
             <LogoSmpHP style={{marginLeft: 180 }}/>
         </View>
 
         <Text style={styles.title}>REGISTER </Text>
             
         <Text style={styles.subTitle}>Division </Text>
-        {/* <Division onValueChange={onDivisionChange}/> */}
-            {/* <InputData label="Username" onChangeText={onEmailChange}/> */}
-            <Division onValueChange={(value) => handleOnchangeText(value, 'division')}/>
-            <InputData label="Fullname" onChangeText={(value) => handleOnchangeText(value, "fullname")}/>
-            <InputData label="Username" onChangeText={(value) => handleOnchangeText(value, "email")}/>
+            <Division onValueChange={(value) => handleOnchangeText (value, 'division')}/>
+            <InputData label="Fullname" onChangeText={(value) => handleOnchangeText(value, "displayName")}/>
+            <InputData label="Email" onChangeText={(value) => handleOnchangeText(value, "email")}/>
             <InputData label="Password" secureTextEntry onChangeText={(value) => handleOnchangeText(value, "password")}/>
             <InputData label="Confirm Password" secureTextEntry onChangeText={(value) => handleOnchangeText(value, "confirmPassword")}/> 
-
-        {/* <View style={styles.checkBox}>
-            <CheckBox
-                disabled={false}
-                value={toggleCheckBox}
-                onValueChange={(newValue) => setToggleCheckBox(newValue)}
-                />
-        <Text style={styles.Term}> I agree to all the Terms and Privacy Policy </Text>
-        </View> */}
-    
-         <Button 
-            text="Create Account" 
-            color={BiruKu}
-            onPress = {submitForm}
-            />
+         <Button  text="Create Account"  color={BiruKu} onPress={submitForm} />
         {error ? (
             <Text style={{color: 'red', fontSize: 14, textAlign: 'center', marginTop: 20}}>
             {error} 

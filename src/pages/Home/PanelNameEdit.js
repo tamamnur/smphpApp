@@ -6,6 +6,7 @@ import InputDataProject from '../../components/InputDataProject';
 import {useNavigation} from '@react-navigation/native';
 import Title from '../../components/Title';
 import firestore, {firebase} from '@react-native-firebase/firestore';
+import Project from '../Discover/project';
 import PickedDateFull from '../../components/pickedDateFull';
 
 const isValidObjField = obj => {
@@ -19,7 +20,7 @@ const updateError = (error, stateUpdate) => {
   }, 3000);
 };
 
-const ProjectDetailsEdit = props => {
+const PanelNameEdit = props => {
   const navigation = useNavigation();
   const text = useState('Choose date!');
   const [datePO, setDatePO] = useState();
@@ -146,7 +147,7 @@ const ProjectDetailsEdit = props => {
   );
 };
 
-export default ProjectDetailsEdit;
+export default PanelNameEdit;
 
 const styles = StyleSheet.create({
   page: {
