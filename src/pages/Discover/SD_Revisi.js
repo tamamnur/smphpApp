@@ -1,95 +1,143 @@
-import {Text, View, ScrollView, StyleSheet} from 'react-native';
-import React, {Component} from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Text, StyleSheet, View, ScrollView, ActivityIndicator } from 'react-native';
+import { IconBack, LogoSmpHP } from '../../assets';
+import { BiruKu } from '../../utils/constant';
+import { useNavigation } from '@react-navigation/native';
+import firestore from '@react-native-firebase/firestore';
 import Title2 from '../../components/Title2';
-import {IconBack, LogoSmpHP} from '../../assets';
-import {Table,TableWrapper,Row,Cell,Col,Rows,} from 'react-native-table-component';
-import {BiruKu} from '../../utils/constant';
+import PanelProjectList from '../../components/panelProjectList';
+import FormatDate from '../../components/FormatDate';
 
-const CONTENT = {
-    tableHead: ['Project', 'Panel Name', 'Update'],
-    tableData: [
-      ['Lippo Uptown Cikarang', 'LVMDP', '28-09-2022'],
-      ['Lippo Uptown Cikarang', 'CAPACITOR BANK 300kVAR', '28-09-2022'],
-      ['Lippo Uptown Cikarang', 'MDP-01', '28-09-2022'],
-      ['Lippo Uptown Cikarang', 'MDP-02', '28-09-2022'],
-      ['Lippo Uptown Cikarang', 'MPD-04', '28-09-2022'],
-      ['Lippo Uptown Cikarang', 'MPD-05', '28-09-2022'],
-      ['Lippo Uptown Cikarang', 'MPD-06', '28-09-2022'],
-      ['Lippo Uptown Cikarang', 'MPD-03', '28-09-2022'],
-      ['Lippo Uptown Cikarang', 'MDP-02', '28-09-2022'],
-      ['Lippo Uptown Cikarang', 'MPD-03', '28-09-2022'],
-      ['Lippo Uptown Cikarang', 'MPD-03', '28-09-2022'],
-      ['Lippo Uptown Cikarang', 'MPD-03', '28-09-2022'],
-      ['Lippo Uptown Cikarang', 'MPD-03', '28-09-2022'],
-      ['Lippo Uptown Cikarang', 'MPD-03', '28-09-2022'],
-      ['Lippo Uptown Cikarang', 'MPD-03', '28-09-2022'],
-      ['Lippo Uptown Cikarang', 'MPD-03', '28-09-2022'],
-      ['Lippo Uptown Cikarang', 'MPD-03', '28-09-2022'],
-      ['Lippo Uptown Cikarang', 'MPD-03', '28-09-2022'],
-      ['Lippo Uptown Cikarang', 'MPD-03', '28-09-2022'],
-      ['Orchard Park Batam', 'MDP', '28-09-2022'],
-      ['Power House, Sanbe Farma', 'P-SUMPIT', '28-09-2022'],  ],
-};
-
-export default class SD_Revision extends Component {
-  constructor(props) {
-    super(props);
+const SD_Revision = () => {
+  const navigation = useNavigation();
+  const [revisionData, setRevisionData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  useEffect(() => {
+    let isMounted = true;
+  
+  const getMonitoring = async () => {
+    try {
+      const monitoringRef = firestore().collection('Monitoring')
+      const docSnapshot = await monitoringRef.get()
+      const monitorData = [];
+      for (const doc of docSnapshot.docs) {
+        const id = doc.id;
+        const shopdrawingRef = monitoringRef.doc(id).collection('Shopdrawing')
+        const revisionRef = shopdrawingRef.doc('Revision')  
+        const revisionDoc = await revisionRef.get()
+        if (revisionDoc.exists) {
+          const revisionData = revisionDoc.data()
+          const dateRevisionValue = revisionData.DateRevisi;
+          const dateRevision = FormatDate(dateRevisionValue.toDate())
+          monitorData.push({id, ...doc.data(), DateRevision: dateRevision })
+        } else {
+          console.log('Revision doc not found for ID: ', id)
+        }
+      }
+      const dateShorted = monitorData.sort((a,b) => {
+        const dateA = new Date(a.DateRevision)
+        const dateB = new Date(b.DateRevision)
+        return dateB.getTime()-dateA.getTime()
+      })
+      if (isMounted) {
+        setRevisionData(dateShorted)
+        setIsLoading(false)
+      }
+    } catch (error) {
+      console.log('Error', error)
+      if (isMounted) {
+        setIsLoading(false)
+      }
+    }
   }
-  render() {
-    const state = this.state;
-    return (
-      <ScrollView>
-        <View
-          style={{flexDirection: 'row', marginHorizontal: 20, marginTop: 30}}>
-          <IconBack
-            onPress={() => this.props.navigation.navigate('Discover')}
-          />
-          <LogoSmpHP style={{marginLeft: 200}} />
-        </View>
-        <Title2 TxtTitle="SHOPDRAWING" SubTitle="REVISI" />
-        <View style={styles.container1}>
-          <Table
-            borderStyle={{
-              borderWidth: 1,
-              borderWidth: 1,
-              borderColor: BiruKu,
-            }}>
-            <Row
-              data={CONTENT.tableHead}
-              flexArr={[5, 6, 3]}
-              style={styles.head1}
-              textStyle={styles.text1}
-            />
-            <TableWrapper style={styles.wrapper1}>
-              <Rows
-                data={CONTENT.tableData}
-                flexArr={[5, 6, 3]}
-                style={styles.row1}
-                textStyle={styles.text2}
+  getMonitoring();
+  return () => {
+    isMounted = false
+  };
+  }, [])
+
+  return (
+    <View>
+      <View style={{ flexDirection: 'row', marginHorizontal: 20, marginTop: 30 }}>
+        <IconBack onPress={() => navigation.navigate('Discover')} />
+        <LogoSmpHP style={{ marginLeft: 200 }} />
+      </View>
+      <Title2 TxtTitle="SHOPDRAWING" SubTitle="REVISION" />
+      <View style={styles.wrappHead}>
+        <Text style={styles.headProjectName}>Project Name</Text>
+        <Text style={styles.headPanelName}>Panel Name</Text>
+        <Text style={styles.headUpdate}>Update</Text>
+      </View>
+      <ScrollView style={{ marginHorizontal: 8, marginBottom: 110, height: 550 }}>
+        <View style={{ marginBottom: 10, borderColor: BiruKu, borderBottomWidth: 1 }}>
+          {isLoading ? (
+            <View style={{ marginTop: 50 }}>
+              <ActivityIndicator size="large" color={BiruKu} />
+            </View>
+          ) : (
+            revisionData.map((item, index) => (
+              <PanelProjectList
+                key={index+1}
+                projectName={item.id}
+                panelName={index+1}
+                status={item.DateRevision}
               />
-            </TableWrapper>
-          </Table>
+            ))
+          )}
+          <View>
+            <Text style={{ fontFamily: 'Poppins-Italic', fontSize: 12, color: BiruKu, textAlign: 'center', marginTop: 15 }}>
+              End of Page
+            </Text>
+          </View>
         </View>
       </ScrollView>
-    );
-  }
-}
+    </View>
+  );
+};
+
+export default SD_Revision;
 
 const styles = StyleSheet.create({
-    container1: {flex: 2, marginTop: 8, marginHorizontal: 8},
-    head1: {height: 35, borderColor: BiruKu, borderWidth: 1},
-    //   wrapper1: { borderWidth: 1, backgroundColor: '#902' },
-    row1: {height: 25, borderWidth: 0.8, borderColor: BiruKu},
-    text1: {
-      textAlign: 'center',
-      color: BiruKu,
-      fontFamily: 'Poppins-SemiBold',
-      fontSize: 12,
-    },
-    text2: {
-      color: BiruKu,
-      fontFamily: 'Poppins-Medium',
-      paddingLeft: 8,
-      fontSize: 10,
-    },
+  wrappHead: {
+    flexDirection: 'row',
+    marginHorizontal: 16,
+    marginBottom: 2,
+    borderColor: BiruKu,
+    borderBottomWidth: 2,
+  },
+  headProjectName: {
+    fontFamily: 'Poppins-Medium',
+    fontSize: 13,
+    color: BiruKu,
+    textAlignVertical: 'center',
+    textAlign: 'center',
+    marginRight: -1,
+    borderWidth: 1,
+    borderColor: BiruKu,
+    height: 30,
+    width: 142,
+  },
+  headPanelName: {
+    fontFamily: 'Poppins-Medium',
+    fontSize: 13,
+    color: BiruKu,
+    textAlignVertical: 'center',
+    textAlign: 'center',
+    borderWidth: 1,
+    borderColor: BiruKu,
+    height: 30,
+    width: 140,
+  },
+  headUpdate: {
+    fontFamily: 'Poppins-Medium',
+    fontSize: 13,
+    color: BiruKu,
+    textAlignVertical: 'center',
+    textAlign: 'center',
+    paddingHorizontal: 2,
+    borderWidth: 1,
+    borderColor: BiruKu,
+    height: 30,
+    width: 79,
+  },
 });

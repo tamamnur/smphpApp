@@ -1,5 +1,5 @@
+import { Text, View, StyleSheet, ScrollView, ActivityIndicator, TextInput } from 'react-native';
 import React, {useState, useEffect} from 'react';
-import { StyleSheet, Text, View, ScrollView, ActivityIndicator, } from 'react-native';
 import Title2 from '../../components/Title2';
 import {IconBack, LogoSmpHP} from '../../assets';
 import {BiruKu} from '../../utils/constant';
@@ -7,11 +7,14 @@ import {useNavigation} from '@react-navigation/native';
 import firestore from '@react-native-firebase/firestore';
 import PanelProjectList from '../../components/panelProjectList';
 import FormatDate from '../../components/FormatDate';
+// import { SearchBar } from 'react-native-screens';
 
-const SD_Submission = () => {
+const ComponentOrder = () => {
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(true);
   const [panelNameData, setPanelNameData] = useState([]);
+  const [searchKeyword, setSearchKeyword] = useState('');
+
   useEffect(() => {
     let isMounted = true;
     const getProject = async () => {
@@ -42,20 +45,20 @@ const SD_Submission = () => {
               panelName: panel.pnameInput,
             });
             const getId = panel.MonitoringID;
-            // console.log('MonitoringID-',getId)
             if (getId) {
               const idRef = firestore().collection('Monitoring');
+              const docRef = await idRef.get();
               const id = getId.substring(12);
               // console.log('id?',id)
               const shopdrawingRef = idRef
                 .doc(id)
-                .collection('Shopdrawing')
-                .doc('Submission');
+                .collection('Procurement')
+                .doc('Construction');
               const submissionDoc = await shopdrawingRef.get();
               if (submissionDoc.exists) {
                 const submissionData = submissionDoc.data();
-                if (submissionData.DateSubmit) {
-                  const dateSubmissionValue = submissionData.DateSubmit;
+                if (submissionData.Order) {
+                  const dateSubmissionValue = submissionData.Order;
                   const dateSubmit = FormatDate(dateSubmissionValue.toDate());
                   panelNameData.push({
                     DateSubmit: dateSubmit,
@@ -64,10 +67,10 @@ const SD_Submission = () => {
                   });
                   // console.log('panel: ',panel.pnameInput,'date: ',dateSubmit)
                 }
-              // } else {
+              } else {
                 // console.log('Doc not found');
               }
-            // } else {
+            } else {
               // console.log( 'Panel', panel.pnameInput, 'tidak memiliki dokumen monitoring');
             }
           });
@@ -95,13 +98,29 @@ const SD_Submission = () => {
     };
   }, []);
 
+  const filteredPanelData = panelNameData.filter((item) => {
+    console.log(item)
+    const projectNameLower = item.projectName.toLowerCase();
+    const panelNameLower = item.panelName.toLowerCase();
+    const searchKeywordLower = searchKeyword.toLowerCase();
+    return (
+      projectNameLower.includes(searchKeywordLower) || panelNameLower.includes(searchKeywordLower)
+    )
+  }) 
   return (
     <View>
       <View style={{flexDirection: 'row', marginHorizontal: 20, marginTop: 30}}>
         <IconBack onPress={() => navigation.navigate('Discover')} />
         <LogoSmpHP style={{marginLeft: 200}} />
       </View>
-      <Title2 TxtTitle="SHOPDRAWING" SubTitle="SUBMISSION" />
+      <Title2 TxtTitle="ORDER" SubTitle="CONSTRUCTION / BOX" />
+      <TextInput 
+        style={styles.searchInput}
+        placeholder='Search by project or panel name'
+        value={searchKeyword}
+        onChangeText={(text) => setSearchKeyword(text)}
+      />
+      {/* <SearchBar searchKeyword={searchKeyword} setSearchKeyword={setSearchKeyword}/> */}
       <View style={styles.wrappHead}>
         <Text style={styles.headProjectName}>Project Name</Text>
         <Text style={styles.headPanelName}>Panel Name</Text>
@@ -115,7 +134,7 @@ const SD_Submission = () => {
               <ActivityIndicator size="large" color={BiruKu} />
             </View>
           ) : (
-            panelNameData.map((item, index) =>
+            filteredPanelData.map((item, index) =>
               item.DateSubmit ? (
                 <PanelProjectList
                   key={index}
@@ -131,7 +150,7 @@ const SD_Submission = () => {
             <Text
               style={{
                 fontFamily: 'Poppins-Italic',
-                fontSize: 10,
+                fontSize: 11,
                 color: BiruKu,
                 textAlign: 'center',
                 marginTop: 15,
@@ -145,7 +164,7 @@ const SD_Submission = () => {
   );
 };
 
-export default SD_Submission;
+export default ComponentOrder;
 
 const styles = StyleSheet.create({
   wrappHead: {
@@ -155,13 +174,36 @@ const styles = StyleSheet.create({
     borderColor: BiruKu,
     borderBottomWidth: 2,
   },
+  panelProject: {
+    fontFamily: 'Poppins-Medium',
+    fontSize: 11,
+    color: BiruKu,
+    textAlignVertical: 'center',
+    paddingLeft: 8,
+    marginHorizontal: -1,
+    borderWidth: 1,
+    borderColor: BiruKu,
+    height: 28,
+    width: 145,
+  },
+  status: {
+    fontFamily: 'Poppins-Medium',
+    fontSize: 10,
+    color: BiruKu,
+    textAlignVertical: 'center',
+    textAlign: 'center',
+    borderWidth: 1,
+    borderColor: BiruKu,
+    height: 28,
+    width: 72,
+  },
   headProjectName: {
     fontFamily: 'Poppins-Medium',
     fontSize: 13,
     color: BiruKu,
     textAlignVertical: 'center',
     textAlign: 'center',
-    marginRight: -1,
+    // marginRight: -1,
     borderWidth: 1,
     borderColor: BiruKu,
     height: 30,
@@ -173,6 +215,7 @@ const styles = StyleSheet.create({
     color: BiruKu,
     textAlignVertical: 'center',
     textAlign: 'center',
+    marginHorizontal: -1,
     borderWidth: 1,
     borderColor: BiruKu,
     height: 30,
@@ -184,10 +227,23 @@ const styles = StyleSheet.create({
     color: BiruKu,
     textAlignVertical: 'center',
     textAlign: 'center',
-    paddingHorizontal: 2,
     borderWidth: 1,
     borderColor: BiruKu,
     height: 30,
     width: 79,
+  },
+  searchInput: {
+    borderWidth: .5,
+    borderColor: BiruKu,
+    borderRadius: 5,
+    fontFamily: 'Poppins-LightItalic',
+    fontSize: 12,
+    color: BiruKu,
+    backgroundColor: 'white',
+    marginHorizontal: 18,
+    marginBottom: 5,
+    paddingHorizontal: 7,
+    paddingVertical: 6,
+    height: 35
   },
 });

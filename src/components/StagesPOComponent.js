@@ -12,7 +12,7 @@ const StagesSD = (props) => {
         mode='dropdown'
         itemStyle={{transform: [{ scaleX: .5 }, { scaleY: .1 }]}}
         selectedValue={stages} 
-        onValueChange={(label)=>{
+        onValueChange={(label, index)=>{
           setStages(label)
           props.onValueChange(label)
           }}>

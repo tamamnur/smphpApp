@@ -1,7 +1,7 @@
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React from 'react'
 import { IconKonsutruksi, IconKomponen, IconCu } from './../assets'
-import { WarnaAbu, WarnaPutih  } from './../utils/constant'
+import { BiruKu, WarnaAbu, WarnaPutih  } from './../utils/constant'
 
 const Procurement = ({title, active, onPress}) => {
     const Icon = () => {
@@ -27,22 +27,21 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         backgroundColor:active ? WarnaAbu: '#CECECE',
         borderWidth: active ? 0 : 3,
-        borderColor: active ? 0:'gray',
-        marginHorizontal: 8,
+        borderColor: active ? 0: BiruKu,
+        marginLeft: 5,
         marginTop: 20,
     }),
     plate: active => ({
-      marginTop: 6,
-      paddingVertical: 2,
+      // marginTop: 6,
+      paddingBottom: 6,
       paddingHorizontal: 5,
       borderRadius: 10,
-      color: active ? '#000' : 'gray',
-      fontWeight : 'bold',
+      color: BiruKu,
+      fontFamily: 'Poppins-Medium',
     }),
-
     icon:{
       alignItems:'center',
-      marginTop:12,
+      marginTop: 8,
       marginHorizontal: 8,
     }
 })

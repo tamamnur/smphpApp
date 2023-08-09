@@ -1,12 +1,11 @@
-import {View,Text,TextInput,StyleSheet,TouchableOpacity,ToastAndroid,ScrollView,} from 'react-native';
-import React, {useEffect, useMemo, useState} from 'react';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, ToastAndroid, ScrollView, ActivityIndicator, } from 'react-native';
+import React, {useEffect, useMemo, useState, useRef} from 'react';
 import {IconBack, LogoSmpHP} from '../../assets';
 import {BiruKu} from '../../utils/constant';
 import {useNavigation} from '@react-navigation/native';
 import Title2 from '../../components/Title2';
 import firestore from '@react-native-firebase/firestore';
 import PickedDateFull from '../../components/pickedDateFull';
-import StagesPO from '../../components/StagesPO';
 import CheckBox from '@react-native-community/checkbox';
 import StagesPODetail from '../../components/StagesPODetail';
 
@@ -14,117 +13,84 @@ const updateError = (error, stateUpdate) => {
   stateUpdate(error);
   setTimeout(() => {
     stateUpdate('');
-  }, 1000);
+  }, 3000);
 };
 
-const FormProcurement = props => {
+const FormPOComponent = (props) => {
   const navigation = useNavigation();
   const [date, setDate] = useState();
+  const [isLoading, setIsLoading] = useState(true);
   const [ProjectList, setProjectList] = useState([]);
-  const [isUnmounted, setIsUnmounted] = useState(false);
-  useEffect(() => {
-    return () => {
-      setIsUnmounted(true);
-    }
-  })
   const onDateChange = value => {
     setDate(value);
   };
-  const [procurementInfo, setProcurementInfo] = useState({
-    projectId: '',
-    FSProjectId: '',
-    projectName: '',
-    stages: '',
-    stagesPODetail: '',
-    customer: '',
-    projectsList: [],
-    Panels: [],
-  });
-
   const [error, setError] = useState('');
-  const {projectId, projectName, stages, stagesPODetail, customer} = procurementInfo;
-  const handleOnchangeText = (value, fieldName) => {
-    setProcurementInfo({...procurementInfo, [fieldName]: value});
-    if (fieldName === 'stages') {
-      procurementInfo.Panels.forEach(async (item) => {
+  const [componentInfo, setComponentInfo] = useState({
+    projectId: '', FSProjectId: '', projectName: '', stagesPODetails: '', customer: '', projectsList: [], Panels: [], 
+  });
+  const {projectId, projectName, stagesPODetails, customer} = componentInfo;
+  const handleOnchangeText = async (value, fieldName) => {
+    setComponentInfo({...componentInfo, [fieldName]: value});
+    if (fieldName === 'stagesPODetails') {
+      setIsLoading(true)
+      const selectedStage = value;
+      // console.log('stage ?',selectedStage)
+      componentInfo.Panels.forEach(async item => {
         if (item.MonitoringID) {
-          const MonitoringID = item.MonitoringID.substring(1)
-          const stageCollection = `Monitoring/${MonitoringID}/Procurement/${value}`;
-          const orderDoc = await firestore().doc().collection(`${stageCollection}/Order`).get();
-          const isOrderExist = orderDoc.exists;
-          const scheduleDoc = await firestore().doc().collection(`${stageCollection}/Schedule`).get();
-          const isScheduleExist = scheduleDoc.exists;
-          const realizedDoc = await firestore().doc().collection(`${stageCollection}/Realized`).get();
-          const isRealizedExist = realizedDoc.exists;
-          console.log(item.pnameInput, 'Order', isOrderExist, 'Schedule', isScheduleExist,'Realized', isRealizedExist)
-          // const _Data = await firestore().collection(MonitoringID+'/Procurement').doc(value).get()
-          // const isExist = _Data.exists
-          // console.log(item.pnameInput,isExist)
-
-          setProcurementInfo(prev => ({...prev,Panels: prev.Panels.map(panel => {
-            if (panel.pnameInput === item.pnameInput) {
-              return {
-                ...panel,
-                stageExist: true,
-                stagesPODetailExist: {
-                  Order: isOrderExist,
-                  Schedule: isScheduleExist,
-                  Realized: isRealizedExist,
-                }
+          const MonitoringID = item.MonitoringID.substring(1);
+          const _Data = await firestore().collection(MonitoringID+'/Procurement').doc('Component').get();
+          // console.log('dataaa',_Data)
+          const isExist = _Data.exists && _Data.data() && _Data.data().hasOwnProperty(selectedStage);
+          // const stageFieldName = selectedStage.charAt(0).toLocaleLowerCase()+selectedStage.slice(1);
+          setComponentInfo(prev => ({
+            ...prev,
+            Panels: prev.Panels.map(panel => {
+              if (panel.pnameInput === item.pnameInput) {
+                return {...panel, stageExist: isExist};
               }
-            } 
-            return panel
-          })
-        }))
-        }
-        else {
-          setProcurementInfo(prev => ({
-          ...prev,Panels: prev.Panels.map(panel => {
-          if (panel.pnameInput === item.pnameInput) {
-            return {...panel,stageExist: false, stagesPODetailExist: {} };
-          } 
-          return panel;
-        })
-      }))
+              return panel;
+            }),
+          }));
+          console.log('cek--',item.pnameInput, isExist);
+          } else {
+            setComponentInfo(prev => ({
+              ...prev,
+              Panels: prev.Panels.map(panel => {
+                if (panel.pnameInput === item.pnameInput) {
+                  return {...panel, stageExist: false};
+                }
+                return panel;
+              }),
+            }));
+          }
+          if (isMountedRef.current) {
+            setIsLoading(false);
+          }
+      });
     }
-  })
-    } 
-    // else if (fieldName === 'stagesPODatail') {
-    //   procurementInfo.Panels.forEach(async (item) => {
-    //     if (item.MonitoringID) {
-    //       const MonitoringID = item.MonitoringID.substring(1);
-    //       const _Data = await firestore().collection(MonitoringID+'/Procurement')
-    //     }
-    //   })
-    // }
-    };
-  
-
+  };
   const isValidForm = () => {
     if (!projectName.trim() || projectName.length === 0)
       return updateError('Invalid name of project', setError);
-    if (stages.length === 0)
-      return updateError('Required to choice Stages of Procurement', setError);
-    if (stagesPODetail.length === 0)
-      return updateError('Required to choice Stages Details of Procurement', setError);
+    if (!stagesPODetails.trim() || stagesPODetails.length === 0)
+      return updateError('Required to choice Stages of Procurement Component', setError);
     if (!date)
       return updateError('Required to choice Date of Proccess!', setError);
     return true;
   };
   const submitForm = () => {
     if (isValidForm()) {
-      handleFormProcurement();
+      handleComponent();
     } else {
-      // error;
-      setError('Some error message');
+      error;
     }
   };
 
-  const handleFormProcurement = async () => {
-    console.log(procurementInfo);
-    procurementInfo.Panels.forEach(async value => {
+  const handleComponent = async () => {
+    let panelSelected = false;
+    componentInfo.Panels.forEach(async value => {
       if (value.selected === true) {
-        // console.log('checkbox?', value.selected === true);
+        panelSelected = true;
         let MonitoringID = null;
         if (value.MonitoringID) {
           MonitoringID = value.MonitoringID.split('/')[2];
@@ -132,73 +98,40 @@ const FormProcurement = props => {
           const newMonitoring = await firestore()
             .collection('Monitoring')
             .add({
-              ProjectID: '/Project/' + procurementInfo.FSProjectId,
+              ProjectID: '/Project/' + componentInfo.FSProjectId,
             });
           MonitoringID = newMonitoring.id;
         }
-        const Procurement = firestore()
+        const Shopdrawing = firestore()
           .collection('Monitoring')
           .doc(MonitoringID)
           .collection('Procurement');
-        //Construction
-        if (procurementInfo.stages === 'Construction'  && procurementInfo.stagesPODetail === 'Order') {
-          Procurement.doc('Construction').set({
-            Order: firestore.Timestamp.fromDate(date)
+        if (componentInfo.stagesPODetails === 'Order') {
+          await Shopdrawing.doc('Component').set({
+            Order: firestore.Timestamp.fromDate(date),
           });
         }
-        if (procurementInfo.stages === 'Construction' && procurementInfo.stagesPODetail === 'Schedule') {
-          Procurement.doc('Construction').update({
-            Schedule: firestore.Timestamp.fromDate(date)
+        if (componentInfo.stagesPODetails === 'Schedule') {
+          await Shopdrawing.doc('Component').update({
+            Schedule: firestore.Timestamp.fromDate(date),
           });
         }
-        if (procurementInfo.stages === 'Construction' && procurementInfo.stagesPODetail === 'Realized') {
-          Procurement.doc('Construction').update({
-            Realized: firestore.Timestamp.fromDate(date)
-          });
-        }
-        //Busbar
-        if (procurementInfo.stages === 'Busbar'  && procurementInfo.stagesPODetail === 'Order') {
-          Procurement.doc('Busbar').set({
-            Order: firestore.Timestamp.fromDate(date)
-          });
-        }
-        if (procurementInfo.stages === 'Busbar' && procurementInfo.stagesPODetail === 'Schedule') {
-          Procurement.doc('Busbar').update({
-            Schedule: firestore.Timestamp.fromDate(date)
-          });
-        }
-        if (procurementInfo.stages === 'Busbar' && procurementInfo.stagesPODetail === 'Realized') {
-          Procurement.doc('Busbar').update({
-            Realized: firestore.Timestamp.fromDate(date)
-          });
-        }
-        //Component
-        if (procurementInfo.stages === 'Component'  && procurementInfo.stagesPODetail === 'Order') {
-          Procurement.doc('Component').set({
-            Order: firestore.Timestamp.fromDate(date)
-          });
-        }
-        if (procurementInfo.stages === 'Component' && procurementInfo.stagesPODetail === 'Schedule') {
-          Procurement.doc('Component').update({
-            Schedule: firestore.Timestamp.fromDate(date)
-          });
-        }
-        if (procurementInfo.stages === 'Component' && procurementInfo.stagesPODetail === 'Realized') {
-          Procurement.doc('Component').update({
-            Realized: firestore.Timestamp.fromDate(date)
+        if (componentInfo.stagesPODetails === 'Realized') {
+          await Shopdrawing.doc('Component').update({
+            Realized: firestore.Timestamp.fromDate(date),
           });
         }
 
         await firestore()
           .collection('Project')
-          .doc(procurementInfo.FSProjectId)
+          .doc(componentInfo.FSProjectId)
           .collection('PanelName')
           .doc(value.id)
           .set({
             pnameInput: value.pnameInput,
             MonitoringID: '/Monitoring/' + MonitoringID,
           });
-        setProcurementInfo(prev => ({
+        setComponentInfo(prev => ({
           ...prev,
           Panels: prev.Panels.map(panelItem => {
             if (panelItem.id === value.id) {
@@ -210,8 +143,21 @@ const FormProcurement = props => {
             return panelItem;
           }),
         }));
+        ToastAndroid.show('Data Added', ToastAndroid.SHORT)
+        if (stagesPODetails === 'Order') {
+          navigation.navigate('ComponentOrder')
+        }
+        if (stagesPODetails === 'Schedule') {
+          navigation.navigate('ComponentOrder')
+        }
+        if (stagesPODetails === 'Realized') {
+          navigation.navigate('ComponentOrder')
+        }
       }
-    }, navigation.navigate('Discover'));
+    });
+    if (!panelSelected) {
+      return updateError('You have not selected any Panel', setError);
+    }
   };
 
   const Panel = props => {
@@ -235,9 +181,17 @@ const FormProcurement = props => {
     return projectName.length > 0;
   }, [projectName.length]);
 
+  const isMountedRef = useRef(true);
+  useEffect(() => {
+    return ()=> {
+      isMountedRef.current = false;
+    }
+  }, []);
+
   useEffect(() => {
     const InitiationFirebase = async () => {
-      const FBProject = await firestore().collection('Project').orderBy('projectName').get();
+      setIsLoading(true)
+      const FBProject = await firestore().collection('Project').get();
       const projectRef = FBProject.docs.map(async doc => {
         const panelName = await doc.ref.collection('PanelName').get();
         const Panels = panelName.docs.map(panelDoc => {
@@ -253,7 +207,11 @@ const FormProcurement = props => {
           Panels: Panels,
         };
       });
-      setProjectList(await Promise.all(projectRef));
+      const projectList = await Promise.all(projectRef);
+      if (isMountedRef.current) {
+        setProjectList(projectList);
+        setIsLoading(false);
+      }
     };
     InitiationFirebase();
   }, []);
@@ -264,7 +222,7 @@ const FormProcurement = props => {
         return value.projectName === projectName;
       });
       if (MatchProject) {
-        setProcurementInfo(prev => ({
+        setComponentInfo(prev => ({
           ...prev,
           projectId: MatchProject.projectId,
           FSProjectId: MatchProject.id,
@@ -272,7 +230,7 @@ const FormProcurement = props => {
           Panels: MatchProject.Panels,
         }));
       } else {
-        setProcurementInfo(prev => ({
+        setComponentInfo(prev => ({
           ...prev,
           projectId: '',
           Panels: [],
@@ -281,6 +239,15 @@ const FormProcurement = props => {
       }
     }
   }, [ProjectList, projectName]);
+
+  const AllPanelsExistMessage = () => {
+    if (componentInfo.Panels.every(item => item.stageExist)) {
+      return (
+        <Text style={styles.unvailable}>Data nama panel tidak tersedia.</Text>
+      );
+    }
+    return null;
+  };
 
   return (
     <View style={styles.page}>
@@ -291,14 +258,14 @@ const FormProcurement = props => {
         />
         <LogoSmpHP style={{marginLeft: 180}} />
       </View>
-      <Title2 TxtTitle="P R O C U R E M E N T" />
+      <Title2 TxtTitle="COMPONENT - PROCUREMENT" />
       {error ? (
-        <Text style={{color: 'red',fontSize: 13,textAlign: 'center',marginBottom: 10,marginTop: -20}}>
+        <Text style={{ color: 'red', fontSize: 13, textAlign: 'center', marginBottom: 10, marginTop: -20, }}>
           {error}
         </Text>
       ) : null}
       <View>
-        <View style={styles.container}>
+        <View style={{flexDirection: 'row', marginHorizontal: 20}}>
           <View>
             <Text style={styles.left}>Project Name </Text>
             <Text style={styles.left}>Customer </Text>
@@ -314,19 +281,13 @@ const FormProcurement = props => {
             />
             <Text style={styles.right}>{customer}</Text>
             <Text style={styles.right}>{projectId}</Text>
-            <View style={{flexDirection: 'row'}}>
-              <View style={{width: 122, marginRight: 2}}>
-                <StagesPO
-                  onValueChange={value => handleOnchangeText(value, 'stages')}
-                />
-              </View>
-              <View style={{width: 122, marginLeft: 2}}>
-                <StagesPODetail
-                  onValueChange={value =>
-                    handleOnchangeText(value, 'stagesPODetail')
-                  }
-                />
-              </View>
+            <View style={{width: 250}}>
+              <StagesPODetail
+                onValueChange={(value) => {
+                  // console.log('selected-- ', value);
+                  handleOnchangeText(value, 'stagesPODetails')}
+                }
+              />
             </View>
             <Text style={styles.txtInput} onChangeText={onDateChange}>
               <PickedDateFull onChangeText={onDateChange} />
@@ -355,34 +316,44 @@ const FormProcurement = props => {
           </View>
         ) : null}
       </View>
-
       <ScrollView style={{marginTop: 5}}>
-        <View style={styles.wrappPanelTitle}>
-          <Text style={{fontFamily: 'Poppins-Medium', color: BiruKu}}>
-            Panel Name
-          </Text>
-        </View>
-        {procurementInfo.Panels.filter(item => !item.stageExist).map(item => (
-          <Panel
-            key={item.id}
-            pname={item.pnameInput}
-            value={item.selected}
-            onValueChange={value =>
-              setProcurementInfo(prev => ({
-                ...prev,
-                Panels: prev.Panels.map(panelItem => {
-                  if (panelItem.id === item.id) {
-                    return {
-                      ...panelItem,
-                      selected: value,
-                    };
+        {isLoading ? (
+          <View style={{marginTop: 30}}>
+            <ActivityIndicator color={BiruKu} />
+          </View>
+        ) : (
+          <View>
+            <View style={styles.wrappPanelTitle}>
+              <Text style={{ fontFamily: 'Poppins-Medium', color: BiruKu, fontSize: 13, }}>
+                Panel Name
+              </Text>
+            </View>
+            {componentInfo.Panels.filter(item => !item.stageExist).map(
+              item => (
+                <Panel
+                  key={item.id}
+                  pname={item.pnameInput}
+                  value={item.selected}
+                  onValueChange={value =>
+                    setComponentInfo(prev => ({
+                      ...prev,
+                      Panels: prev.Panels.map(panelItem => {
+                        if (panelItem.id === item.id) {
+                          return {
+                            ...panelItem,
+                            selected: value,
+                          };
+                        }
+                        return panelItem;
+                      }),
+                    }))
                   }
-                  return panelItem;
-                }),
-              }))
-            }
-          />
-        ))}
+                />
+              ),
+            )}
+            <AllPanelsExistMessage />
+          </View>
+        )}
       </ScrollView>
       <TouchableOpacity style={styles.btn} onPress={submitForm}>
         <Text
@@ -399,7 +370,7 @@ const FormProcurement = props => {
   );
 };
 
-export default FormProcurement;
+export default FormPOComponent;
 
 const styles = StyleSheet.create({
   page: {
@@ -422,8 +393,17 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   container: {
+    justifyContent: 'flex-end',
     flexDirection: 'row',
     marginHorizontal: 20,
+  },
+  label: {
+    fontSize: 14,
+    fontFamily: 'Poppins-Regular',
+    marginBottom: 5,
+    color: BiruKu,
+    textAlignVertical: 'center',
+    textAlign: 'right',
   },
   txtInput: {
     borderWidth: 1,
@@ -432,7 +412,7 @@ const styles = StyleSheet.create({
     height: 33,
     padding: -10,
     marginVertical: 4,
-    fontSize: 30,
+    fontSize: 13,
     marginLeft: 5,
     width: 250,
   },
@@ -484,7 +464,8 @@ const styles = StyleSheet.create({
     marginRight: 30,
     marginLeft: 20,
     marginBottom: 5,
-    marginHorizontal: 20,
+    paddingRight: 20,
+    paddingLeft: -20,
   },
   left: {
     fontFamily: 'Poppins-Medium',
@@ -505,5 +486,15 @@ const styles = StyleSheet.create({
     width: 250,
     padding: 7,
     color: BiruKu,
+  },
+  unvailable: {
+    fontFamily: 'Poppins-Italic',
+    fontSize: 12,
+    textAlign: 'center',
+    color: BiruKu,
+    marginHorizontal: 30,
+    padding: 10,
+    borderWidth: 1,
+    borderColor: BiruKu,
   },
 });

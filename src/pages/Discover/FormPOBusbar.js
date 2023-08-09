@@ -1,76 +1,94 @@
-import {View,Text,TextInput,StyleSheet,TouchableOpacity,ToastAndroid,ScrollView,} from 'react-native';
-import React, {useEffect, useMemo, useState} from 'react';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, ToastAndroid, ScrollView, ActivityIndicator, } from 'react-native';
+import React, {useEffect, useMemo, useState, useRef} from 'react';
 import {IconBack, LogoSmpHP} from '../../assets';
 import {BiruKu} from '../../utils/constant';
 import {useNavigation} from '@react-navigation/native';
-import Title from '../../components/Title';
+import Title2 from '../../components/Title2';
 import firestore from '@react-native-firebase/firestore';
 import PickedDateFull from '../../components/pickedDateFull';
 import CheckBox from '@react-native-community/checkbox';
-
-const isValidObjField = obj => {
-  return Object.values(obj).every(value => {
-    if (value) {
-      console.log(value);
-      return value.trim();
-    }
-  });
-};
+import StagesPODetail from '../../components/StagesPODetail';
 
 const updateError = (error, stateUpdate) => {
   stateUpdate(error);
   setTimeout(() => {
     stateUpdate('');
-  }, 1000);
+  }, 3000);
 };
 
-const FormDelivery = props => {
+const FormPOBusbar = (props) => {
   const navigation = useNavigation();
   const [date, setDate] = useState();
-  const [selectedDate, setSelectedDate] = useState();
-  const [ProjectList, setProjectList] = useState([]);
-  const [panelSelected, setPanelSelected] = useState(false);
-  const onDateChange = value => {
-    setDate(value);
-  };
-  const [deliveryInfo, setDeliveryInfo] = useState({
-    projectId: '',
-    FSProjectId: '',
-    projectName: '',
-    customer: '',
-    projectsList: [],
-    Panels: [],
-  });
-
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
-  const {projectId, projectName, stages, stagesFABDetail, customer} =
-    deliveryInfo;
-  const handleOnchangeText = (value, fieldName) => {
-    setDeliveryInfo({...deliveryInfo, [fieldName]: value});
-  };
+  const [ProjectList, setProjectList] = useState([]);
+  const onDateChange = value => { setDate(value) };
+
   const isValidForm = () => {
-    // if (!isValidObjField(deliveryInfo))
-    //   return updateError('Required all fields!', setError);
     if (!projectName.trim() || projectName.length === 0)
       return updateError('Invalid name of project', setError);
-    if (!date === 0)
+    if (!stagesPODetails.trim() || stagesPODetails.length === 0)
+      return updateError('Required to choice Stages of Procurement Construction', setError);
+    if (!date)
       return updateError('Required to choice Date of Proccess!', setError);
-    // if (value.selected === null )
-    //   return updateError('Panel Has Not Been Selected')
     return true;
   };
-  const submitForm = () => {
-    if (isValidForm()) {
-      handleFormdelivery();
-    } else {
-      error;
+  const isMountedRef = useRef(true);
+  useEffect(() => {
+    return ()=> {
+      isMountedRef.current = false;
+    }
+  }, []);
+
+  const [busbarInfo, setBusbarInfo] = useState({
+    projectId: '', FSProjectId: '', projectName: '', stagesPODetails: '', customer: '', projectsList: [], Panels: [],
+  });
+  
+  const {projectId, projectName, stagesPODetails, customer} = busbarInfo;
+  
+  const handleOnchangeText = async (value, fieldName) => {
+    setBusbarInfo({...busbarInfo, [fieldName]: value});
+    if (fieldName === 'stagesPODetails') {
+      setIsLoading(true)
+      const selectedStage = value;
+      busbarInfo.Panels.forEach(async item => {
+        if (item.MonitoringID) {
+          const MonitoringID = item.MonitoringID.substring(1);
+          const _Data = await firestore().collection(MonitoringID+'/Procurement').doc('Construction').get();
+          const isExist = _Data.exists && _Data.data() && _Data.data().hasOwnProperty(selectedStage);
+          setBusbarInfo(prev => ({
+            ...prev,
+            Panels: prev.Panels.map(panel => {
+              if (panel.pnameInput === item.pnameInput) {
+                return {...panel, stageExist: isExist};
+              }
+              return panel;
+            }),
+          }));
+          console.log('cek--',item.pnameInput, isExist);
+          } else {
+            setBusbarInfo(prev => ({
+              ...prev,
+              Panels: prev.Panels.map(panel => {
+                if (panel.pnameInput === item.pnameInput) {
+                  return {...panel, stageExist: false};
+                }
+                return panel;
+              }),
+            }));
+          }
+          if (isMountedRef.current) {
+            setIsLoading(false);
+          }
+      });
     }
   };
 
-  const handleFormdelivery = async () => {
-    console.log(deliveryInfo);
-    deliveryInfo.Panels.forEach(async value => {
+  const handleComponent = async () => {
+    let panelSelected = false;
+    busbarInfo.Panels.forEach(async value => {
       if (value.selected === true) {
+        panelSelected = true;
         let MonitoringID = null;
         if (value.MonitoringID) {
           MonitoringID = value.MonitoringID.split('/')[2];
@@ -78,28 +96,40 @@ const FormDelivery = props => {
           const newMonitoring = await firestore()
             .collection('Monitoring')
             .add({
-              ProjectID: '/Project/' + deliveryInfo.FSProjectId,
+              ProjectID: '/Project/' + busbarInfo.FSProjectId,
             });
           MonitoringID = newMonitoring.id;
         }
-        const Delivery = firestore()
+        const Shopdrawing = firestore()
           .collection('Monitoring')
           .doc(MonitoringID)
-          .collection('Sent');
-          Delivery.doc('Sent').set({
-            sent: firestore.Timestamp.fromDate(date)
+          .collection('Procurement');
+        if (busbarInfo.stagesPODetails === 'Order') {
+          await Shopdrawing.doc('Construction').set({
+            Order: firestore.Timestamp.fromDate(date),
           });
+        }
+        if (busbarInfo.stagesPODetails === 'Schedule') {
+          await Shopdrawing.doc('Construction').update({
+            Schedule: firestore.Timestamp.fromDate(date),
+          });
+        }
+        if (busbarInfo.stagesPODetails === 'Realized') {
+          await Shopdrawing.doc('Construction').update({
+            Realized: firestore.Timestamp.fromDate(date),
+          });
+        }
 
         await firestore()
           .collection('Project')
-          .doc(deliveryInfo.FSProjectId)
+          .doc(busbarInfo.FSProjectId)
           .collection('PanelName')
           .doc(value.id)
           .set({
             pnameInput: value.pnameInput,
             MonitoringID: '/Monitoring/' + MonitoringID,
           });
-        setDeliveryInfo(prev => ({
+        setBusbarInfo(prev => ({
           ...prev,
           Panels: prev.Panels.map(panelItem => {
             if (panelItem.id === value.id) {
@@ -111,8 +141,94 @@ const FormDelivery = props => {
             return panelItem;
           }),
         }));
+        ToastAndroid.show('Data Added', ToastAndroid.SHORT)
+        if (stagesPODetails === 'Order') {
+          navigation.navigate('ComponentOrder')
+        }
+        if (stagesPODetails === 'Schedule') {
+          navigation.navigate('ComponentOrder')
+        }
+        if (stagesPODetails === 'Realized') {
+          navigation.navigate('ComponentOrder')
+        }
       }
     });
+    if (!panelSelected) {
+      return updateError('You have not selected any Panel', setError);
+    }
+  };
+
+  const submitForm = () => {
+    if (isValidForm()) {
+      handleComponent();
+    } else {
+      error;
+    }
+  };
+
+  const isProjectNameSuggestionShow = useMemo(() => {
+    return projectName.length > 0;
+  }, [projectName.length]);
+
+  useEffect(() => {
+    const InitiationFirebase = async () => {
+      setIsLoading(true)
+      const FBProject = await firestore().collection('Project').get();
+      const projectRef = FBProject.docs.map(async doc => {
+        const panelName = await doc.ref.collection('PanelName').get();
+        const Panels = panelName.docs.map(panelDoc => {
+          return {
+            id: panelDoc.id,
+            ...panelDoc.data(),
+            selected: false,
+          };
+        });
+        return {
+          id: doc.id,
+          ...doc.data(),
+          Panels: Panels,
+        };
+      });
+      const projectList = await Promise.all(projectRef);
+      if (isMountedRef.current) {
+        setProjectList(projectList);
+        setIsLoading(false);
+      }
+    };
+    InitiationFirebase();
+  }, []);
+
+  useEffect(() => {
+    if (ProjectList.length) {
+      const MatchProject = ProjectList.find(value => {
+        return value.projectName === projectName;
+      });
+      if (MatchProject) {
+        setBusbarInfo(prev => ({
+          ...prev,
+          projectId: MatchProject.projectId,
+          FSProjectId: MatchProject.id,
+          customer: MatchProject.customer,
+          Panels: MatchProject.Panels,
+        }));
+      } else {
+        setBusbarInfo(prev => ({
+          ...prev,
+          projectId: '',
+          Panels: [],
+          customer: '',
+        }));
+      }
+    }
+  }, [ProjectList, projectName]);
+
+  const AllPanelsExistMessage = () => {
+    if (busbarInfo.Panels.every(item => item.stageExist)) {
+      return (
+        <Text style={styles.unvailable}>Data nama panel tidak tersedia.</Text>
+      );
+    }
+    return null;
   };
 
   const Panel = props => {
@@ -132,78 +248,28 @@ const FormDelivery = props => {
     );
   };
 
-  const isProjectNameSuggestionShow = useMemo(() => {
-    return projectName.length > 0;
-  }, [projectName.length]);
-
-  useEffect(() => {
-    const InitiationFirebase = async () => {
-      const FBProject = await firestore().collection('Project').get();
-      const projectRef = FBProject.docs.map(async doc => {
-        const panelName = await doc.ref.collection('PanelName').get();
-        const Panels = panelName.docs.map(panelDoc => {
-          return {
-            id: panelDoc.id,
-            ...panelDoc.data(),
-            selected: false,
-          };
-        });
-        return {
-          id: doc.id,
-          ...doc.data(),
-          Panels: Panels,
-        };
-      });
-      setProjectList(await Promise.all(projectRef));
-    };
-    InitiationFirebase();
-  }, []);
-
-  useEffect(() => {
-    if (ProjectList.length) {
-      const MatchProject = ProjectList.find(value => {
-        return value.projectName === projectName;
-      });
-      if (MatchProject) {
-        setDeliveryInfo(prev => ({
-          ...prev,
-          projectId: MatchProject.projectId,
-          FSProjectId: MatchProject.id,
-          customer: MatchProject.customer,
-          Panels: MatchProject.Panels,
-        }));
-      } else {
-        setDeliveryInfo(prev => ({
-          ...prev,
-          projectId: '',
-          Panels: [],
-          customer: '',
-        }));
-      }
-    }
-  }, [ProjectList, projectName]);
-
   return (
     <View style={styles.page}>
       <View style={styles.header}>
         <IconBack
-          onPress={() => navigation.navigate('Discover')}
+          onPress={() => navigation.goBack()}
           style={{marginTop: 10, marginLeft: 30}}
         />
         <LogoSmpHP style={{marginLeft: 180}} />
       </View>
-      <Title TxtTitle="D E L I V E R Y   P A N E L S" />
+      <Title2 TxtTitle="BUSBAR Cu - PROCUREMENT" />
       {error ? (
-        <Text style={{color: 'red',fontSize: 13,textAlign: 'center',marginBottom: 10,marginTop: -20}}>
+        <Text style={{ color: 'red', fontSize: 13, textAlign: 'center', marginBottom: 10, marginTop: -20, }}>
           {error}
         </Text>
       ) : null}
       <View>
-        <View style={styles.container}>
+        <View style={{flexDirection: 'row', marginHorizontal: 20}}>
           <View>
             <Text style={styles.left}>Project Name </Text>
             <Text style={styles.left}>Customer </Text>
             <Text style={styles.left}>Number SO </Text>
+            <Text style={styles.left}>Stages </Text>
             <Text style={styles.left}>Date </Text>
           </View>
           <View>
@@ -214,6 +280,14 @@ const FormDelivery = props => {
             />
             <Text style={styles.right}>{customer}</Text>
             <Text style={styles.right}>{projectId}</Text>
+            <View style={{width: 250}}>
+              <StagesPODetail
+                onValueChange={(value) => {
+                  // console.log('selected-- ', value);
+                  handleOnchangeText(value, 'stagesPODetails')}
+                }
+              />
+            </View>
             <Text style={styles.txtInput} onChangeText={onDateChange}>
               <PickedDateFull onChangeText={onDateChange} />
             </Text>
@@ -231,6 +305,7 @@ const FormDelivery = props => {
               );
             }).map(item => (
               <TouchableOpacity
+                key={item.id}
                 onPress={() => {
                   handleOnchangeText(item.projectName, 'projectName');
                 }}>
@@ -240,33 +315,44 @@ const FormDelivery = props => {
           </View>
         ) : null}
       </View>
-
       <ScrollView style={{marginTop: 5}}>
-        <View style={styles.wrappPanelTitle}>
-          <Text style={{fontFamily: 'Poppins-Medium', color: BiruKu}}>
-            Panel Name
-          </Text>
-        </View>
-        {deliveryInfo.Panels.map(item => (
-          <Panel
-            pname={item.pnameInput}
-            value={item.selected}
-            onValueChange={value =>
-              setDeliveryInfo(prev => ({
-                ...prev,
-                Panels: prev.Panels.map(panelItem => {
-                  if (panelItem.id === item.id) {
-                    return {
-                      ...panelItem,
-                      selected: value,
-                    };
+        {isLoading ? (
+          <View style={{marginTop: 30}}>
+            <ActivityIndicator color={BiruKu} />
+          </View>
+        ) : (
+          <View>
+            <View style={styles.wrappPanelTitle}>
+              <Text style={{ fontFamily: 'Poppins-Medium', color: BiruKu, fontSize: 13, }}>
+                Panel Name
+              </Text>
+            </View>
+            {busbarInfo.Panels.filter(item => !item.stageExist).map(
+              item => (
+                <Panel
+                  key={item.id}
+                  pname={item.pnameInput}
+                  value={item.selected}
+                  onValueChange={value =>
+                    setBusbarInfo(prev => ({
+                      ...prev,
+                      Panels: prev.Panels.map(panelItem => {
+                        if (panelItem.id === item.id) {
+                          return {
+                            ...panelItem,
+                            selected: value,
+                          };
+                        }
+                        return panelItem;
+                      }),
+                    }))
                   }
-                  return panelItem;
-                }),
-              }))
-            }
-          />
-        ))}
+                />
+              ),
+            )}
+            <AllPanelsExistMessage />
+          </View>
+        )}
       </ScrollView>
       <TouchableOpacity style={styles.btn} onPress={submitForm}>
         <Text
@@ -283,7 +369,7 @@ const FormDelivery = props => {
   );
 };
 
-export default FormDelivery;
+export default FormPOBusbar;
 
 const styles = StyleSheet.create({
   page: {
@@ -306,8 +392,17 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   container: {
+    justifyContent: 'flex-end',
     flexDirection: 'row',
     marginHorizontal: 20,
+  },
+  label: {
+    fontSize: 14,
+    fontFamily: 'Poppins-Regular',
+    marginBottom: 5,
+    color: BiruKu,
+    textAlignVertical: 'center',
+    textAlign: 'right',
   },
   txtInput: {
     borderWidth: 1,
@@ -316,7 +411,7 @@ const styles = StyleSheet.create({
     height: 33,
     padding: -10,
     marginVertical: 4,
-    fontSize: 30,
+    fontSize: 13,
     marginLeft: 5,
     width: 250,
   },
@@ -368,7 +463,8 @@ const styles = StyleSheet.create({
     marginRight: 30,
     marginLeft: 20,
     marginBottom: 5,
-    marginHorizontal: 20,
+    paddingRight: 20,
+    paddingLeft: -20,
   },
   left: {
     fontFamily: 'Poppins-Medium',
@@ -389,5 +485,15 @@ const styles = StyleSheet.create({
     width: 250,
     padding: 7,
     color: BiruKu,
+  },
+  unvailable: {
+    fontFamily: 'Poppins-Italic',
+    fontSize: 12,
+    textAlign: 'center',
+    color: BiruKu,
+    marginHorizontal: 30,
+    padding: 10,
+    borderWidth: 1,
+    borderColor: BiruKu,
   },
 });

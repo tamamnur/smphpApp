@@ -2,8 +2,7 @@ import { View, ScrollView, Text, StatusBar, TouchableOpacity, StyleSheet, ToastA
 import React, { useState, useEffect, useContext } from 'react'
 import { LogoCubicle } from '../../assets'
 import InputData from '../../components/InputData'
-import Button from '../../components/Button'
-import SignMenu from '../../components/SignMenu'
+import Button from '../../components/Button6'
 import { BiruKu, WarnaPutih } from '../../utils/constant'
 import { useNavigation } from '@react-navigation/native'
 import auth from '@react-native-firebase/auth'
@@ -97,9 +96,8 @@ const toastLoginSuccess = () => {
         <TouchableOpacity onPress={() => navigation.navigate('ResetPassword')}>
           <Text style={styles.forgotPs}> Forgot Password ?</Text>
         </TouchableOpacity>
-      <Button text="Sign In" color={BiruKu} 
-          onPress={submitForm} 
-        />
+      <Button text="Sign In" 
+        fontColor={'white'} bgColor={BiruKu} onPress={submitForm} />
       <View style={styles.wrapperSign}>
       </View>
         <TouchableOpacity style={styles.signUpTO}

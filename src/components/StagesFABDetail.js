@@ -4,20 +4,21 @@ import {Picker} from '@react-native-picker/picker';
 import {BiruKu} from '../utils/constant';
 
 const StagesFABDetail = props => {
-  const [stagesFABDetail, setStagesFABDetail] = useState('Select an option');
-
+  const [stagesFABDetail, setStagesFABDetail] = useState('');
+  const handleValueChange = (label) => {
+    setStagesFABDetail(label);
+    if (props.onValueChange) {
+      props.onValueChange(label);
+    }
+  }
   return (
     <View style={styles.area}>
       <Picker
         style={styles.picked}
         mode="dropdown"
-        // itemStyle={{transform: [{ scaleX: 20 }, { scaleY: 50 }]}}
         selectedValue={stagesFABDetail}
-        onValueChange={(label, index) => {
-          setStagesFABDetail(label);
-          props.onValueChange(label);
-        }}>
-        {/* <Picker.Item style={styles.pickerItem} label="Select an option" /> */}
+        onValueChange={handleValueChange}>
+        <Picker.Item style={styles.pickerItem} label="Select an option" />
         <Picker.Item style={styles.pickerItem} label="Start" value="Start" />
         <Picker.Item style={styles.pickerItem} label="Finish" value="Finish" />
       </Picker>

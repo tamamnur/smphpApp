@@ -175,6 +175,12 @@ const Status = props => {
             )}
           </View>
           <View style={{marginLeft: 10}}>
+            <Text style={styles.headerStatus}>Tested</Text>
+            <View style={{marginRight: 50, marginTop: -21}}>
+              <Text style={styles.update}>{props.tested}</Text>
+            </View>
+          </View>
+          <View style={{marginLeft: 10}}>
             <Text style={styles.headerStatus}>Sent</Text>
             <View style={{marginRight: 50, marginTop: -21}}>
               <Text style={styles.update}>{props.sentPanel}</Text>
@@ -302,12 +308,19 @@ class ProjectStatus extends Component {
               WiringStart = Wiring.data().Start;
               WiringFinish = Wiring.data().Finish;
             }
+            //Tested
+            const Tested = await Monitoring.collection('End').doc('Tested').get();
+            let TestedPanel;
+            if (Tested && Tested.data()) {
+              TestedPanel = Tested.data().Tested;
+            }
             //Sent
-            const Sent = await Monitoring.collection('Sent').doc('Sent').get();
+            const Sent = await Monitoring.collection('End').doc('Sent').get();
             let SentPanel;
             if (Sent && Sent.data()) {
-              SentPanel = Sent.data().sent;
+              SentPanel = Sent.data().Sent;
             }
+            // console.log(SentPanel.toDate())
 
             const Result = {
               SubmissionDate: SubmissionDate ? FormatDate(SubmissionDate.toDate()) : '   ------',
@@ -328,6 +341,7 @@ class ProjectStatus extends Component {
               MechanicFinish: MechFinish ? FormatDate(MechFinish.toDate()) : '   ------',
               WiringStart: WiringStart ? FormatDate(WiringStart.toDate()) : '   ------',
               WiringFinish: WiringFinish ? FormatDate(WiringFinish.toDate()) : '   ------',
+              TestedPanel: TestedPanel ? FormatDate(TestedPanel.toDate()) : '   ------',
               SentPanel: SentPanel ? FormatDate(SentPanel.toDate()) : '   ------',
             };
             return {id: item.id, ...item.data(), monitoring: Result};
@@ -394,6 +408,7 @@ class ProjectStatus extends Component {
                     finish_layout={item.monitoring?.LayoutingFinish}
                     finish_mech={item.monitoring?.MechanicFinish}
                     finish_wiring={item.monitoring?.WiringFinish}
+                    tested={item.monitoring?.TestedPanel}
                     sentPanel={item.monitoring?.SentPanel}
                   />
                 );

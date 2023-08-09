@@ -2,10 +2,7 @@ import { View, Text, StyleSheet, TouchableOpacity, TextInput, ScrollView } from 
 import React, { Component } from 'react'
 import { IconBack, LogoSmpHP } from '../../assets'
 import { BiruKu } from '../../utils/constant'
-import Inputan from '../../components/Inputan'
-import Button from '../../components/Button'
-import Title from '../../components/Title'
-import { Picker } from '@react-native-picker/picker'
+import Title2 from '../../components/Title2'
 import InputData from '../../components/InputData'
 import Division from '../../components/Division'
 
@@ -24,7 +21,7 @@ export default class MemoCreate extends Component {
           <IconBack onPress={() => this.props.navigation.navigate('Home')} style={{marginTop: 10, marginLeft: 30}}/>
           <LogoSmpHP style={{marginLeft: 180}}/>
       </View>
-        <Title TxtTitle="MEMO INTERNAL"/>
+        <Title2 TxtTitle="MEMO INTERNAL"/>
         <View>
           <Text style={styles.label} >From</Text>
         </View>

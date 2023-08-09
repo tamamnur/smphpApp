@@ -3,33 +3,38 @@ import React, { Component, useState } from 'react'
 import { IconBack, IconAdd, LogoSmpHP } from '../../assets'
 import { BiruKu } from '../../utils/constant'
 import InputDataProject from '../../components/InputDataProject'
-import Title from '../../components/Title'
 import { useNavigation } from '@react-navigation/native';
 import firestore from '@react-native-firebase/firestore'
+import Title2 from '../../components/Title2'
 
 const PanelNameInput = ({route}) => {
-  const [errorText, setErroText] = useState('');
+  const [errorText, setErrorText] = useState('');
   const {ProjectId} = route.params;
 
   const [formQty, setFormQty] = useState(1);
   const navigation = useNavigation();
 
-  const forms = [...new Array(formQty)];
+  const forms = [...Array(formQty)];
   
   const [pnameInput, setPnameInput] = useState([]);
 
   const onPnameInputChange = (value,index) => {
-    if(pnameInput.some(item => item.trim() === '')) {
-      setErroText('Please fill in all panel names');
-      return;
-    }   
     const PanelName = pnameInput.slice()
     PanelName[index] = value;
     setPnameInput(PanelName)
+
+    if(PanelName.some(item => item.trim() === '')) {
+      setErrorText('Please fill in all panel names');
+    } else {
+      setErrorText('');
+    }   
   }
 
   const handlePnameInput = async () => {
-    
+    if (pnameInput.some(item => item.trim() === '')) {
+      setErrorText('Please fill in all panel names');
+      return;
+    }
     const batch = firestore().batch();
     pnameInput.forEach((item, index) => {
       batch.set(firestore().doc(`Project/${ProjectId}/PanelName/${index+1}`),
@@ -46,20 +51,19 @@ const PanelNameInput = ({route}) => {
   }
 
   return (    
-  <View style={styles.page}>
-      <View style={styles.header}>
+  <View style={{marginTop: 20}}>
+      <View style={{flexDirection: 'row'}}>
           <LogoSmpHP style={{marginLeft: 180}}/>
       </View>
-        <Title TxtTitle="PANEL NAMES INPUT"/>
-        {
-          forms.map((item, index) => {
+        <Title2 TxtTitle="PANEL NAMES INPUT"/>
+        {forms.map((item, index) => {
             return (
             <InputDataProject 
               label="Panel Name"
               key={index.toString()}
-              
-              onChangeText={(value)=>{onPnameInputChange(value,index)}}
-              />)
+              onChangeText={ value=> {
+                onPnameInputChange(value,index)}}
+            />)
           })
         }
         
@@ -74,10 +78,8 @@ const PanelNameInput = ({route}) => {
         )}
       
         <TouchableOpacity style={styles.btn} onPress={handlePnameInput}>
-        {/* onPress={()=> navigation.navigate('Home')}> */}
           <Text style={{textAlign: 'center', color:'#FFF', fontFamily: 'Poppins-Bold', fontSize: 16}}>Create Project</Text>
-        </TouchableOpacity>
-        
+        </TouchableOpacity>        
    </View>
 )
 }
@@ -85,12 +87,6 @@ const PanelNameInput = ({route}) => {
 export default PanelNameInput
 
 const styles = StyleSheet.create({
-  page:{
-    marginTop: 20
-    },
-  header:{
-    flexDirection: 'row',
-  },
   btn:{
     color: '#FFF',
     backgroundColor: BiruKu,

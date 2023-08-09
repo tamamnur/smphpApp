@@ -32,6 +32,7 @@ import IconSearch from './IconSearch.svg'
 import IconCalendar from './calendar.svg'
 import EditButton from './btnEdit.svg'
 import IconInput from './input.svg'
+import IconInput2 from './iconCarrier.svg'
 
 export { IconHomeActive, 
     IconHome, 
@@ -65,5 +66,6 @@ export { IconHomeActive,
     IconSearch,
     IconCalendar,
     EditButton,
-    IconInput
+    IconInput,
+    IconInput2,
  } 

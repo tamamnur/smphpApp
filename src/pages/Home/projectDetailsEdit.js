@@ -1,161 +1,251 @@
-import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
-import React, {useState} from 'react';
-import {IconAdd, IconBack, LogoSmpHP} from '../../assets';
+import { Text, TextInput, StyleSheet, View, ScrollView, ActivityIndicator, ToastAndroid, TouchableOpacity, Alert, } from 'react-native';
+import React, {Component, useState, useEffect} from 'react';
+import {IconBack, LogoSmpHP, EditButton, } from '../../assets';
 import {BiruKu} from '../../utils/constant';
-import InputDataProject from '../../components/InputDataProject';
 import {useNavigation} from '@react-navigation/native';
-import Title from '../../components/Title';
-import firestore, {firebase} from '@react-native-firebase/firestore';
-import PickedDateFull from '../../components/pickedDateFull';
+import firestore from '@react-native-firebase/firestore';
+import Button6 from '../../components/Button6';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
-const isValidObjField = obj => {
-  return Object.values(obj).every(value => value.trim());
-};
-
-const updateError = (error, stateUpdate) => {
-  stateUpdate(error);
-  setTimeout(() => {
-    stateUpdate('');
-  }, 3000);
-};
-
-const ProjectDetailsEdit = props => {
+const ProjectDetailsEdit = (props) => {
   const navigation = useNavigation();
-  const text = useState('Choose date!');
-  const [datePO, setDatePO] = useState();
-
-  const onDatePOChange = value => {
-    setDatePO(value);
-  };
+  const [isLoading, setIsLoading] = useState(true);
+  const id = props.route.params.id;
   const [projectInfo, setProjectInfo] = useState({
-    projectId: '',
-    projectName: '',
-    customer: '',
-    numberPO: '',
-  });
+    ProjectName: '', ProjectId: '', Customer:'', NumberPO:'', DatePO: new Date(),
+  })
+  const [isDatePickerVisible, setDatePickerVisibility] = useState(false);
 
-  const [error, setError] = useState('');
-  const {projectId, projectName, customer, numberPO} = projectInfo;
-  const handleOnchangeText = (value, fieldName) => {
-    setProjectInfo({...projectInfo, [fieldName]: value});
-  };
-
-  const isValidForm = () => {
-    if (!isValidObjField(projectInfo))
-      return updateError('Required all fields!', setError);
-    if (!projectName.trim() || projectName.length < 3)
-      return updateError('Invalid name of project', setError);
-    if (!customer.trim() || customer.length < 3)
-      return updateError('Invalid customer name', setError);
-    if (!numberPO.trim() || numberPO.length < 2)
-      return updateError('Invalid number PO', setError);
-    return true;
-  };
-  const submitForm = () => {
-    {
-      isValidForm() ? handleCreateProject() : error;
-    }
-  };
-
-  const handleCreateProject = async () => {
-    console.log(projectId);
-    console.log(projectName);
-    console.log(customer);
-    console.log(numberPO);
-    console.log(datePO);
-
-    const projectCollection = await firestore()
-      .collection('Project')
-      .add({
-        projectId: projectId,
-        projectName: projectName,
-        customer: customer,
-        numberPO: numberPO,
-        datePO: firestore.Timestamp.fromDate(datePO),
-      })
-      .then(response => {
-        console.log('Project Created');
-
-        navigation.navigate('PanelNameInput', {
-          ProjectId: response.id,
-        });
-      })
-      .catch(error => {
-        console.log(error);
+  useEffect (() => {
+    const unsubscribe = firestore().collection('Project').doc(id)
+    .onSnapshot(doc => {
+      const data = doc.data();
+      if (data && data.datePO) {
+        const FirebaseDate = data.datePO.toDate();
+        const monthString = (month) =>  {
+          const monthName = [ 'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul','Ags', 'Sep', 'Okt', 'Nov', 'Des'];
+          return monthName[month-1]
+        }
+        const getMonth = (FirebaseDate.getMonth()+1);
+        const month = monthString(getMonth)
+        const FormatDate = FirebaseDate.getDate() +'-'+month+ '-' + FirebaseDate.getFullYear();        
+        setProjectInfo({
+          ProjectName: doc.data().projectName,
+          ProjectId: doc.data().projectId,
+          Customer: doc.data().customer,
+          NumberPO: doc.data().numberPO,
+          DatePO: FormatDate,
+        }),
+        // console.log(projectInfo)
+          setIsLoading(false);
+        } else {
+          setProjectInfo(prevProjectInfo => ({
+            ...prevProjectInfo, DatePO: new Date(),
+          }))
+          setIsLoading(false)
+          // ToastAndroid.show('Some data not found', ToastAndroid.SHORT);
+        }
+      }, error => {
+        ToastAndroid.show('Error', error.message, ToastAndroid.SHORT);
+        setIsLoading(false);
       });
-  };
+      return () => {
+        unsubscribe();
+      };
+    }, [id]);
 
-  return (
-    <View style={styles.page}>
-      <Title TxtTitle="EDIT PROJECT DETAILS" />
-      {error ? (
-        <Text style={{color: 'red', fontSize: 14, textAlign: 'center'}}>
-          {error}
-        </Text>
-      ) : null}
-      <InputDataProject
-        label="ProjectID"
-        onChangeText={value => handleOnchangeText(value, 'projectId')}
-      />
-      <InputDataProject
-        label="Project Name"
-        onChangeText={value => handleOnchangeText(value, 'projectName')}
-      />
-      <InputDataProject
-        label="Customer"
-        onChangeText={value => handleOnchangeText(value, 'customer')}
-      />
-      <InputDataProject
-        label="PO Number"
-        onChangeText={value => handleOnchangeText(value, 'numberPO')}
-      />
-      <View style={styles.container}>
-        <Text style={styles.label}>PO Date</Text>
-        <Text style={styles.txtInput} onChangeText={onDatePOChange}>
-          <PickedDateFull onChangeText={onDatePOChange} />
-        </Text>
+    const showDatePicker = () => {
+      setDatePickerVisibility(true);
+    };
+  
+    const hideDatePicker = () => {
+      setDatePickerVisibility(false);
+    };
+  
+    const handleDatePicked = (date) => {
+      setProjectInfo(prevProjectInfo => ({
+        ...prevProjectInfo,
+        DatePO: date,
+      }));
+      hideDatePicker();
+    };
+
+    const handleDeleteProject = () => {
+      Alert.alert('Konfirmasi Hapus', 'Apakah Anda yakin ingin menghapus Project ini?', 
+      [{ text: 'Batal', style: 'cancel'},
+       {text: 'Hapus', style:'destructive', onPress: async () => {
+        try {
+          await firestore().collection('Project').doc(id).delete();
+          navigation.navigate('Home');
+        } catch (error) {
+          Alert.alert('Error', 'Terjadi kesalahan saat menghapus Project.');
+        }
+       }}])
+    }
+    const handleSaveChanges = async () => {
+      try {
+        await firestore().collection('Project').doc(id).update({
+          projectName: projectInfo.ProjectName,
+          projectId: projectInfo.ProjectId,
+          customer: projectInfo.Customer,
+          numberPO: projectInfo.NumberPO,
+          datePO: new Date (projectInfo.DatePO),
+        })
+        navigation.goBack();
+        ToastAndroid.show('Detail Project'+projectInfo.ProjectName+' telah diperbarui', ToastAndroid.SHORT)
+      } catch (error) {
+        Alert.alert('Error', 'Terjadi kesalahan saat menyimpan perubahan.')
+      }
+    }
+      
+    return (
+      <View style={{flex: 1}}>
+        <View
+          style={{flexDirection: 'row', marginTop: 30, marginHorizontal: 30}}>
+          <IconBack onPress={() => navigation.goBack()} />
+          <LogoSmpHP style={{marginLeft: 180}} />
+        </View>
+        {isLoading ? (
+          <View style={{marginTop: 50}}>
+            <ActivityIndicator size={'large'} />
+          </View>
+        ) : (
+          <View>
+            <Text style={styles.title}>EDIT PROJECT DETAIL</Text>
+            <View style={styles.projectId}>
+              <View>
+                <Text style={styles.left}>Number SO</Text>
+                <Text style={styles.left}>Project Name</Text>
+                <Text style={styles.left}>Customer</Text>
+                <Text style={styles.left}>Number PO</Text>
+                <Text style={styles.left}>Date PO</Text>
+              </View>
+              <View>
+              <TextInput
+                style={styles.right}
+                value={projectInfo.ProjectId}
+                onChangeText={text => setProjectInfo({ ...projectInfo, ProjectId: text })}
+              />
+              <TextInput
+                style={styles.right}
+                value={projectInfo.ProjectName}
+                onChangeText={text => setProjectInfo({ ...projectInfo, ProjectName: text })}
+              />
+              <TextInput
+                style={styles.right}
+                value={projectInfo.Customer}
+                onChangeText={text => setProjectInfo({ ...projectInfo, Customer: text })}
+              />
+              <TextInput
+                style={styles.right}
+                value={projectInfo.NumberPO}
+                onChangeText={text => setProjectInfo({ ...projectInfo, NumberPO: text })}
+              />
+              <TouchableOpacity
+                onPress={showDatePicker}
+                onChangeText={text => setProjectInfo({ ...projectInfo, DatePO: text })}
+              >
+              <Text
+                style={styles.right}
+                value={projectInfo.DatePO}
+                >{projectInfo.DatePO}</Text>
+                {/* /> */}
+                </TouchableOpacity>
+              {isDatePickerVisible &&
+              <DateTimePicker
+                isVisible={isDatePickerVisible}
+                mode="date"
+                onConfirm={handleDatePicked}
+                onCancel={hideDatePicker}
+              />
+              } 
+              </View>
+            </View> 
+            <Button6
+              text="Save Changes"
+              bgColor={BiruKu}
+              fontColor={'white'}
+              onPress={handleSaveChanges}
+            />
+            <Button6 
+              text="Delete Project"
+              bgColor={'black'}
+              fontColor={'red'}
+              onPress={handleDeleteProject}
+            />
+          </View>
+        )}
       </View>
-      <TouchableOpacity
-        style={styles.btn}
-        // onPress={submitForm}
-      >
-        <Text
-          style={{
-            textAlign: 'center',
-            color: '#FFF',
-            fontFamily: 'Poppins-Bold',
-            fontSize: 16,
-          }}>
-          Save Changes
-        </Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={styles.btn}
-        onPress={() => navigation.navigate('ProjectDetails')}>
-        <Text
-          style={{
-            textAlign: 'center',
-            color: '#023',
-            fontFamily: 'Poppins-Bold',
-            fontSize: 16,
-          }}>
-          Cancel
-        </Text>
-      </TouchableOpacity>
-    </View>
-  );
-};
+    );
+  }
 
 export default ProjectDetailsEdit;
 
 const styles = StyleSheet.create({
-  page: {
-    marginTop: 70,
+  title: {
+    marginTop: 20,
+    marginBottom: 25,
+    textAlign: 'center',
+    fontFamily: 'Poppins-Bold',
+    fontSize: 18,
+    color: BiruKu,
   },
-  header: {
+  projectId: {
+    marginHorizontal: 20,
+    paddingRight: 20,
     flexDirection: 'row',
   },
-  btn: {
+  left: {
+    fontFamily: 'Poppins-Medium',
+    fontSize: 14,
+    marginVertical: 14,
+    color: BiruKu,
+  },
+  right: {
+    fontFamily: 'Poppins-SemiBold',
+    fontSize: 14,
+    borderWidth: 1,
+    borderColor: BiruKu,
+    marginLeft: 8,
+    height: 35,
+    width: 250,
+    padding: 3,
+    paddingHorizontal: 5,
+    marginVertical: 8,
+    color: BiruKu,
+  },
+  pnameTitle: {
+    fontFamily: 'Poppins-Medium',
+    fontSize: 14,
+    marginTop: 14,
+    marginHorizontal: 20,
+    color: BiruKu,
+  },
+  pname: {
+    fontFamily: 'Poppins-Medium',
+    fontSize: 11,
+    marginVertical: 2,
+    marginHorizontal: 2,
+    paddingTop: 2,
+    paddingLeft: 10,
+    color: BiruKu,
+    borderWidth: 1,
+    borderColor: BiruKu,
+    width: 290,
+  },
+  pnomor: {
+    fontFamily: 'Poppins-Medium',
+    fontSize: 11,
+    paddingTop: 2,
+    marginVertical: 2,
+    marginLeft: 20,
+    color: BiruKu,
+    borderWidth: 1,
+    borderColor: BiruKu,
+    width: 30,
+    textAlign: 'center',
+  },
+  btnSave:{
     color: '#FFF',
     backgroundColor: BiruKu,
     marginTop: 35,
@@ -166,30 +256,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     fontSize: 16,
     fontFamily: 'Poppins-Bold',
-    textAlign: 'center',
-  },
-  container: {
-    justifyContent: 'flex-end',
-    flexDirection: 'row',
-    marginHorizontal: 20,
-  },
-  label: {
-    fontSize: 13,
-    fontFamily: 'Poppins-Regular',
-    marginBottom: 5,
-    color: BiruKu,
-    textAlignVertical: 'center',
-    textAlign: 'right',
-  },
-  txtInput: {
-    borderWidth: 1,
-    borderColor: BiruKu,
-    borderRadius: 5,
-    height: 35,
-    padding: 10,
-    marginVertical: 8,
-    width: 240,
-    marginHorizontal: 10,
-    width: 250,
+    textAlign: 'center'
   },
 });

@@ -2,20 +2,10 @@ import { View, Text, StyleSheet, TouchableOpacity, TextInput, ToastAndroid } fro
 import React, { useState } from 'react'
 import {IconBack, LogoSmpHP } from '../../assets'
 import { BiruKu } from '../../utils/constant'
-import InputDataProject from '../../components/InputDataProject'
 import { useNavigation } from '@react-navigation/native'
-import Title from '../../components/Title'
 import firestore from '@react-native-firebase/firestore';
 import PickedDateFull from '../../components/pickedDateFull'
-
-// const isValidObjField = obj => {
-//   return Object.values(obj).every(value => {
-//     if (value) {
-//       console.log(value);
-//       return value.trim();
-//     }
-//   });
-// };
+import Title2 from '../../components/Title2'
 
 const updateError = (error, stateUpdate) => {
   stateUpdate(error)
@@ -24,7 +14,7 @@ const updateError = (error, stateUpdate) => {
   }, 3000) 
 }
 
-const CreateProject = (props) => {
+const ProjectCreate = (props) => {
   const navigation = useNavigation();
   const [datePO, setDatePO] = useState();
 
@@ -45,7 +35,6 @@ const CreateProject = (props) => {
   } 
 
   const isValidForm = () => {
-    // if(!isValidObjField(projectInfo)) return updateError('Required all fields!', setError)
     if(!projectName.trim() || projectName.length < 3 ) return updateError ('Invalid name of project', setError)
     if(!customer.trim() || customer.length < 3 ) return updateError ('Invalid customer name', setError)
     // if(!numberPO.trim() || numberPO.length < 2 ) return updateError ('Invalid number PO', setError)
@@ -57,7 +46,8 @@ const CreateProject = (props) => {
   }
 
   const handleCreateProject = async ()=>{
-      console.log(projectId, projectName, customer, numberPO, datePO)
+    console.log(projectId, projectName, customer, numberPO, datePO);
+    const createdAt = new Date();
 
     const projectCollection = await firestore()
     .collection('Project')
@@ -67,6 +57,7 @@ const CreateProject = (props) => {
       customer: customer,
       numberPO: numberPO,
       datePO: firestore.Timestamp.fromDate(datePO),
+      createdAt: firestore.Timestamp.fromDate(createdAt)
     })
     .then((response) => {
       console.log('Project Created');
@@ -86,7 +77,7 @@ const CreateProject = (props) => {
           <IconBack onPress={() => navigation.navigate('Home')} style={{marginTop: 10, marginLeft: 30}}/>
           <LogoSmpHP style={{marginLeft: 180}}/>
       </View>
-        <Title TxtTitle="NEW PROJECT"/>
+        <Title2 TxtTitle="N  E  W        P  R  O  J  E  C  T"/>
           {error ? (
             <Text style={{color: 'red', fontSize: 13, textAlign: 'center', marginVertical:10}}>
               {error} 
@@ -116,20 +107,6 @@ const CreateProject = (props) => {
           </View>
       </View>
       </View>
-{/* 
-        <InputDataProject label="Number SO" onChangeText={(value) => handleOnchangeText(value, 'projectId')}/>
-        <InputDataProject label="Project Name" onChangeText={(value) => handleOnchangeText(value, 'projectName')}/>
-        <InputDataProject label="Customer" onChangeText={(value) => handleOnchangeText(value, 'customer')}/>
-        <InputDataProject label="PO Number" onChangeText={(value) => handleOnchangeText(value, 'numberPO')}/>
-        <View style={styles.container}>
-            <Text style={styles.label}>PO Date</Text>
-                <Text style={styles.txtInput} onChangeText={onDatePOChange}>
-                  <PickedDateFull onChangeText={onDatePOChange}/> 
-                  {/* <PickedDateShort onChangeText={onDatePOChange}/>  
-                </Text>
-        </View>      
-          */}
-                  
         <TouchableOpacity 
           style={styles.btn} 
           onPress={submitForm}
@@ -140,7 +117,7 @@ const CreateProject = (props) => {
   )
 }
 
-export default CreateProject;
+export default ProjectCreate;
 
 const styles = StyleSheet.create({
   page:{

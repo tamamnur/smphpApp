@@ -3,6 +3,7 @@ import { ScrollView, StyleSheet, Text, TouchableOpacity, View, ActivityIndicator
 import {BiruKu} from '../../utils/constant';
 import {useNavigation} from '@react-navigation/native';
 import firestore from '@react-native-firebase/firestore';
+import FormatDate from '../../components/FormatDate';
 
 const Project = props => {
   const navigation = useNavigation();
@@ -30,38 +31,36 @@ class RecapProject extends Component {
       isLoading: true,
       Projects: [],
     };
+    this.unsubscribe = null;
   }
-
   componentDidMount() {
-    this.getProject();
-    this.subscribe = firestore().collection('Project');
+    this.subscribeToProject();
   }
-
-  getProject = async () => {
-    try {
-      const userDocument = await firestore().collection('Project').get();
-      const projects = userDocument.docs.map(document => ({
-        id: document.id,
-        ...document.data(),
-      }));
-
+  componentWillUnmount() {
+    this.unsubscribeFromProject()
+  }
+  subscribeToProject = () => {
+    this.unsubscribe = firestore().collection('Project').orderBy('createdAt', 'desc').onSnapshot(snapshot => {
+      const projects = snapshot.docs.map(document => {
+        const data = document.data();
+        const createdAt = data.createdAt.toDate();
+        return {
+          id: document.id, ...data, createdAt: FormatDate(createdAt)
+        }
+      })
       this.setState({
-        Projects: projects,
+        projects: projects,
         isLoading: false,
-      });
-
-      // projects.forEach((project) => {
-      //   console.log('project---', project.projectName)
-      // })
-
-    } catch (error) {
-      console.log('Error fetching projects:', error);
-      this.setState({isLoading: false});
+      })
+    })
+  }
+  unsubscribeFromProject = () => {
+    if (this.unsubscribe) {
+      this.unsubscribe()
     }
-  };
-
+  }
   render() {
-    const {Projects, isLoading} = this.state;
+    const {projects, isLoading} = this.state;
     return (
       <View style={styles.container}>
         <View style={styles.titleWrap}>
@@ -73,14 +72,14 @@ class RecapProject extends Component {
               <ActivityIndicator size="large" color={BiruKu} />
             </View>
           ) : (
-            Projects.map(item => (
-              <Project
+            projects.map(item => (
+                <Project
                 key={item.id}
                 id={item.id}
                 ProjectName={item.projectName}
                 status="Procurement -- Component"
-                update="20-02-2022"
-              />
+                update={item.createdAt} //"20-02-2022"
+                />
             ))
           )}
         </ScrollView>
@@ -88,7 +87,6 @@ class RecapProject extends Component {
     );
   }
 }
-
 export default RecapProject;
 
 const styles = StyleSheet.create({

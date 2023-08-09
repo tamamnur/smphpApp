@@ -1,7 +1,7 @@
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React from 'react'
 import { IconAdd, IconSD_Approv, IconSD_Pengajuan, IconSD_Revisi } from '../assets'
-import { WarnaAbu, WarnaPutih } from '../utils/constant'
+import { WarnaAbu, WarnaPutih, BiruKu } from '../utils/constant'
 
 const SDrawing = ({title, active, onPress}) => {
     const Icon = () => {
@@ -27,22 +27,26 @@ const styles = StyleSheet.create({
     pilihan:active => ({
         alignItems: 'center',
         borderRadius: 10,
-        backgroundColor:active ? WarnaAbu: '#CECECE',
-        borderWidth: active ? 0 : 3,
-        borderColor: active ? 0:'gray',
-        marginHorizontal: 8,
+        // backgroundColor:active ? WarnaAbu: '#CECECE',
+        // borderWidth: active ? 0 : 3,
+        // borderColor: active ? 0:'gray',
+        borderWidth: 3,
+        borderColor: BiruKu,
+        marginHorizontal: 5,
         marginTop: 45,
 
     }),
     titleText: active => ({
-        margin: 6,
+        // fontFamily: 'Poppins-Medium',
+        color: BiruKu,
+        margin: 5,
         textAlign: 'center',
-        fontWeight: 'bold',
-        color:active ? '#000' : 'gray',
+        color: BiruKu,
+        fontFamily: 'Poppins-Medium',
     }),
     icon:{
         alignItems: 'center',
-        marginTop: -35,
+        marginTop: -40,
         marginHorizontal: 10
     }
 })

@@ -3,7 +3,7 @@ import React, {useState} from 'react';
 import {LogoSmpHP, IconBack} from '../../assets';
 import {BiruKu} from '../../utils/constant';
 import InputData from '../../components/InputData';
-import Button from '../../components/Button';
+import Button6 from '../../components/Button6';
 import {useNavigation} from '@react-navigation/native';
 import firebase from '@react-native-firebase/app';
 
@@ -60,15 +60,14 @@ export default function ResetPassword() {
           {error}
         </Text>
       ) : null}
-      <Button
-        text="Reset Password"
-        color={BiruKu}
+      <Button6
+        text="Reset Password" fontColor={'white'} bgColor={BiruKu}
         onPress={handleResetPassword}
       />
     </ScrollView>
   );
 }
-
+// password for all account : smphp2023
 const styles = StyleSheet.create({
   title: {
     fontFamily: 'Poppins-SemiBold',

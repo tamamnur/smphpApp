@@ -3,7 +3,7 @@ import React, {useEffect, useMemo, useState} from 'react';
 import {IconBack, LogoSmpHP} from '../../assets';
 import {BiruKu} from '../../utils/constant';
 import {useNavigation} from '@react-navigation/native';
-import Title from '../../components/Title';
+import Title2 from '../../components/Title2';
 import firestore from '@react-native-firebase/firestore';
 import PickedDateFull from '../../components/pickedDateFull';
 import CheckBox from '@react-native-community/checkbox';
@@ -230,7 +230,7 @@ const FormFabrication = props => {
         />
         <LogoSmpHP style={{marginLeft: 180}} />
       </View>
-      <Title TxtTitle="F A B R I C A T I O N" />
+      <Title2 TxtTitle="F A B R I C A T I O N" />
       {error ? (
         <Text style={{color: 'red',fontSize: 13,textAlign: 'center',marginBottom: 10,marginTop: -20}}>
           {error}

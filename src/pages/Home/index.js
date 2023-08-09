@@ -17,7 +17,7 @@ const Home = () => {
             <HeaderInformation /></View>
             <RecapProject />
             <TouchableOpacity style={styles.iconAdd}>
-                    <LogoAdd onPress={() => navigation.navigate('CreateProject')}/>
+                    <LogoAdd onPress={() => navigation.navigate('ProjectCreate')}/>
                 </TouchableOpacity>
               <Memo />
               <TouchableOpacity style={{alignItems: 'flex-end', marginHorizontal: 14}}>

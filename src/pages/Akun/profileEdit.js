@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { LogoSmpHP, IconBack } from '../../assets';
 import { BiruKu } from '../../utils/constant';
 import InputData from '../../components/InputData';
-import Button from '../../components/Button';
+import Button6 from '../../components/Button6';
 import Division from '../../components/Division';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
@@ -153,7 +153,7 @@ export default class ProfileEdit extends Component {
         ) : null} */}
         <Text style={styles.title}>E D I T   P R O F I L E</Text>
         <View style={styles.container}>
-          <Text style={styles.label}>{'('}Change Division{')'}</Text>
+          <Text style={styles.label}>{'('}Choose to change Division{')'}</Text>
         </View>
         <Division
           value={this.state.division}
@@ -187,9 +187,10 @@ export default class ProfileEdit extends Component {
           ) : null}
           </>
         )}
-        <Button
+        <Button6
           text="Save Changes"
-          color={BiruKu}
+          fontColor={'white'}
+          bgColor={BiruKu}
           onPress={this.handleProfileEdit}
         />
       </ScrollView>

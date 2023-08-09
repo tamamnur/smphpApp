@@ -2,7 +2,7 @@
 import { Text, ScrollView, StyleSheet, View, Image, ToastAndroid } from 'react-native'
 import React, { useState, useEffect, Component, useContext } from 'react'
 import { IconBack, LogoForSignUp, LogoSmpHP } from '../../assets'
-import Button from '../../components/Button'
+import Button from '../../components/Button6'
 import { BiruKu } from '../../utils/constant'
 import InputData from '../../components/InputData'
 import Division from '../../components/Division'
@@ -100,7 +100,7 @@ const Signup = (props) => {
             <InputData label="Email" onChangeText={(value) => handleOnchangeText(value, "email")}/>
             <InputData label="Password" secureTextEntry onChangeText={(value) => handleOnchangeText(value, "password")}/>
             <InputData label="Confirm Password" secureTextEntry onChangeText={(value) => handleOnchangeText(value, "confirmPassword")}/> 
-         <Button  text="Create Account"  color={BiruKu} onPress={submitForm} />
+         <Button  text="Create Account" fontColor={'white'} bgColor={BiruKu} onPress={submitForm} />
         {error ? (
             <Text style={{color: 'red', fontSize: 14, textAlign: 'center', marginTop: 20}}>
             {error} 

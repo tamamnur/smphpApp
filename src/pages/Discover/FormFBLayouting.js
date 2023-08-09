@@ -6,17 +6,8 @@ import {useNavigation} from '@react-navigation/native';
 import Title2 from '../../components/Title2';
 import firestore from '@react-native-firebase/firestore';
 import PickedDateFull from '../../components/pickedDateFull';
-import StagesSD from '../../components/StagesSD';
 import CheckBox from '@react-native-community/checkbox';
-
-const isValidObjField = obj => {
-  return Object.values(obj).every(value => {
-    if (value) {
-      console.log(value);
-      return value.trim();
-    }
-  });
-};
+import StagesFABDetail from '../../components/StagesFABDetail';
 
 const updateError = (error, stateUpdate) => {
   stateUpdate(error);
@@ -25,53 +16,47 @@ const updateError = (error, stateUpdate) => {
   }, 3000);
 };
 
-const FormShopdrawing = props => {
+const FormFBLayouting = (props) => {
   const navigation = useNavigation();
   const [date, setDate] = useState();
   const [isLoading, setIsLoading] = useState(true);
-  const [ProjectList, setProjectList] = useState([]);
-  const onDateChange = value => { setDate(value)};
   const [error, setError] = useState('');
+  const [ProjectList, setProjectList] = useState([]);
+  const onDateChange = value => {setDate(value)};
 
   const isValidForm = () => {
     if (!projectName.trim() || projectName.length === 0)
-    return updateError('Invalid name of project', setError);
-    if (!stages.trim() || stages.length === 0)
-    return updateError('Required to choice Stages of Shopdrawing', setError);
+      return updateError('Invalid name of project', setError);
+    if (!stagesFABDetail.trim() || stagesFABDetail.length === 0)
+      return updateError('Required to choice Stages of Fabrication', setError);
     if (!date)
-    return updateError('Required to choice Date of Proccess!', setError);
+      return updateError('Required to choice Date of Proccess!', setError);
     return true;
   };
-
   const isMountedRef = useRef(true);
   useEffect(() => {
     return () => {
       isMountedRef.current = false;
     }
   }, []);
-  const [shopdrawingInfo, setShopdrawingInfo] = useState({
-    projectId: '', FSProjectId: '', projectName: '', stages: '', customer: '', projectsList: [], Panels: [], 
-  });
-
-  const {projectId, projectName, stages, customer} = shopdrawingInfo;
   
+  const [layoutingInfo, setLayoutingInfo] = useState({
+    projectId: '', FSProjectId: '', projectName: '', stagesFABDetail: '', customer: '', projectsList: [], Panels: []
+  });
+  
+  const {projectId, projectName, stagesFABDetail, customer} = layoutingInfo;
+
   const handleOnchangeText = async (value, fieldName) => {
-    setShopdrawingInfo({...shopdrawingInfo, [fieldName]: value});
-    if (fieldName === 'stages') {
+    setLayoutingInfo({...layoutingInfo, [fieldName]: value});
+    if (fieldName === 'stagesFABDetail') {
       setIsLoading(true)
-      // const selectedStage = shopdrawingInfo.stages;
-      // console.log(selectedStage)
-      shopdrawingInfo.Panels.forEach(async item => {
+      const selectedStage = value;
+      layoutingInfo.Panels.forEach(async item => {
         if (item.MonitoringID) {
           const MonitoringID = item.MonitoringID.substring(1);
-          // console.log(MonitoringID)
-          const _Data = await firestore()
-            .collection(MonitoringID + '/Shopdrawing')
-            .doc(value)
-            .get();
-          const isExist = _Data.exists;
-          console.log(item.pnameInput, isExist);
-          setShopdrawingInfo(prev => ({
+          const _Data = await firestore().collection(MonitoringID+'/Fabrication').doc('Layouting').get();
+          const isExist = _Data.exists && _Data.data() && _Data.data().hasOwnProperty(selectedStage);
+          setLayoutingInfo(prev => ({
             ...prev,
             Panels: prev.Panels.map(panel => {
               if (panel.pnameInput === item.pnameInput) {
@@ -80,30 +65,30 @@ const FormShopdrawing = props => {
               return panel;
             }),
           }));
-        } else {
-          setShopdrawingInfo(prev => ({
-            ...prev,
-            Panels: prev.Panels.map(panel => {
-              if (panel.pnameInput === item.pnameInput) {
-                return {...panel, stageExist: false};
-              }
-              return panel;
-            }),
-          }));
-        }
-        if (isMountedRef.current) {
-          setIsLoading(false);
-        }
+          console.log('cek--',item.pnameInput, isExist);
+          } else {
+            setLayoutingInfo(prev => ({
+              ...prev,
+              Panels: prev.Panels.map(panel => {
+                if (panel.pnameInput === item.pnameInput) {
+                  return {...panel, stageExist: false};
+                }
+                return panel;
+              }),
+            }));
+          }
+          if (isMountedRef.current) {
+            setIsLoading(false);
+          }
       });
     }
   };
-  
-  const handleFormShopdrawing = async () => {
+
+  const handleComponent = async () => {
     let panelSelected = false;
-    shopdrawingInfo.Panels.forEach(async value => {
+    layoutingInfo.Panels.forEach(async value => {
       if (value.selected === true) {
         panelSelected = true;
-        // console.log(value);
         let MonitoringID = null;
         if (value.MonitoringID) {
           MonitoringID = value.MonitoringID.split('/')[2];
@@ -111,40 +96,34 @@ const FormShopdrawing = props => {
           const newMonitoring = await firestore()
             .collection('Monitoring')
             .add({
-              ProjectID: '/Project/' + shopdrawingInfo.FSProjectId,
+              ProjectID: '/Project/' + layoutingInfo.FSProjectId,
             });
           MonitoringID = newMonitoring.id;
         }
         const Shopdrawing = firestore()
           .collection('Monitoring')
           .doc(MonitoringID)
-          .collection('Shopdrawing');
-        if (shopdrawingInfo.stages === 'Approval') {
-          await Shopdrawing.doc('Approval').set({
-            DateApprove: firestore.Timestamp.fromDate(date),
+          .collection('Fabrication');
+        if (layoutingInfo.stagesFABDetail === 'Start') {
+          await Shopdrawing.doc('Layouting').set({
+            Start: firestore.Timestamp.fromDate(date),
           });
         }
-        if (shopdrawingInfo.stages === 'Revision') {
-          await Shopdrawing.doc('Revision').set({
-            DateRevisi: firestore.Timestamp.fromDate(date),
+        if (layoutingInfo.stagesFABDetail === 'Finish') {
+          await Shopdrawing.doc('Layouting').update({
+            Finish: firestore.Timestamp.fromDate(date),
           });
         }
-        if (shopdrawingInfo.stages === 'Submission') {
-          await Shopdrawing.doc('Submission').set({
-            DateSubmit: firestore.Timestamp.fromDate(date),
-          });
-        }
-
-        await firestore()
-          .collection('Project')
-          .doc(shopdrawingInfo.FSProjectId)
-          .collection('PanelName')
-          .doc(value.id)
-          .set({
-            pnameInput: value.pnameInput,
-            MonitoringID: '/Monitoring/' + MonitoringID,
-          });
-        setShopdrawingInfo(prev => ({
+          await firestore()
+            .collection('Project')
+            .doc(layoutingInfo.FSProjectId)
+            .collection('PanelName')
+            .doc(value.id)
+            .set({
+              pnameInput: value.pnameInput,
+              MonitoringID: '/Monitoring/' + MonitoringID,
+            });
+        setLayoutingInfo(prev => ({
           ...prev,
           Panels: prev.Panels.map(panelItem => {
             if (panelItem.id === value.id) {
@@ -157,14 +136,11 @@ const FormShopdrawing = props => {
           }),
         }));
         ToastAndroid.show('Data Added', ToastAndroid.SHORT)
-        if (stages === 'Submission') {
-          navigation.navigate('SD_Submission')
+        if (stagesFABDetail === 'Start') {
+          navigation.navigate('ComponentOrder')
         }
-        if (stages === 'Revision') {
-          navigation.navigate('SD_Revisi')
-        }
-        if (stages === 'Approval') {
-          navigation.navigate('SD_Approval')
+        if (stagesFABDetail === 'Finish') {
+          navigation.navigate('ComponentOrder')
         }
       }
     });
@@ -174,7 +150,7 @@ const FormShopdrawing = props => {
   };
   const submitForm = () => {
     if (isValidForm()) {
-      handleFormShopdrawing();
+      handleComponent();
     } else {
       error;
     }
@@ -196,7 +172,6 @@ const FormShopdrawing = props => {
             selected: false,
           };
         });
-        // console.log('Panel',Panels)
         return {
           id: doc.id,
           ...doc.data(),
@@ -207,9 +182,6 @@ const FormShopdrawing = props => {
       if (isMountedRef.current) {
         setProjectList(projectList);
         setIsLoading(false);
-        // setProjectList(await Promise.all(projectRef));
-        // const isDataAvailable = projectList.some(project => project.Panels.length > 0)
-        // setIsPanelAvailable(isDataAvailable)
       }
     };
     InitiationFirebase();
@@ -221,7 +193,7 @@ const FormShopdrawing = props => {
         return value.projectName === projectName;
       });
       if (MatchProject) {
-        setShopdrawingInfo(prev => ({
+        setLayoutingInfo(prev => ({
           ...prev,
           projectId: MatchProject.projectId,
           FSProjectId: MatchProject.id,
@@ -229,7 +201,7 @@ const FormShopdrawing = props => {
           Panels: MatchProject.Panels,
         }));
       } else {
-        setShopdrawingInfo(prev => ({
+        setLayoutingInfo(prev => ({
           ...prev,
           projectId: '',
           Panels: [],
@@ -240,14 +212,13 @@ const FormShopdrawing = props => {
   }, [ProjectList, projectName]);
 
   const AllPanelsExistMessage = () => {
-    if (shopdrawingInfo.Panels.every(item => item.stageExist)) {
+    if (layoutingInfo.Panels.every(item => item.stageExist)) {
       return (
         <Text style={styles.unvailable}>Data nama panel tidak tersedia.</Text>
-        );
-      }
-      return null;
-    };
-
+      );
+    }
+    return null;
+  };
   const Panel = props => {
     const navigation = useNavigation();
     return (
@@ -264,7 +235,6 @@ const FormShopdrawing = props => {
       </View>
     );
   };
-    
   return (
     <View style={styles.page}>
       <View style={styles.header}>
@@ -274,7 +244,7 @@ const FormShopdrawing = props => {
         />
         <LogoSmpHP style={{marginLeft: 180}} />
       </View>
-      <Title2 TxtTitle="SHOP DRAWING" />
+      <Title2 TxtTitle="LAYOUTING  -  FABRICATION" />
       {error ? (
         <Text style={{ color: 'red', fontSize: 13, textAlign: 'center', marginBottom: 10, marginTop: -20, }}>
           {error}
@@ -298,8 +268,11 @@ const FormShopdrawing = props => {
             <Text style={styles.right}>{customer}</Text>
             <Text style={styles.right}>{projectId}</Text>
             <View style={{width: 250}}>
-              <StagesSD
-                onValueChange={value => handleOnchangeText(value, 'stages')}
+              <StagesFABDetail
+                onValueChange={(value) => {
+                  // console.log('selected-- ', value);
+                  handleOnchangeText(value, 'stagesFABDetail')}
+                }
               />
             </View>
             <Text style={styles.txtInput} onChangeText={onDateChange}>
@@ -317,7 +290,6 @@ const FormShopdrawing = props => {
                 fullname.includes(searchTerm) &&
                 fullname !== searchTerm
               );
-              // console.log(projectName);
             }).map(item => (
               <TouchableOpacity
                 key={item.id}
@@ -342,14 +314,14 @@ const FormShopdrawing = props => {
                 Panel Name
               </Text>
             </View>
-            {shopdrawingInfo.Panels.filter(item => !item.stageExist).map(
+            {layoutingInfo.Panels.filter(item => !item.stageExist).map(
               item => (
                 <Panel
                   key={item.id}
                   pname={item.pnameInput}
                   value={item.selected}
                   onValueChange={value =>
-                    setShopdrawingInfo(prev => ({
+                    setLayoutingInfo(prev => ({
                       ...prev,
                       Panels: prev.Panels.map(panelItem => {
                         if (panelItem.id === item.id) {
@@ -384,7 +356,7 @@ const FormShopdrawing = props => {
   );
 };
 
-export default FormShopdrawing;
+export default FormFBLayouting;
 
 const styles = StyleSheet.create({
   page: {
