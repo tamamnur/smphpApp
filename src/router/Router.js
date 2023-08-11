@@ -36,8 +36,23 @@ import FormFBMechanic from '../pages/Discover/FormFBMechanic'
 import FormFBWiring from '../pages/Discover/FormFBWiring'
 import PageWiring from '../pages/Discover/pageWiring'
 import PageMechanic from '../pages/Discover/pageMechanic'
-import DeliveryReport from '../pages/Discover/deliveryReport'
 import FormFinishing from '../pages/Discover/FormFinishing'
+import ComponentSchedule from '../pages/Discover/componentSchedule'
+import ComponentRealized from '../pages/Discover/componentRealized'
+import BusbarOrder from '../pages/Discover/busbarOrder' 
+import BusbarSchedule from '../pages/Discover/busbarSchedule'
+import BusbarRealized from '../pages/Discover/busbarRealized'
+import ConstructionOrder from '../pages/Discover/constructionOrder'
+import ConstructionSchedule from '../pages/Discover/constructionSchedule'
+import ConstructionRealized from '../pages/Discover/constructionRealized'
+import LayoutingStart from '../pages/Discover/fabLayoutingStart'
+import LayoutingFinish from '../pages/Discover/fabLayoutingFinish'
+import MechanicStart from '../pages/Discover/fabMechanicStart'
+import MechanicFinish from '../pages/Discover/fabMechanicFinish'
+import WiringFinish from '../pages/Discover/fabWiringFinish'
+import WiringStart from '../pages/Discover/fabWiringStart'
+import TestReport from '../pages/Discover/endTested'
+import DeliveryReport from '../pages/Discover/endDelivery'
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -84,7 +99,26 @@ const SecuredNav = () => {
       <Stack.Screen name="PageWiring" component={PageWiring} options={{ headerShown: false}}/>
 
       <Stack.Screen name="ComponentOrder" component={ComponentOrder} options={{ headerShown: false}}/>
+      <Stack.Screen name="ComponentSchedule" component={ComponentSchedule} options={{ headerShown: false}}/>
+      <Stack.Screen name="ComponentRealized" component={ComponentRealized} options={{ headerShown: false}}/>
+            
+      <Stack.Screen name="BusbarOrder" component={BusbarOrder} options={{ headerShown: false}}/>
+      <Stack.Screen name="BusbarSchedule" component={BusbarSchedule} options={{ headerShown: false}}/>
+      <Stack.Screen name="BusbarRealized" component={BusbarRealized} options={{ headerShown: false}}/>
+
+      <Stack.Screen name="ConstructionOrder" component={ConstructionOrder} options={{ headerShown: false}}/>
+      <Stack.Screen name="ConstructionSchedule" component={ConstructionSchedule} options={{ headerShown: false}}/>
+      <Stack.Screen name="ConstructionRealized" component={ConstructionRealized} options={{ headerShown: false}}/>
+      
+      <Stack.Screen name="LayoutingStart" component={LayoutingStart} options={{ headerShown: false}}/>
+      <Stack.Screen name="LayoutingFinish" component={LayoutingFinish} options={{ headerShown: false}}/>
+      <Stack.Screen name="MechanicStart" component={MechanicStart} options={{ headerShown: false}}/>
+      <Stack.Screen name="MechanicFinish" component={MechanicFinish} options={{ headerShown: false}}/>
+      <Stack.Screen name="WiringStart" component={WiringStart} options={{ headerShown: false}}/>
+      <Stack.Screen name="WiringFinish" component={WiringFinish} options={{ headerShown: false}}/>
+      
       <Stack.Screen name="DeliveryReport" component={DeliveryReport} options={{ headerShown: false}}/>
+      <Stack.Screen name="TestReport" component={TestReport} options={{ headerShown: false}}/>
     </Stack.Navigator>
   )
 }

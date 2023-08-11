@@ -22,13 +22,13 @@ const PageLayouting = () => {
         <Text style={styles.title}>LAYOUTING {'\n'}- FABRICATION -</Text>
       </View>
       <View style={{alignSelf: 'center', flexDirection: 'row'}}>
-        <TouchableOpacity onPress={() => navigation.navigate('ComponentOrder')}>
+        <TouchableOpacity onPress={() => navigation.navigate('LayoutingStart')}>
           <View style={styles.wrapper}>
             <AntDesign name="playcircleo" color={'orange'} size={80} />
             <Text style={styles.desc}>Start</Text>
           </View>
         </TouchableOpacity>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate('LayoutingFinish')}>
           <View style={styles.wrapper}>
             <AntDesign name="carryout" color={'orange'} size={80} />
             <Text style={styles.desc}>Finish</Text>

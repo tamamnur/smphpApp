@@ -8,7 +8,7 @@ import firestore from '@react-native-firebase/firestore';
 import PanelProjectList from '../../components/panelProjectList';
 import FormatDate from '../../components/FormatDate';
 
-const ComponentOrder = () => {
+const ConstructionOrder = () => {
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(true);
   const [panelNameData, setPanelNameData] = useState([]);
@@ -42,7 +42,7 @@ const ComponentOrder = () => {
             if (getId) {
               const idRef = firestore().collection('Monitoring');
               const id = getId.substring(12);
-              const monitoringRef = idRef.doc(id).collection('Procurement').doc('Component');
+              const monitoringRef = idRef.doc(id).collection('Procurement').doc('Construction');
               const monitoringDoc = await monitoringRef.get();
               if (monitoringDoc.exists) {
                 const monitoringData = monitoringDoc.data();
@@ -77,7 +77,7 @@ const ComponentOrder = () => {
   }, []);
 
   const filteredPanelData = panelNameData.filter(item => {
-    console.log('item?', item);
+    // console.log('item?', item);
     const projectNameLower = item.projectName.toLowerCase();
     const panelNameLower = item.panelName.toLowerCase();
     const searchKeywordLower = searchKeyword.toLowerCase();
@@ -104,10 +104,10 @@ const ComponentOrder = () => {
   return (
     <View>
       <View style={{flexDirection: 'row', marginHorizontal: 20, marginTop: 30}}>
-        <IconBack onPress={() => navigation.navigate('PageComponent')} />
+        <IconBack onPress={() => navigation.navigate('PageConstruction')} />
         <LogoSmpHP style={{marginLeft: 200}} />
       </View>
-      <Title2 TxtTitle="PURCHASE ORDER" SubTitle="COMPONENT" />
+      <Title2 TxtTitle="PURCHASE ORDER" SubTitle="CONSTRUCTION / BOX" />
       {isLoading ? (<Text></Text>) : 
       (<>
           <TextInput
@@ -209,4 +209,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default ComponentOrder;
+export default ConstructionOrder;

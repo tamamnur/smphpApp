@@ -8,7 +8,7 @@ import firestore from '@react-native-firebase/firestore';
 import PanelProjectList from '../../components/panelProjectList';
 import FormatDate from '../../components/FormatDate';
 
-const ComponentOrder = () => {
+const WiringStart = () => {
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(true);
   const [panelNameData, setPanelNameData] = useState([]);
@@ -42,12 +42,13 @@ const ComponentOrder = () => {
             if (getId) {
               const idRef = firestore().collection('Monitoring');
               const id = getId.substring(12);
-              const monitoringRef = idRef.doc(id).collection('Procurement').doc('Component');
+              // console.log('ididi', id)
+              const monitoringRef = idRef.doc(id).collection('Fabrication').doc('Wiring');
               const monitoringDoc = await monitoringRef.get();
               if (monitoringDoc.exists) {
                 const monitoringData = monitoringDoc.data();
-                if (monitoringData.Order) {
-                  const dateMonitoringValue = monitoringData.Order;
+                if (monitoringData.Start) {
+                  const dateMonitoringValue = monitoringData.Start;
                   const dateMonitoring = FormatDate(dateMonitoringValue.toDate());
                   panelNameData.push({
                     projectName: panel.projectName,
@@ -77,7 +78,6 @@ const ComponentOrder = () => {
   }, []);
 
   const filteredPanelData = panelNameData.filter(item => {
-    console.log('item?', item);
     const projectNameLower = item.projectName.toLowerCase();
     const panelNameLower = item.panelName.toLowerCase();
     const searchKeywordLower = searchKeyword.toLowerCase();
@@ -104,10 +104,10 @@ const ComponentOrder = () => {
   return (
     <View>
       <View style={{flexDirection: 'row', marginHorizontal: 20, marginTop: 30}}>
-        <IconBack onPress={() => navigation.navigate('PageComponent')} />
+        <IconBack onPress={() => navigation.navigate('PageWiring')} />
         <LogoSmpHP style={{marginLeft: 200}} />
       </View>
-      <Title2 TxtTitle="PURCHASE ORDER" SubTitle="COMPONENT" />
+      <Title2 TxtTitle="WORK STARTED" SubTitle="WIRING" />
       {isLoading ? (<Text></Text>) : 
       (<>
           <TextInput
@@ -209,4 +209,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default ComponentOrder;
+export default WiringStart;

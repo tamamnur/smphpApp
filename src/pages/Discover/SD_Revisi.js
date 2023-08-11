@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Text, StyleSheet, View, ScrollView, ActivityIndicator } from 'react-native';
-import { IconBack, LogoSmpHP } from '../../assets';
-import { BiruKu } from '../../utils/constant';
-import { useNavigation } from '@react-navigation/native';
+import React, {useState, useEffect, useRef} from 'react';
+import {Text,StyleSheet,View,ScrollView,ActivityIndicator,TextInput,} from 'react-native';
+import {IconBack, LogoSmpHP} from '../../assets';
+import {BiruKu} from '../../utils/constant';
+import {useNavigation} from '@react-navigation/native';
 import firestore from '@react-native-firebase/firestore';
 import Title2 from '../../components/Title2';
 import PanelProjectList from '../../components/panelProjectList';
@@ -10,92 +10,143 @@ import FormatDate from '../../components/FormatDate';
 
 const SD_Revision = () => {
   const navigation = useNavigation();
-  const [revisionData, setRevisionData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [panelNameData, setPanelNameData] = useState([]);
+  const [searchKeyword, setSearchKeywoard] = useState('');
+
   useEffect(() => {
     let isMounted = true;
-  
-  const getMonitoring = async () => {
-    try {
-      const monitoringRef = firestore().collection('Monitoring')
-      const docSnapshot = await monitoringRef.get()
-      const monitorData = [];
-      for (const doc of docSnapshot.docs) {
-        const id = doc.id;
-        const shopdrawingRef = monitoringRef.doc(id).collection('Shopdrawing')
-        const revisionRef = shopdrawingRef.doc('Revision')  
-        const revisionDoc = await revisionRef.get()
-        if (revisionDoc.exists) {
-          const revisionData = revisionDoc.data()
-          const dateRevisionValue = revisionData.DateRevisi;
-          const dateRevision = FormatDate(dateRevisionValue.toDate())
-          monitorData.push({id, ...doc.data(), DateRevision: dateRevision })
-        } else {
-          console.log('Revision doc not found for ID: ', id)
+    const getProject = async () => {
+      try {
+        const projectNameData = [];
+        const idRef = await firestore().collection('Project').get();
+        const idDoc = idRef.docs.map(doc => ({id: doc.id, ...doc.data()}));
+        idDoc.forEach(docIdRef => {
+          projectNameData.push(docIdRef.projectName);
+        });
+        const panelNameData = [];
+        for (const doc of idDoc) {
+          const projectRef = firestore().collection('Project').doc(doc.id).collection('PanelName');
+          const panelIdRef = await projectRef.get();
+          const panelIdData = panelIdRef.docs.map(panelIdDoc => ({
+            panelId: panelIdDoc.id,
+            ...panelIdDoc.data(),
+            projectName: doc.projectName,
+          }));
+          const fetchDatePromises = panelIdData.map(async panel => {
+            panelNameData.push({
+              projectName: doc.projectName,
+              panelName: panel.pnameInput,
+            });
+            const getId = panel.MonitoringID;
+            if (getId) {
+              const idRef = firestore().collection('Monitoring');
+              const id = getId.substring(12);
+              const shopdrawingRef = idRef.doc(id).collection('Shopdrawing').doc('Revision');
+              const revisionDoc = await shopdrawingRef.get();
+              if (revisionDoc.exists) {
+                const revisionData = revisionDoc.data();
+                if (revisionData.DateRevisi) {
+                  const dateRevisionValue = revisionData.DateRevisi;
+                  const dateRevision = FormatDate(dateRevisionValue.toDate());
+                  panelNameData.push({
+                    projectName: panel.projectName,
+                    panelName: panel.pnameInput,
+                    DateRevision: dateRevision,
+                  });
+                  // console.log('panel: ',panel.pnameInput,'date: ',dateSubmit)
+                }
+                // } else {
+                // console.log('Doc not found');
+              }
+              // } else {
+              // console.log( 'Panel', panel.pnameInput, 'tidak memiliki dokumen monitoring');
+            }
+          });
+          await Promise.all(fetchDatePromises);
+        }
+        if (isMounted) {
+          setPanelNameData(panelNameData);
+          setIsLoading(false);
+        }
+      } catch (error) {
+        console.log('ERROR Fetching Data', error);
+        if (isMounted) {
+          setIsLoading(false);
         }
       }
-      const dateShorted = monitorData.sort((a,b) => {
-        const dateA = new Date(a.DateRevision)
-        const dateB = new Date(b.DateRevision)
-        return dateB.getTime()-dateA.getTime()
-      })
-      if (isMounted) {
-        setRevisionData(dateShorted)
-        setIsLoading(false)
-      }
-    } catch (error) {
-      console.log('Error', error)
-      if (isMounted) {
-        setIsLoading(false)
-      }
-    }
-  }
-  getMonitoring();
-  return () => {
-    isMounted = false
-  };
-  }, [])
+    };
+    getProject();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const filteredPanelData = panelNameData.filter(item => {
+    console.log('item?', item);
+    const projectNameLower = item.projectName.toLowerCase();
+    const panelNameLower = item.panelName.toLowerCase();
+    const searchKeywordLower = searchKeyword.toLowerCase();
+    return (
+      projectNameLower.includes(searchKeywordLower) ||
+      panelNameLower.includes(searchKeywordLower)
+    );
+  });
+
+  const renderedPanelList = filteredPanelData.filter(item => item.DateRevision)
+    .sort((a, b) => new Date(b.DateRevision) - new Date(a.DateRevision))
+    .map((item, index) => (
+      <PanelProjectList
+        key={index + 1}
+        projectName={item.projectName}
+        panelName={item.panelName}
+        status={item.DateRevision}
+      />
+    ));
+  const dataNotFound = (<Text style={styles.dataNotFound}>No matching result found.</Text>);
+  
+  const contenToRender = renderedPanelList.length > 0 ? renderedPanelList : dataNotFound;
 
   return (
     <View>
-      <View style={{ flexDirection: 'row', marginHorizontal: 20, marginTop: 30 }}>
+      <View style={{flexDirection: 'row', marginHorizontal: 20, marginTop: 30}}>
         <IconBack onPress={() => navigation.navigate('Discover')} />
-        <LogoSmpHP style={{ marginLeft: 200 }} />
+        <LogoSmpHP style={{marginLeft: 200}} />
       </View>
       <Title2 TxtTitle="SHOPDRAWING" SubTitle="REVISION" />
-      <View style={styles.wrappHead}>
-        <Text style={styles.headProjectName}>Project Name</Text>
-        <Text style={styles.headPanelName}>Panel Name</Text>
-        <Text style={styles.headUpdate}>Update</Text>
-      </View>
-      <ScrollView style={{ marginHorizontal: 8, marginBottom: 110, height: 550 }}>
-        <View style={{ marginBottom: 10, borderColor: BiruKu, borderBottomWidth: 1 }}>
+      {isLoading ? (
+        // <View><Text style={styles.dataNotFound}>Data collection proses...</Text></View>
+        <View>
+          <Text style={styles.dataNotFound}></Text>
+        </View>
+      ) : (
+        <>
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Search by project or panel name....."
+            value={searchKeyword}
+            onChangeText={text => setSearchKeywoard(text)}
+          />
+          <View style={styles.wrappHead}>
+            <Text style={styles.headProjectName}>Project Name</Text>
+            <Text style={styles.headPanelName}>Panel Name</Text>
+            <Text style={styles.headUpdate}>Update</Text>
+          </View>
+        </>
+      )}
+      <ScrollView style={{marginHorizontal: 8, marginBottom: 110, height: 550}}>
+        <View style={{marginBottom: 10, borderColor: BiruKu, borderBottomWidth: 1}}>
           {isLoading ? (
-            <View style={{ marginTop: 50 }}>
+            <View style={{marginTop: 10, marginBottom: 100}}>
               <ActivityIndicator size="large" color={BiruKu} />
             </View>
-          ) : (
-            revisionData.map((item, index) => (
-              <PanelProjectList
-                key={index+1}
-                projectName={item.id}
-                panelName={index+1}
-                status={item.DateRevision}
-              />
-            ))
-          )}
-          <View>
-            <Text style={{ fontFamily: 'Poppins-Italic', fontSize: 12, color: BiruKu, textAlign: 'center', marginTop: 15 }}>
-              End of Page
-            </Text>
-          </View>
+          ) : (contenToRender)}
+          <View><Text style={styles.endOfPage}>End of Page</Text></View>
         </View>
       </ScrollView>
     </View>
   );
 };
-
-export default SD_Revision;
 
 const styles = StyleSheet.create({
   wrappHead: {
@@ -140,4 +191,34 @@ const styles = StyleSheet.create({
     height: 30,
     width: 79,
   },
+  endOfPage: {
+    fontFamily: 'Poppins-Italic',
+    fontSize: 12,
+    color: BiruKu,
+    textAlign: 'center',
+    marginTop: 15,
+  },
+  searchInput: {
+    borderWidth: 1,
+    borderColor: BiruKu,
+    borderRadius: 6,
+    backgroundColor: '#F7F7F8',
+    paddingHorizontal: 8,
+    paddingVertical: 1,
+    marginHorizontal: 16,
+    marginBottom: 5,
+    height: 35,
+    color: BiruKu,
+    fontFamily: 'Poppins-Medium',
+    fontSize: 13,
+  },
+  dataNotFound: {
+    fontFamily: 'Poppins-Italic',
+    fontSize: 14,
+    textAlign: 'center',
+    marginTop: 20,
+    color: BiruKu,
+  },
 });
+
+export default SD_Revision;

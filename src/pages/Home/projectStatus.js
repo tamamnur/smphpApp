@@ -5,6 +5,7 @@ import {BiruKu} from '../../utils/constant';
 import {useNavigation} from '@react-navigation/native';
 import firestore from '@react-native-firebase/firestore';
 import Icon from 'react-native-vector-icons/AntDesign';
+import FormatDate from '../../components/FormatDate';
 
 const Status = props => {
   const navigation = useNavigation();
@@ -134,7 +135,7 @@ const Status = props => {
                       <Text style={styles.statusPO}>{'\u2B25'} Start</Text>
                       <Text style={styles.statusPO}>{'\u2B25'} Finish</Text>
                     </View>
-                    <View style={{marginLeft: 18}}>
+                    <View style={{marginLeft: 12}}>
                       <Text style={styles.update}>{props.start_layout}</Text>
                       <Text style={styles.update}>{props.finish_layout}</Text>
                     </View>
@@ -149,7 +150,7 @@ const Status = props => {
                       <Text style={styles.statusPO}>{'\u2B25'} Start</Text>
                       <Text style={styles.statusPO}>{'\u2B25'} Finish</Text>
                     </View>
-                    <View style={{marginLeft: 18}}>
+                    <View style={{marginLeft: 12}}>
                       <Text style={styles.update}>{props.start_mech}</Text>
                       <Text style={styles.update}>{props.finish_mech}</Text>
                     </View>
@@ -165,7 +166,7 @@ const Status = props => {
                       <Text style={styles.statusPO}>{'\u2B25'} Start</Text>
                       <Text style={styles.statusPO}>{'\u2B25'} Finish</Text>
                     </View>
-                    <View style={{marginLeft: 18}}>
+                    <View style={{marginLeft: 12}}>
                       <Text style={styles.update}>{props.start_wiring}</Text>
                       <Text style={styles.update}>{props.finish_wiring}</Text>
                     </View>
@@ -192,20 +193,11 @@ const Status = props => {
   );
 };
 
-const FormatDate = date => {
-  const monthString = (month) =>  {
-    const monthName = [ 'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul','Ags', 'Sep', 'Okt', 'Nov', 'Des'];
-    return monthName[month-1]
-  };
-  const getMonth = (date.getMonth()+1);
-  const month = monthString(getMonth)
-
-  return (
-    date.getDate() + '-' +month+ '-' +date.getFullYear()
-  );
-};
-
 class ProjectStatus extends Component {
+  componentWillUnmount() {
+    this.subscriber();
+  }
+
   state = {
     Monitoring: {Monitoring: ''},
     Project: {ProjectName: ''},

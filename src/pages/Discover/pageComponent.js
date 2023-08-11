@@ -24,13 +24,13 @@ const PageComponent = () => {
             <Text style={styles.desc}>Purchase</Text>
           </View>
         </TouchableOpacity>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate('ComponentSchedule')}>
           <View style={{alignItems: 'center', backgroundColor: '#E5E5E5', paddingVertical: 25, borderWidth: 1, borderColor: BiruKu, marginHorizontal: 10}}>
             <AntDesign name="hourglass" color={BiruKu} size={50} />
             <Text style={styles.desc}>Schedule</Text>
           </View>
         </TouchableOpacity>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate('ComponentRealized')}>
           <View style={{alignItems: 'center', backgroundColor: '#E5E5E5', paddingVertical: 25, borderWidth: 1, borderColor: BiruKu}}>
             <AntDesign name="carryout" color={BiruKu} size={50} />
             <Text style={styles.desc}>Realized</Text>

@@ -8,7 +8,7 @@ import firestore from '@react-native-firebase/firestore';
 import PanelProjectList from '../../components/panelProjectList';
 import FormatDate from '../../components/FormatDate';
 
-const ComponentOrder = () => {
+const ComponentSchedule = () => {
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(true);
   const [panelNameData, setPanelNameData] = useState([]);
@@ -46,8 +46,8 @@ const ComponentOrder = () => {
               const monitoringDoc = await monitoringRef.get();
               if (monitoringDoc.exists) {
                 const monitoringData = monitoringDoc.data();
-                if (monitoringData.Order) {
-                  const dateMonitoringValue = monitoringData.Order;
+                if (monitoringData.Schedule) {
+                  const dateMonitoringValue = monitoringData.Schedule;
                   const dateMonitoring = FormatDate(dateMonitoringValue.toDate());
                   panelNameData.push({
                     projectName: panel.projectName,
@@ -77,7 +77,6 @@ const ComponentOrder = () => {
   }, []);
 
   const filteredPanelData = panelNameData.filter(item => {
-    console.log('item?', item);
     const projectNameLower = item.projectName.toLowerCase();
     const panelNameLower = item.panelName.toLowerCase();
     const searchKeywordLower = searchKeyword.toLowerCase();
@@ -107,7 +106,7 @@ const ComponentOrder = () => {
         <IconBack onPress={() => navigation.navigate('PageComponent')} />
         <LogoSmpHP style={{marginLeft: 200}} />
       </View>
-      <Title2 TxtTitle="PURCHASE ORDER" SubTitle="COMPONENT" />
+      <Title2 TxtTitle="ARRIVAL SCHEDULE" SubTitle="COMPONENT" />
       {isLoading ? (<Text></Text>) : 
       (<>
           <TextInput
@@ -209,4 +208,4 @@ const styles = StyleSheet.create({
   }
 });
 
-export default ComponentOrder;
+export default ComponentSchedule;

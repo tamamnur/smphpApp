@@ -22,13 +22,13 @@ const PageWiring = () => {
         <Text style={styles.title}>WIRING {'\n'}- FABRICATION -</Text>
       </View>
       <View style={{alignSelf: 'center', flexDirection: 'row'}}>
-        <TouchableOpacity onPress={() => navigation.navigate('ComponentOrder')}>
+        <TouchableOpacity onPress={() => navigation.navigate('WiringStart')}>
           <View style={styles.wrapper}>
             <AntDesign name="playcircleo" color={'orange'} size={80} />
             <Text style={styles.desc}>Start</Text>
           </View>
         </TouchableOpacity>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate('WiringFinish')}>
           <View style={styles.wrapper}>
             <AntDesign name="carryout" color={'orange'} size={80} />
             <Text style={styles.desc}>Finish</Text>

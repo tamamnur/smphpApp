@@ -54,7 +54,7 @@ const FormPOBusbar = (props) => {
       busbarInfo.Panels.forEach(async item => {
         if (item.MonitoringID) {
           const MonitoringID = item.MonitoringID.substring(1);
-          const _Data = await firestore().collection(MonitoringID+'/Procurement').doc('Construction').get();
+          const _Data = await firestore().collection(MonitoringID+'/Procurement').doc('Busbar').get();
           const isExist = _Data.exists && _Data.data() && _Data.data().hasOwnProperty(selectedStage);
           setBusbarInfo(prev => ({
             ...prev,
@@ -84,7 +84,7 @@ const FormPOBusbar = (props) => {
     }
   };
 
-  const handleComponent = async () => {
+  const handleBusbar = async () => {
     let panelSelected = false;
     busbarInfo.Panels.forEach(async value => {
       if (value.selected === true) {
@@ -105,17 +105,17 @@ const FormPOBusbar = (props) => {
           .doc(MonitoringID)
           .collection('Procurement');
         if (busbarInfo.stagesPODetails === 'Order') {
-          await Shopdrawing.doc('Construction').set({
+          await Shopdrawing.doc('Busbar').set({
             Order: firestore.Timestamp.fromDate(date),
           });
         }
         if (busbarInfo.stagesPODetails === 'Schedule') {
-          await Shopdrawing.doc('Construction').update({
+          await Shopdrawing.doc('Busbar').update({
             Schedule: firestore.Timestamp.fromDate(date),
           });
         }
         if (busbarInfo.stagesPODetails === 'Realized') {
-          await Shopdrawing.doc('Construction').update({
+          await Shopdrawing.doc('Busbar').update({
             Realized: firestore.Timestamp.fromDate(date),
           });
         }
@@ -143,13 +143,13 @@ const FormPOBusbar = (props) => {
         }));
         ToastAndroid.show('Data Added', ToastAndroid.SHORT)
         if (stagesPODetails === 'Order') {
-          navigation.navigate('ComponentOrder')
+          navigation.navigate('BusbarOder')
         }
         if (stagesPODetails === 'Schedule') {
-          navigation.navigate('ComponentOrder')
+          navigation.navigate('BusbarSchedule')
         }
         if (stagesPODetails === 'Realized') {
-          navigation.navigate('ComponentOrder')
+          navigation.navigate('BusbarRealized')
         }
       }
     });
@@ -160,7 +160,7 @@ const FormPOBusbar = (props) => {
 
   const submitForm = () => {
     if (isValidForm()) {
-      handleComponent();
+      handleBusbar();
     } else {
       error;
     }

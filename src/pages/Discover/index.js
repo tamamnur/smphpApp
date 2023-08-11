@@ -54,14 +54,14 @@ class Discover extends Component {
               </TouchableOpacity>
               <TouchableOpacity>
                 <SDrawing
-                  title="Approval"
-                  onPress={() => this.props.navigation.navigate('SD_Approval')}
+                  title="Revision"
+                  onPress={() => this.props.navigation.navigate('SD_Revisi')}
                 />
               </TouchableOpacity>
               <TouchableOpacity>
                 <SDrawing
-                  title="Revision"
-                  onPress={() => this.props.navigation.navigate('SD_Revisi')}
+                  title="Approval"
+                  onPress={() => this.props.navigation.navigate('SD_Approval')}
                 />
               </TouchableOpacity>
             </View>
@@ -136,7 +136,7 @@ class Discover extends Component {
               </TouchableOpacity>
               <View>
               <TouchableOpacity 
-                onPress={() => this.props.navigation.navigate('DeliveryReport')}
+                onPress={() => this.props.navigation.navigate('TestReport')}
                 style={{alignItems:'center', marginHorizontal: 25}}>
                 <View>
                   <AntDesign name="switcher" color={'#10324A'} size={35} />

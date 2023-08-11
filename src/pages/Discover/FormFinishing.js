@@ -137,11 +137,11 @@ const FormFinishing = (props) => {
           }),
         }));
         ToastAndroid.show('Data Added', ToastAndroid.SHORT)
-        if (stages === 'Start') {
-          navigation.navigate('ComponentOrder')
+        if (stages === 'Tested') {
+          navigation.navigate('TestReport')
         }
-        if (stages === 'Finish') {
-          navigation.navigate('ComponentOrder')
+        if (stages === 'Delivery') {
+          navigation.navigate('DeliveryReport')
         }
       }
     });

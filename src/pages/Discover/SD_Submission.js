@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import { StyleSheet, Text, View, ScrollView, ActivityIndicator, } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, ActivityIndicator, TextInput, } from 'react-native';
 import Title2 from '../../components/Title2';
 import {IconBack, LogoSmpHP} from '../../assets';
 import {BiruKu} from '../../utils/constant';
@@ -95,50 +95,81 @@ const SD_Submission = () => {
     };
   }, []);
 
-  return (
+  const [searchKeyword, setSearchKeyword] = useState('');
+
+  const filteredPanelData = panelNameData.filter((item) => {
+    const projectNameLower = item.projectName.toLowerCase();
+    const panelNameLower = item.panelName.toLowerCase();
+    const searchKeywordLower = searchKeyword.toLowerCase();
+    return (
+      projectNameLower.includes(searchKeywordLower) ||
+      panelNameLower.includes(searchKeywordLower)
+    )
+  })
+
+  const renderedPanelList = filteredPanelData.filter(item => item.DateSubmit)
+    .sort((a,b) => new Date(b.DateSubmit) - new Date(a.DateSubmit))
+    .map((item, index) => (
+      <PanelProjectList
+        key={index}
+        projectName={item.projectName}
+        panelName={item.panelName}
+        status={item.DateSubmit}
+      />
+    ))
+  
+  const dataNotFound = (<Text style={styles.dataNotFound}>No matching result found.</Text>)
+
+  const contenToRender = renderedPanelList.length > 0 ? renderedPanelList: dataNotFound;
+
+  return (  
     <View>
       <View style={{flexDirection: 'row', marginHorizontal: 20, marginTop: 30}}>
         <IconBack onPress={() => navigation.navigate('Discover')} />
         <LogoSmpHP style={{marginLeft: 200}} />
       </View>
       <Title2 TxtTitle="SHOPDRAWING" SubTitle="SUBMISSION" />
-      <View style={styles.wrappHead}>
-        <Text style={styles.headProjectName}>Project Name</Text>
-        <Text style={styles.headPanelName}>Panel Name</Text>
-        <Text style={styles.headUpdate}>Update</Text>
-      </View>
+      {isLoading ? (
+        <Text></Text>
+      ) : (
+        <>
+        <TextInput 
+          style={styles.searchInput}
+          placeholder='Search by project or panel name.....'
+          value={searchKeyword}
+          onChangeText={(text) => setSearchKeyword(text)}          
+        />
+        <View style={styles.wrappHead}>
+          <Text style={styles.headProjectName}>Project Name</Text>
+          <Text style={styles.headPanelName}>Panel Name</Text>
+          <Text style={styles.headUpdate}>Update</Text>
+        </View>
+        </>
+      )}
       <ScrollView style={{marginHorizontal: 8, marginBottom: 110, height: 550}}>
-        <View
-          style={{marginBottom: 10, borderColor: BiruKu, borderBottomWidth: 1}}>
+        <View style={{marginBottom: 10, borderColor: BiruKu, borderBottomWidth: 1}}>
           {isLoading ? (
-            <View style={{marginTop: 50}}>
+            <View style={{marginTop: 20, marginBottom: 100}}>
               <ActivityIndicator size="large" color={BiruKu} />
             </View>
           ) : (
-            panelNameData.map((item, index) =>
-              item.DateSubmit ? (
-                <PanelProjectList
-                  key={index}
-                  projectName={item.projectName}
-                  panelName={item.panelName}
-                  status={item.DateSubmit}
-                  // status={index + 1}
-                />
-              ) : null,
-            )
+            // filteredPanelData
+            // .filter(item => item.DateSubmit)
+            // .sort((a,b) => new Date(b.DateSubmit) - new Date(a.DateSubmit))
+            // .map((item, index) =>
+            //   item.DateSubmit ? (
+            //     <PanelProjectList
+            //       key={index}
+            //       projectName={item.projectName}
+            //       panelName={item.panelName}
+            //       status={item.DateSubmit}
+            //       // status={index + 1}
+            //     />
+            //   ) : null,
+            // )
+            contenToRender
           )}
-          <View>
-            <Text
-              style={{
-                fontFamily: 'Poppins-Italic',
-                fontSize: 10,
-                color: BiruKu,
-                textAlign: 'center',
-                marginTop: 15,
-              }}>
-              End of Page
-            </Text>
-          </View>
+          <View><Text style={styles.endOfPage}>End of Page</Text></View>
         </View>
       </ScrollView>
     </View>
@@ -190,4 +221,32 @@ const styles = StyleSheet.create({
     height: 30,
     width: 79,
   },
+  endOfPage:{
+    fontFamily: 'Poppins-Italic',
+    fontSize: 12,
+    color: BiruKu,
+    textAlign: 'center',
+    marginTop: 15,
+  },
+  searchInput: {
+    borderWidth: 1,
+    borderColor: BiruKu,
+    borderRadius: 6,
+    backgroundColor: '#F7F7F8',
+    paddingHorizontal: 8,
+    paddingVertical: 1,
+    marginHorizontal: 16,
+    marginBottom: 5,
+    height: 35,
+    color: BiruKu,
+    fontFamily: 'Poppins-Medium',
+    fontSize: 13
+  },
+  dataNotFound: {
+    fontFamily: 'Poppins-Italic',
+    fontSize: 14,
+    textAlign: 'center',
+    marginTop: 20,
+    color: BiruKu,
+  }
 });
