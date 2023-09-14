@@ -70,9 +70,9 @@ const styles = StyleSheet.create({
   iconAdd:{
     alignItems: 'flex-end',
     marginHorizontal: 10,
-    marginBottom: 6,
-    marginTop: -40,
-    // flex: 2
+    marginTop: -30,
+    marginBottom: 30,
+    flex: 2
   },
   seeMore:{
     fontFamily: 'Poppins-SemiBoldItalic',

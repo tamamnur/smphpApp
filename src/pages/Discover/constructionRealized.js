@@ -46,7 +46,7 @@ const ConstructionRealized = () => {
               const monitoringDoc = await monitoringRef.get();
               if (monitoringDoc.exists) {
                 const monitoringData = monitoringDoc.data();
-                if (monitoringData.Schedule) {
+                if (monitoringData.Realized) {
                   const dateMonitoringValue = monitoringData.Realized;
                   const dateMonitoring = FormatDate(dateMonitoringValue.toDate());
                   panelNameData.push({

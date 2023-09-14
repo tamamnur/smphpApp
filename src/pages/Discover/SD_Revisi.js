@@ -83,7 +83,7 @@ const SD_Revision = () => {
   }, []);
 
   const filteredPanelData = panelNameData.filter(item => {
-    console.log('item?', item);
+    // console.log('item?', item);
     const projectNameLower = item.projectName.toLowerCase();
     const panelNameLower = item.panelName.toLowerCase();
     const searchKeywordLower = searchKeyword.toLowerCase();
@@ -93,8 +93,10 @@ const SD_Revision = () => {
     );
   });
 
-  const renderedPanelList = filteredPanelData.filter(item => item.DateRevision)
+  const renderedPanelList = filteredPanelData
+    .filter(item => item.DateRevision)
     .sort((a, b) => new Date(b.DateRevision) - new Date(a.DateRevision))
+    // .sort((b, a) => new Date(b.DateRevision) - new Date(a.DateRevision))
     .map((item, index) => (
       <PanelProjectList
         key={index + 1}

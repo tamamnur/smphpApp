@@ -39,13 +39,10 @@ const FormPOConstruction = (props) => {
       isMountedRef.current = false;
     }
   }, []);
-  
   const [constructionInfo, setConstructionInfo] = useState({
     projectId: '', FSProjectId: '', projectName: '', stagesPODetails: '', customer: '', projectsList: [], Panels: []
   });
-  
   const {projectId, projectName, stagesPODetails, customer} = constructionInfo;
-
   const handleOnchangeText = async (value, fieldName) => {
     setConstructionInfo({...constructionInfo, [fieldName]: value});
     if (fieldName === 'stagesPODetails') {
@@ -84,82 +81,91 @@ const FormPOConstruction = (props) => {
     }
   };
 
-  const handleComponent = async () => {
+  const handleConstruction = async () => {
     let panelSelected = false;
-    constructionInfo.Panels.forEach(async value => {
+    let hasPanelWithoutPO = false;
+    
+    for (const value of constructionInfo.Panels) {
       if (value.selected === true) {
-        panelSelected = true;
+        if (!value.stageExist) {
+          hasPanelWithoutPO = true;
+          break;
+        }
+
         let MonitoringID = null;
         if (value.MonitoringID) {
           MonitoringID = value.MonitoringID.split('/')[2];
         } else {
           const newMonitoring = await firestore()
-            .collection('Monitoring')
-            .add({
-              ProjectID: '/Project/' + constructionInfo.FSProjectId,
-            });
-          MonitoringID = newMonitoring.id;
-        }
-        const Shopdrawing = firestore()
-          .collection('Monitoring')
-          .doc(MonitoringID)
-          .collection('Procurement');
-        if (constructionInfo.stagesPODetails === 'Order') {
-          await Shopdrawing.doc('Construction').set({
-            Order: firestore.Timestamp.fromDate(date),
+          .collection('Monitoring').add({
+            ProjectID: '/Project/' + constructionInfo.FSProjectId,
           });
-        }
+        MonitoringID = newMonitoring.id;
+      }
+      const Procurement = firestore()
+      .collection('Monitoring').doc(MonitoringID).collection('Procurement');
+      if (constructionInfo.stagesPODetails === 'Order') {
+        await Procurement.doc('Construction').set({
+          Order: firestore.Timestamp.fromDate(date),
+        });
+        await firestore().collection('Project').doc(constructionInfo.FSProjectId).update({
+          status: 'Procurement Construction - Order',
+          updatedAt: firestore.Timestamp.fromDate(date),
+        })
+      } else {
+        const poConstructionDoc = await Procurement.doc('Construction').get();
+        if (!poConstructionDoc.exists) {
+          hasPanelWithoutPO = true;
+          break;
+        } 
         if (constructionInfo.stagesPODetails === 'Schedule') {
-          await Shopdrawing.doc('Construction').update({
+          await Procurement.doc('Construction').update({
             Schedule: firestore.Timestamp.fromDate(date),
           });
+          await firestore().collection('Project').doc(constructionInfo.FSProjectId).update({
+            status: 'Procurement Construction - Scheduled',
+            updatedAt: firestore.Timestamp.fromDate(date),
+          })
         }
         if (constructionInfo.stagesPODetails === 'Realized') {
-          await Shopdrawing.doc('Construction').update({
+          await Procurement.doc('Construction').update({
             Realized: firestore.Timestamp.fromDate(date),
           });
-        }
-
-        await firestore()
-          .collection('Project')
-          .doc(constructionInfo.FSProjectId)
-          .collection('PanelName')
-          .doc(value.id)
-          .set({
-            pnameInput: value.pnameInput,
-            MonitoringID: '/Monitoring/' + MonitoringID,
-          });
-        setConstructionInfo(prev => ({
-          ...prev,
-          Panels: prev.Panels.map(panelItem => {
-            if (panelItem.id === value.id) {
-              return {
-                ...panelItem,
-                MonitoringID: '/Monitoring/' + MonitoringID,
-              };
-            }
-            return panelItem;
-          }),
-        }));
-        ToastAndroid.show('Data Added', ToastAndroid.SHORT)
-        if (stagesPODetails === 'Order') {
-          navigation.navigate('ComponentOrder')
-        }
-        if (stagesPODetails === 'Schedule') {
-          navigation.navigate('ComponentOrder')
-        }
-        if (stagesPODetails === 'Realized') {
-          navigation.navigate('ComponentOrder')
+          await firestore().collection('Project').doc(constructionInfo.FSProjectId).update({
+            status: 'Procurement Construction - Ready',
+            updatedAt: firestore.Timestamp.fromDate(date),
+          })
         }
       }
-    });
+      await firestore().collection('Project').doc(constructionInfo.FSProjectId)
+      .collection('PanelName').doc(value.id).set({
+          pnameInput: value.pnameInput,
+          MonitoringID: '/Monitoring/' + MonitoringID,
+        });
+        panelSelected = true
+      }
+    } 
+    if (hasPanelWithoutPO) {
+      updateError('An error occurred, choose the panel correctly and make sure the panel you have selected has been ordered previously.', setError)
+      return
+    } 
     if (!panelSelected) {
-      return updateError('You have not selected any Panel', setError);
+      updateError('An error occurred, choose the panel correctly and make sure the panel you have selected has been ordered previously.', setError)
+      return
+    }
+    ToastAndroid.show('Procurement construction updated', ToastAndroid.SHORT)
+    if (stagesPODetails === 'Order') {
+      navigation.navigate('ConstructionOrder')
+    } if (stagesPODetails === 'Schedule') {
+      navigation.navigate('ConstructionSchedule')
+    } if (stagesPODetails === 'Realized') {
+      navigation.navigate('ConstructionRealized')
     }
   };
+    
   const submitForm = () => {
     if (isValidForm()) {
-      handleComponent();
+      handleConstruction();
     } else {
       error;
     }
@@ -223,7 +229,7 @@ const FormPOConstruction = (props) => {
   const AllPanelsExistMessage = () => {
     if (constructionInfo.Panels.every(item => item.stageExist)) {
       return (
-        <Text style={styles.unvailable}>Data nama panel tidak tersedia.</Text>
+        <Text style={styles.unvailable}>Panel name data is not unvailable.</Text>
       );
     }
     return null;

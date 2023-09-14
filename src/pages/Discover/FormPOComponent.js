@@ -19,12 +19,12 @@ const updateError = (error, stateUpdate) => {
 const FormPOComponent = (props) => {
   const navigation = useNavigation();
   const [date, setDate] = useState();
+  const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [ProjectList, setProjectList] = useState([]);
   const onDateChange = value => {
     setDate(value);
   };
-  const [error, setError] = useState('');
   const [componentInfo, setComponentInfo] = useState({
     projectId: '', FSProjectId: '', projectName: '', stagesPODetails: '', customer: '', projectsList: [], Panels: [], 
   });
@@ -69,6 +69,7 @@ const FormPOComponent = (props) => {
       });
     }
   };
+
   const isValidForm = () => {
     if (!projectName.trim() || projectName.length === 0)
       return updateError('Invalid name of project', setError);
@@ -88,9 +89,9 @@ const FormPOComponent = (props) => {
 
   const handleComponent = async () => {
     let panelSelected = false;
-    componentInfo.Panels.forEach(async value => {
+    let hasPanelWithoutPO = false;
+    for (const value of componentInfo.Panels) {
       if (value.selected === true) {
-        panelSelected = true;
         let MonitoringID = null;
         if (value.MonitoringID) {
           MonitoringID = value.MonitoringID.split('/')[2];
@@ -102,61 +103,62 @@ const FormPOComponent = (props) => {
             });
           MonitoringID = newMonitoring.id;
         }
-        const Shopdrawing = firestore()
-          .collection('Monitoring')
-          .doc(MonitoringID)
+        const Procurement = firestore().collection('Monitoring').doc(MonitoringID)
           .collection('Procurement');
         if (componentInfo.stagesPODetails === 'Order') {
-          await Shopdrawing.doc('Component').set({
+          await Procurement.doc('Component').set({
             Order: firestore.Timestamp.fromDate(date),
           });
+          await firestore().collection('Project').doc(componentInfo.FSProjectId).update({
+            status: 'Procurement Component - Order',
+            updatedAt: firestore.Timestamp.fromDate(date),
+          }); 
+        } else {
+          const poComponentDoc = await Procurement.doc('Procurement').get();
+          console.log('poDoc',poComponentDoc)
+          if (!poComponentDoc.exists) {
+            hasPanelWithoutPO = true;
+            break;
+          }
+          if (componentInfo.stagesPODetails === 'Schedule') {
+            await Procurement.doc('Component').update({
+              Schedule: firestore.Timestamp.fromDate(date),
+            });
+            await firestore().collection('Project').doc(componentInfo.FSProjectId).update({
+              status: 'Procurement Component - Scheduled',
+              updatedAt: firestore.Timestamp.fromDate(date),
+            }); 
+          }
+          if (componentInfo.stagesPODetails === 'Realized') {
+            await Procurement.doc('Component').update({
+              Realized: firestore.Timestamp.fromDate(date),r
+            });
+            await firestore().collection('Project').doc(componentInfo.FSProjectId).update({
+              status: 'Procurement Component - Ready',
+              updatedAt: firestore.Timestamp.fromDate(date),
+            }); 
+          }
         }
-        if (componentInfo.stagesPODetails === 'Schedule') {
-          await Shopdrawing.doc('Component').update({
-            Schedule: firestore.Timestamp.fromDate(date),
-          });
-        }
-        if (componentInfo.stagesPODetails === 'Realized') {
-          await Shopdrawing.doc('Component').update({
-            Realized: firestore.Timestamp.fromDate(date),
-          });
-        }
-
-        await firestore()
-          .collection('Project')
-          .doc(componentInfo.FSProjectId)
-          .collection('PanelName')
-          .doc(value.id)
-          .set({
+        await firestore().collection('Project').doc(componentInfo.FSProjectId)
+        .collection('PanelName').doc(value.id).set({
             pnameInput: value.pnameInput,
             MonitoringID: '/Monitoring/' + MonitoringID,
           });
-        setComponentInfo(prev => ({
-          ...prev,
-          Panels: prev.Panels.map(panelItem => {
-            if (panelItem.id === value.id) {
-              return {
-                ...panelItem,
-                MonitoringID: '/Monitoring/' + MonitoringID,
-              };
-            }
-            return panelItem;
-          }),
-        }));
-        ToastAndroid.show('Data Added', ToastAndroid.SHORT)
-        if (stagesPODetails === 'Order') {
-          navigation.navigate('ComponentOrder')
-        }
-        if (stagesPODetails === 'Schedule') {
-          navigation.navigate('ComponentOrder')
-        }
-        if (stagesPODetails === 'Realized') {
-          navigation.navigate('ComponentOrder')
-        }
+          panelSelected = true;
       }
-    });
-    if (!panelSelected) {
-      return updateError('You have not selected any Panel', setError);
+    } if (!panelSelected && hasPanelWithoutPO) {
+      updateError('You have not selected a Panel yet, \n or some panels that were selected have not been ordered yet', setError);
+      return;
+    }
+    ToastAndroid.show('Procurement component updated', ToastAndroid.SHORT)
+    if (stagesPODetails === 'Order') {
+      navigation.navigate('ComponentOrder')
+    }
+    if (stagesPODetails === 'Schedule') {
+      navigation.navigate('ComponentOrder')
+    }
+    if (stagesPODetails === 'Realized') {
+      navigation.navigate('ComponentOrder')
     }
   };
 

@@ -177,6 +177,13 @@ const FormProcurement = props => {
           Procurement.doc('Component').set({
             Order: firestore.Timestamp.fromDate(date)
           });
+          await firestore()
+            .collection('Project')
+            .doc(procurementInfo.FSProjectId)
+            .update({
+              status: 'Procurement Component - Order',
+              updatedAt: firestore.Timestamp.fromDate(date),
+            });
         }
         if (procurementInfo.stages === 'Component' && procurementInfo.stagesPODetail === 'Schedule') {
           Procurement.doc('Component').update({
@@ -187,6 +194,13 @@ const FormProcurement = props => {
           Procurement.doc('Component').update({
             Realized: firestore.Timestamp.fromDate(date)
           });
+          await firestore()
+            .collection('Project')
+            .doc(procurementInfo.FSProjectId)
+            .update({
+              status: 'Procurement Component - Ready',
+              updatedAt: firestore.Timestamp.fromDate(date),
+            });
         }
 
         await firestore()

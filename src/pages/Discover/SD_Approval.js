@@ -82,7 +82,7 @@ const SD_Approval = () => {
   }, []);
 
   const filteredPanelData = panelNameData.filter(item => {
-    console.log('item?', item);
+    // console.log('item?', item);
     const projectNameLower = item.projectName.toLowerCase();
     const panelNameLower = item.panelName.toLowerCase();
     const searchKeywordLower = searchKeyword.toLowerCase();

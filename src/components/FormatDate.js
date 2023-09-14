@@ -19,6 +19,7 @@ const FormatDate = date => {
   const getMonth = date.getMonth() + 1;
   const month = monthString(getMonth);
   const day = date.getDate().toString().padStart(2, '0');
+  // const day = ('0'+ date.getDate()).slice(-2);
   return day + '-' + month + '-' + date.getFullYear();
 };
 export default FormatDate;

@@ -28,7 +28,7 @@ const FormPOBusbar = (props) => {
     if (!projectName.trim() || projectName.length === 0)
       return updateError('Invalid name of project', setError);
     if (!stagesPODetails.trim() || stagesPODetails.length === 0)
-      return updateError('Required to choice Stages of Procurement Construction', setError);
+      return updateError('Required to choice Stages of Procurement Busbar Cu', setError);
     if (!date)
       return updateError('Required to choice Date of Proccess!', setError);
     return true;
@@ -86,9 +86,14 @@ const FormPOBusbar = (props) => {
 
   const handleBusbar = async () => {
     let panelSelected = false;
+    const {stagesPODetails, FSProjectId} = busbarInfo;
+
     busbarInfo.Panels.forEach(async value => {
       if (value.selected === true) {
         panelSelected = true;
+        // if (value.stageExist) {
+
+        
         let MonitoringID = null;
         if (value.MonitoringID) {
           MonitoringID = value.MonitoringID.split('/')[2];
@@ -100,57 +105,69 @@ const FormPOBusbar = (props) => {
             });
           MonitoringID = newMonitoring.id;
         }
-        const Shopdrawing = firestore()
-          .collection('Monitoring')
-          .doc(MonitoringID)
-          .collection('Procurement');
-        if (busbarInfo.stagesPODetails === 'Order') {
-          await Shopdrawing.doc('Busbar').set({
-            Order: firestore.Timestamp.fromDate(date),
-          });
-        }
-        if (busbarInfo.stagesPODetails === 'Schedule') {
-          await Shopdrawing.doc('Busbar').update({
-            Schedule: firestore.Timestamp.fromDate(date),
-          });
-        }
-        if (busbarInfo.stagesPODetails === 'Realized') {
-          await Shopdrawing.doc('Busbar').update({
-            Realized: firestore.Timestamp.fromDate(date),
-          });
-        }
-
-        await firestore()
-          .collection('Project')
-          .doc(busbarInfo.FSProjectId)
-          .collection('PanelName')
-          .doc(value.id)
-          .set({
-            pnameInput: value.pnameInput,
-            MonitoringID: '/Monitoring/' + MonitoringID,
-          });
-        setBusbarInfo(prev => ({
-          ...prev,
-          Panels: prev.Panels.map(panelItem => {
-            if (panelItem.id === value.id) {
-              return {
-                ...panelItem,
-                MonitoringID: '/Monitoring/' + MonitoringID,
-              };
+        const Procurement = firestore()
+          .collection('Monitoring').doc(MonitoringID).collection('Procurement');
+          try {
+            if (busbarInfo.stagesPODetails === 'Order') {
+              await Procurement.doc('Busbar').set({
+                Order: firestore.Timestamp.fromDate(date),
+              });
             }
-            return panelItem;
-          }),
-        }));
-        ToastAndroid.show('Data Added', ToastAndroid.SHORT)
-        if (stagesPODetails === 'Order') {
-          navigation.navigate('BusbarOder')
-        }
-        if (stagesPODetails === 'Schedule') {
-          navigation.navigate('BusbarSchedule')
-        }
-        if (stagesPODetails === 'Realized') {
-          navigation.navigate('BusbarRealized')
-        }
+            if (busbarInfo.stagesPODetails === 'Schedule') {
+              await Procurement.doc('Busbar').update({
+                Schedule: firestore.Timestamp.fromDate(date),
+              });
+            }
+            if (busbarInfo.stagesPODetails === 'Realized') {
+              await Procurement.doc('Busbar').update({
+                Realized: firestore.Timestamp.fromDate(date),
+              });
+            }
+          } catch (error) {
+            // console.error('Error updating Busbar document: ', error);
+            return updateError('Error updating Busbar proccess for some panel.\n Make sure you have filled in the Order for each selected panel. ', setError)
+          }
+
+          try {
+            await firestore()
+              .collection('Project')
+              .doc(busbarInfo.FSProjectId)
+              .collection('PanelName')
+              .doc(value.id)
+              .set({
+                pnameInput: value.pnameInput,
+                MonitoringID: '/Monitoring/' + MonitoringID,
+              });
+            setBusbarInfo(prev => ({
+              ...prev,
+              Panels: prev.Panels.map(panelItem => {
+                if (panelItem.id === value.id) {
+                  return {
+                    ...panelItem,
+                    MonitoringID: '/Monitoring/' + MonitoringID,
+                  };
+                }
+                return panelItem;
+              }),
+            }));
+            ToastAndroid.show('Data Added', ToastAndroid.SHORT)
+            if (stagesPODetails === 'Order') {
+              navigation.navigate('BusbarOrder')
+            }
+            if (stagesPODetails === 'Schedule') {
+              navigation.navigate('BusbarSchedule')
+            }
+            if (stagesPODetails === 'Realized') {
+              navigation.navigate('BusbarRealized')
+            }
+          } catch (error) {
+            // console.error('Error updating Project document: ', error);
+            return updateError('Error updating Project proccess.', setError)
+          }
+      // } else {
+      //   return updateError(`There is no Order for some of Panels you selected`, setError);
+      // }
+
       }
     });
     if (!panelSelected) {
@@ -283,7 +300,7 @@ const FormPOBusbar = (props) => {
             <View style={{width: 250}}>
               <StagesPODetail
                 onValueChange={(value) => {
-                  // console.log('selected-- ', value);
+                  console.log('selected-- ', value);
                   handleOnchangeText(value, 'stagesPODetails')}
                 }
               />

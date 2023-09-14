@@ -49,7 +49,7 @@ const ProjectCreate = (props) => {
     console.log(projectId, projectName, customer, numberPO, datePO);
     const createdAt = new Date();
 
-    const projectCollection = await firestore()
+    await firestore()
     .collection('Project')
     .add({
       projectId: projectId,
@@ -57,7 +57,8 @@ const ProjectCreate = (props) => {
       customer: customer,
       numberPO: numberPO,
       datePO: firestore.Timestamp.fromDate(datePO),
-      createdAt: firestore.Timestamp.fromDate(createdAt)
+      updatedAt: firestore.Timestamp.fromDate(createdAt),
+      status: 'Created At'
     })
     .then((response) => {
       console.log('Project Created');

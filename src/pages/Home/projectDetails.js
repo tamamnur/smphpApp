@@ -48,7 +48,7 @@ const ProjectDetails = (props) => {
         }),
         setListPanel(PanelNames);
         setIsLoading(false);
-        console.log(panelName.docs.map(item => ({id: item.id, ...item.data() })));
+        // console.log(panelName.docs.map(item => ({id: item.id, ...item.data() })));
       });
       return () => {
         unsubscribe();

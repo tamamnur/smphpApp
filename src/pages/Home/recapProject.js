@@ -16,7 +16,7 @@ const Project = props => {
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => navigation.navigate('ProjectStatus', {id: props.id})}>
-          <Text style={styles.status}>Status : {props.status}</Text>
+          <Text style={styles.status}>{props.status}</Text>
         </TouchableOpacity>
       </View>
       <Text style={styles.update}>{props.update}</Text>
@@ -40,12 +40,13 @@ class RecapProject extends Component {
     this.unsubscribeFromProject()
   }
   subscribeToProject = () => {
-    this.unsubscribe = firestore().collection('Project').orderBy('createdAt', 'desc').onSnapshot(snapshot => {
+    this.unsubscribe = firestore().collection('Project').orderBy('updatedAt', 'desc').onSnapshot(snapshot => {
       const projects = snapshot.docs.map(document => {
         const data = document.data();
-        const createdAt = data.createdAt.toDate();
+        const updatedAt = data.updatedAt.toDate();
+        // const progres = data.
         return {
-          id: document.id, ...data, createdAt: FormatDate(createdAt)
+          id: document.id, ...data, updatedAt: FormatDate(updatedAt)
         }
       })
       this.setState({
@@ -66,7 +67,7 @@ class RecapProject extends Component {
         <View style={styles.titleWrap}>
           <Text style={styles.title}>Last Progress</Text>
         </View>
-        <ScrollView>
+        <ScrollView style={{marginBottom: 25}}>
           {isLoading ? (
             <View style={{marginTop: 50}}>
               <ActivityIndicator size="large" color={BiruKu} />
@@ -77,8 +78,8 @@ class RecapProject extends Component {
                 key={item.id}
                 id={item.id}
                 ProjectName={item.projectName}
-                status="Procurement -- Component"
-                update={item.createdAt} //"20-02-2022"
+                status= {item.status} //'Created at....' //"Procurement -- Component"
+                update={item.updatedAt}
                 />
             ))
           )}
@@ -92,7 +93,7 @@ export default RecapProject;
 const styles = StyleSheet.create({
   container: {
     width: '98%',
-    height: '50%',
+    height: '57%',
     borderRadius: 20,
     marginHorizontal: 4,
     marginBottom: 10,
@@ -105,13 +106,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    borderBottomLeftRadius: 20,
     borderBottomRightRadius: 100,
     elevation: 8,
   },
   title: { fontFamily: 'Acme-Regular', fontSize: 20, color: '#FFF', marginHorizontal: 20, },
   recap: { marginHorizontal: 15, marginVertical: 6, flexDirection: 'row', },
   projectName: { color: BiruKu, fontFamily: 'Poppins-Medium', fontSize: 13, },
-  status: { color: BiruKu, fontFamily: 'Poppins-Regular', fontSize: 11, marginHorizontal: 5, flex: 1, },
+  status: { color: BiruKu, fontFamily: 'Poppins-Regular', fontSize: 11, marginHorizontal: 5, },
   update: { color: BiruKu, fontFamily: 'Poppins-Medium', fontSize: 10, marginTop: 22, textAlign: 'right', },
 });

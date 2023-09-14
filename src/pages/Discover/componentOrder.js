@@ -77,7 +77,7 @@ const ComponentOrder = () => {
   }, []);
 
   const filteredPanelData = panelNameData.filter(item => {
-    console.log('item?', item);
+    // console.log('item?', item);
     const projectNameLower = item.projectName.toLowerCase();
     const panelNameLower = item.panelName.toLowerCase();
     const searchKeywordLower = searchKeyword.toLowerCase();
@@ -88,7 +88,9 @@ const ComponentOrder = () => {
   });
 
   const renderedPanelList = filteredPanelData.filter(item => item.DateMonitoring)
+  // console.log(Date)
   .sort((a, b) => new Date(b.DateMonitoring) - new Date(a.DateMonitoring))
+  .sort((a, b) => new Date(a.DateMonitoring) - new Date(b.DateMonitoring))
   .map((item, index) => (
     <PanelProjectList
       key={index + 1}
@@ -99,7 +101,7 @@ const ComponentOrder = () => {
   ))
   const dataNotFound = (<Text style={styles.dataNotFound}>No matching result found.</Text>)
   
-  const contenToRender = renderedPanelList.length > 0 ? renderedPanelList : dataNotFound
+  const contentToRender = renderedPanelList.length > 0 ? renderedPanelList : dataNotFound
 
   return (
     <View>
@@ -128,7 +130,7 @@ const ComponentOrder = () => {
             <View style={{marginTop: 20, marginBottom: 100}}>
               <ActivityIndicator size="large" color={BiruKu} />
             </View>
-          ) : ( contenToRender )}
+          ) : ( contentToRender )}
           <View><Text style={styles.endOfPage}>End of Page</Text></View>
         </View>
       </ScrollView>
