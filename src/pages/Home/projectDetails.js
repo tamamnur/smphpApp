@@ -1,15 +1,20 @@
-import { Text, StyleSheet, View, ScrollView, ActivityIndicator, TouchableOpacity, } from 'react-native';
-import React, {Component, useState, useEffect} from 'react';
+import { Text, StyleSheet, View, ScrollView, Dimensions, } from 'react-native';
+import React, {useState, useEffect} from 'react';
 import {IconBack, LogoSmpHP, EditButton, } from '../../assets';
 import {BiruKu} from '../../utils/constant';
 import {useNavigation} from '@react-navigation/native';
 import firestore from '@react-native-firebase/firestore';
-import AntDesign from 'react-native-vector-icons/AntDesign';
+import FormatDate from '../../components/FormatDate';
+import LoadingComponent from '../../components/LoadingComponent';
+import EndOf from '../../components/Footer';
+import InfoProject from '../../components/InfoProject';
+
+const {width, height} = Dimensions.get('window');
 
 const Panel = props => {
   const navigation = useNavigation();
   return (
-    <View style={{flexDirection: 'row', marginHorizontal: 20}}>
+    <View style={{flexDirection: 'row', marginHorizontal: 20, borderWidth:0}}>
       <Text style={styles.pnomor}>{props.pnomor}</Text>
       <Text style={styles.pname}>{props.pname}</Text>
     </View>
@@ -19,7 +24,7 @@ const Panel = props => {
 const ProjectDetails = (props) => {
   const navigation = useNavigation();
   const [projectInfo, setProjectInfo] = useState({
-    ProjectName: '', ProjectId: '', Customer:'', NumberPO:'', DatePO:'',
+    ProjectName: '', ProjectId: '', Customer:'', NumberPO:'', DatePO:null,
   })
   const [ListPanel, setListPanel] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -28,13 +33,7 @@ const ProjectDetails = (props) => {
     const unsubscribe = firestore().collection('Project').doc(id)
       .onSnapshot(async doc => {
         const FirebaseDate = doc.data().datePO ? doc.data().datePO.toDate() : null;
-        const monthString = (month) =>  {
-          const monthName = [ 'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul','Ags', 'Sep', 'Okt', 'Nov', 'Des'];
-          return monthName[month-1]
-        }
-        const getMonth = FirebaseDate ? FirebaseDate.getMonth()+1 : null;
-        const month = FirebaseDate ? monthString(getMonth) : null;
-        const FormatDate = FirebaseDate ? FirebaseDate.getDate() +'-'+month+ '-' + FirebaseDate.getFullYear() : '';
+        const getDatePO = FirebaseDate ? FormatDate(FirebaseDate) : ' ---';
         const panelName = await doc.ref.collection('PanelName').get();
         const PanelNames = panelName.docs.map(item => ({
           id: item.id, ...item.data(),
@@ -44,7 +43,7 @@ const ProjectDetails = (props) => {
           ProjectId: doc.data().projectId,
           Customer: doc.data().customer,
           NumberPO: doc.data().numberPO,
-          DatePO: FormatDate
+          DatePO: getDatePO
         }),
         setListPanel(PanelNames);
         setIsLoading(false);
@@ -63,17 +62,19 @@ const ProjectDetails = (props) => {
           <LogoSmpHP style={{marginLeft: 180}} />
         </View>
         {isLoading ? (
-          <View style={{marginTop: 50}}>
-            <ActivityIndicator size={'large'} />
-          </View>
+          <LoadingComponent />
         ) : (
           <View>
             <Text style={styles.title}>{projectInfo.ProjectName}</Text>
             <Text style={styles.subtitle}>"Project Details"</Text>
-            <View style={{ marginVertical: 2, marginHorizontal: 30, alignItems: 'flex-end', }}>
+            <View style={{ marginVertical: 2, marginHorizontal: 20, alignItems: 'flex-end', }}>
               <EditButton onPress={() => navigation.navigate('ProjectDetailsEdit', {id: props.route.params.id} )}/>
             </View>
-            <View style={styles.projectId}>
+            <InfoProject label={'Number SO'} value={projectInfo.ProjectId}/>
+            <InfoProject label={'Customer'} value={projectInfo.Customer}/>
+            <InfoProject label={'Number PO'} value={projectInfo.NumberPO}/>
+            <InfoProject label={'Date PO'} value={projectInfo.DatePO}/>
+            {/* <View style={styles.projectId}>
               <View>
                 <Text style={styles.left}>Number SO</Text>
                 <Text style={styles.left}>Customer</Text>
@@ -86,16 +87,16 @@ const ProjectDetails = (props) => {
                 <Text style={styles.right}>{projectInfo.NumberPO}</Text>
                 <Text style={styles.right}>{projectInfo.DatePO}</Text>
               </View>
-            </View>
+            </View> */}
             <View style={{flexDirection: 'row'}}>
               <View> 
                 <Text style={styles.pnameTitle}>Panel Name's :</Text> 
               </View>
-              <View style={{ marginVertical: 12, marginHorizontal: 180, alignItems: 'flex-end', }}>
+              <View style={{ marginTop: 15, marginHorizontal: 180, alignItems: 'flex-end', }}>
                 <EditButton onPress={() => navigation.navigate('PanelNameEdit', {id: props.route.params.id}) } />
               </View>
             </View>
-            <ScrollView style={{marginBottom: 50}}>
+            <ScrollView style={{marginBottom: 50,}}>
               {ListPanel.map(item => {
                 return (
                   <Panel
@@ -105,6 +106,7 @@ const ProjectDetails = (props) => {
                   />
                 );
               })}
+              <EndOf />
             </ScrollView>
           </View>
         )}
@@ -130,7 +132,7 @@ const styles = StyleSheet.create({
     color: BiruKu,
   },
   projectId: {
-    marginHorizontal: 20,
+    marginHorizontal: 10,
     paddingRight: 20,
     flexDirection: 'row',
   },
@@ -140,6 +142,8 @@ const styles = StyleSheet.create({
     marginVertical: 4,
     padding: 2,
     color: BiruKu,
+    height: 25,
+    width: width* 0.2
   },
   right: {
     fontFamily: 'Poppins-SemiBold',
@@ -147,10 +151,12 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: BiruKu,
     borderRadius: 2,
-    marginLeft: 15,
+    // marginLeft: 15,
     height: 25,
-    width: 250,
-    padding: 3,
+    width: width * 0.7,
+    // width: 250,
+    marginHorizontal:10,
+    padding: 2,
     paddingHorizontal: 5,
     marginVertical: 3,
     color: BiruKu,
@@ -172,14 +178,14 @@ const styles = StyleSheet.create({
     color: BiruKu,
     borderWidth: 1,
     borderColor: BiruKu,
-    width: 290,
+    width: width *0.8,
   },
   pnomor: {
     fontFamily: 'Poppins-Medium',
     fontSize: 11,
     paddingTop: 2,
     marginVertical: 2,
-    marginLeft: 20,
+    // marginLeft: 20,
     color: BiruKu,
     borderWidth: 1,
     borderColor: BiruKu,

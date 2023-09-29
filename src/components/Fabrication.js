@@ -1,8 +1,8 @@
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React from 'react'
 import { BiruKu, Darkred, WarnaAbu } from '../utils/constant'
 import AntDesign from 'react-native-vector-icons/AntDesign'
-
+const width = Dimensions.get('window').width;
 const Fabrication = ({title, active, onPress}) => {
   const Icon = () => {
       if(title === "Layouting") return <AntDesign name='layout' size={50}  color={Darkred}/>;
@@ -10,7 +10,7 @@ const Fabrication = ({title, active, onPress}) => {
       if(title === "W i r i n g") return <AntDesign name='fork' size={50}  color={'blue'}/>;
   }
   return (
-  <TouchableOpacity style={styles.pilihan(active)} onPress={onPress}>
+  <TouchableOpacity style={[styles.pilihan(active), {width:width*0.275}]} onPress={onPress}>
     <View style={styles.icon}>
         <Icon />
         <Text style={styles.plate(active)} onPress={onPress}>{title} </Text>
@@ -26,12 +26,12 @@ const styles = StyleSheet.create({
       backgroundColor:active ? WarnaAbu: '#CECECE',
       borderWidth: active ? 0 : 3,
       borderColor: BiruKu,
-      marginRight: 12,
+      marginHorizontal: 3,
       marginTop: 20,
   }),
   plate: active => ({
     paddingVertical: 2,
-    paddingHorizontal: 5,
+    // paddingHorizontal: 5,
     borderRadius: 10,
     color: BiruKu,
     fontFamily: 'Poppins-Medium',
@@ -39,6 +39,6 @@ const styles = StyleSheet.create({
   icon:{
     alignItems:'center',
     marginTop:3,
-    marginHorizontal: 8,
+    // marginHorizontal: 8,
   }
 })

@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import { StyleSheet, Text, View, ScrollView, ActivityIndicator, TextInput, } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, TextInput, Dimensions, } from 'react-native';
 import Title2 from '../../components/Title2';
 import {IconBack, LogoSmpHP} from '../../assets';
 import {BiruKu} from '../../utils/constant';
@@ -7,7 +7,11 @@ import {useNavigation} from '@react-navigation/native';
 import firestore from '@react-native-firebase/firestore';
 import PanelProjectList from '../../components/panelProjectList';
 import FormatDate from '../../components/FormatDate';
+import EndOf from '../../components/Footer';
+import PanelHeadTable from '../../components/panelHeadTable';
+import LoadingComponent from '../../components/LoadingComponent'
 
+const height = Dimensions.get('window').height;
 const SD_Submission = () => {
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(true);
@@ -64,10 +68,10 @@ const SD_Submission = () => {
                   });
                   // console.log('panel: ',panel.pnameInput,'date: ',dateSubmit)
                 }
-              // } else {
+                // } else {
                 // console.log('Doc not found');
               }
-            // } else {
+              // } else {
               // console.log( 'Panel', panel.pnameInput, 'tidak memiliki dokumen monitoring');
             }
           });
@@ -97,18 +101,19 @@ const SD_Submission = () => {
 
   const [searchKeyword, setSearchKeyword] = useState('');
 
-  const filteredPanelData = panelNameData.filter((item) => {
+  const filteredPanelData = panelNameData.filter(item => {
     const projectNameLower = item.projectName.toLowerCase();
     const panelNameLower = item.panelName.toLowerCase();
     const searchKeywordLower = searchKeyword.toLowerCase();
     return (
       projectNameLower.includes(searchKeywordLower) ||
       panelNameLower.includes(searchKeywordLower)
-    )
-  })
+    );
+  });
 
-  const renderedPanelList = filteredPanelData.filter(item => item.DateSubmit)
-    .sort((a,b) => new Date(b.DateSubmit) - new Date(a.DateSubmit))
+  const renderedPanelList = filteredPanelData
+    .filter(item => item.DateSubmit)
+    .sort((a, b) => new Date(b.DateSubmit) - new Date(a.DateSubmit))
     .map((item, index) => (
       <PanelProjectList
         key={index}
@@ -116,60 +121,45 @@ const SD_Submission = () => {
         panelName={item.panelName}
         status={item.DateSubmit}
       />
-    ))
-  
-  const dataNotFound = (<Text style={styles.dataNotFound}>No matching result found.</Text>)
+    ));
 
-  const contenToRender = renderedPanelList.length > 0 ? renderedPanelList: dataNotFound;
+  const dataNotFound = (
+    <Text style={styles.dataNotFound}>No matching result found.</Text>
+  );
 
-  return (  
+  const contenToRender =
+    renderedPanelList.length > 0 ? renderedPanelList : dataNotFound;
+
+  return (
     <View>
       <View style={{flexDirection: 'row', marginHorizontal: 20, marginTop: 30}}>
         <IconBack onPress={() => navigation.navigate('Discover')} />
         <LogoSmpHP style={{marginLeft: 200}} />
       </View>
       <Title2 TxtTitle="SHOPDRAWING" SubTitle="SUBMISSION" />
-      {isLoading ? (
-        <Text></Text>
+      {isLoading ? ( <></>
       ) : (
         <>
-        <TextInput 
-          style={styles.searchInput}
-          placeholder='Search by project or panel name.....'
-          value={searchKeyword}
-          onChangeText={(text) => setSearchKeyword(text)}          
-        />
-        <View style={styles.wrappHead}>
-          <Text style={styles.headProjectName}>Project Name</Text>
-          <Text style={styles.headPanelName}>Panel Name</Text>
-          <Text style={styles.headUpdate}>Update</Text>
-        </View>
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Search by project or panel name....."
+            value={searchKeyword}
+            onChangeText={text => setSearchKeyword(text)}
+          />
+          <PanelHeadTable />
         </>
       )}
-      <ScrollView style={{marginHorizontal: 8, marginBottom: 110, height: 550}}>
-        <View style={{marginBottom: 10, borderColor: BiruKu, borderBottomWidth: 1}}>
+      <ScrollView
+        style={{ marginHorizontal: 8, marginBottom: 110, height: height*0.65, }}>
+        <View>
           {isLoading ? (
-            <View style={{marginTop: 20, marginBottom: 100}}>
-              <ActivityIndicator size="large" color={BiruKu} />
-            </View>
+            <LoadingComponent />
           ) : (
-            // filteredPanelData
-            // .filter(item => item.DateSubmit)
-            // .sort((a,b) => new Date(b.DateSubmit) - new Date(a.DateSubmit))
-            // .map((item, index) =>
-            //   item.DateSubmit ? (
-            //     <PanelProjectList
-            //       key={index}
-            //       projectName={item.projectName}
-            //       panelName={item.panelName}
-            //       status={item.DateSubmit}
-            //       // status={index + 1}
-            //     />
-            //   ) : null,
-            // )
-            contenToRender
+            <>
+              {contenToRender}
+              <EndOf />
+            </>
           )}
-          <View><Text style={styles.endOfPage}>End of Page</Text></View>
         </View>
       </ScrollView>
     </View>
@@ -179,55 +169,6 @@ const SD_Submission = () => {
 export default SD_Submission;
 
 const styles = StyleSheet.create({
-  wrappHead: {
-    flexDirection: 'row',
-    marginHorizontal: 16,
-    marginBottom: 2,
-    borderColor: BiruKu,
-    borderBottomWidth: 2,
-  },
-  headProjectName: {
-    fontFamily: 'Poppins-Medium',
-    fontSize: 13,
-    color: BiruKu,
-    textAlignVertical: 'center',
-    textAlign: 'center',
-    marginRight: -1,
-    borderWidth: 1,
-    borderColor: BiruKu,
-    height: 30,
-    width: 142,
-  },
-  headPanelName: {
-    fontFamily: 'Poppins-Medium',
-    fontSize: 13,
-    color: BiruKu,
-    textAlignVertical: 'center',
-    textAlign: 'center',
-    borderWidth: 1,
-    borderColor: BiruKu,
-    height: 30,
-    width: 140,
-  },
-  headUpdate: {
-    fontFamily: 'Poppins-Medium',
-    fontSize: 13,
-    color: BiruKu,
-    textAlignVertical: 'center',
-    textAlign: 'center',
-    paddingHorizontal: 2,
-    borderWidth: 1,
-    borderColor: BiruKu,
-    height: 30,
-    width: 79,
-  },
-  endOfPage:{
-    fontFamily: 'Poppins-Italic',
-    fontSize: 12,
-    color: BiruKu,
-    textAlign: 'center',
-    marginTop: 15,
-  },
   searchInput: {
     borderWidth: 1,
     borderColor: BiruKu,
@@ -235,12 +176,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#F7F7F8',
     paddingHorizontal: 8,
     paddingVertical: 1,
-    marginHorizontal: 16,
+    marginHorizontal: 15,
     marginBottom: 5,
     height: 35,
     color: BiruKu,
     fontFamily: 'Poppins-Medium',
-    fontSize: 13
+    fontSize: 13,
   },
   dataNotFound: {
     fontFamily: 'Poppins-Italic',
@@ -248,5 +189,5 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 20,
     color: BiruKu,
-  }
+  },
 });

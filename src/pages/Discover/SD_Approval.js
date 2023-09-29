@@ -7,6 +7,8 @@ import {useNavigation} from '@react-navigation/native';
 import firestore from '@react-native-firebase/firestore';
 import PanelProjectList from '../../components/panelProjectList';
 import FormatDate from '../../components/FormatDate';
+import EndOf from '../../components/Footer'
+import LoadingComponent from '../../components/LoadingComponent';
 
 const SD_Approval = () => {
   const navigation = useNavigation();
@@ -130,14 +132,16 @@ const SD_Approval = () => {
           </View>
         </>
       )}
-      <ScrollView style={{marginHorizontal: 8, marginBottom: 110, height: 550}}>
-        <View style={{marginBottom: 10, borderColor: BiruKu, borderBottomWidth: 1}}>
+      <ScrollView style={{marginHorizontal: 8, marginBottom: 110, height: '80%'}}>
+        <View style={{marginBottom: 10, borderColor: BiruKu, borderBottomWidth: 0}}>
           {isLoading ? (
-            <View style={{marginTop: 20, marginBottom: 100}}>
-              <ActivityIndicator size="large" color={BiruKu} />
-            </View>
+            // <View style={{marginTop: 20, marginBottom: 100}}>
+            //   <ActivityIndicator size="large" color={BiruKu} />
+            // </View>
+            <LoadingComponent />
           ) : ( contenToRender )}
-          <View><Text style={styles.endOfPage}>End of Page</Text></View>
+          {/* <View><Text style={styles.endOfPage}>End of Page</Text></View> */}
+          <EndOf /> 
         </View>
       </ScrollView>
     </View>

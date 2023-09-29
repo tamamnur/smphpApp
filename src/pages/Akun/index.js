@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity, ToastAndroid, Alert, BackHandler, ActivityIndicator, } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity, ToastAndroid, Alert, BackHandler, ActivityIndicator, Dimensions, } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {LogoCubicle} from '../../assets';
 import {BiruKu} from '../../utils/constant';
@@ -6,6 +6,8 @@ import {CommonActions, useNavigation} from '@react-navigation/native';
 import auth from '@react-native-firebase/auth';
 import firebase from '@react-native-firebase/app';
 import firestore from '@react-native-firebase/firestore';
+
+const {width} = Dimensions.get('window')
 
 const User = props => {
   const navigation = useNavigation();
@@ -143,7 +145,6 @@ export default User;
 const styles = StyleSheet.create({
   LogoSmpHP: {
     marginTop: 30,
-    marginHorizontal: 20,
     flex: 1,
     alignItems: 'flex-end',
     alignItems: 'center',
@@ -160,6 +161,7 @@ const styles = StyleSheet.create({
     marginBottom: 13,
     padding: 10,
     color: BiruKu,
+    height: 45,
   },
   right: {
     fontFamily: 'Poppins-SemiBold',
@@ -169,7 +171,8 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     marginBottom: 15,
     height: 45,
-    width: 230,
+    // width: 230,
+    width: width*0.6,
     padding: 10,
     color: BiruKu,
   },

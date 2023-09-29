@@ -14,7 +14,8 @@ const PickedDateFull = props => {
       [ 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
       return monthName[month-1];
     }
-    return selected.getDate()+'-'+monthString(selected.getMonth()+1)+'-'+selected.getFullYear();
+    const day = selected.getDate().toString().padStart(2,'0');
+    return day+'-'+monthString(selected.getMonth()+1)+'-'+selected.getFullYear();
   }
   const onChange = (event, selected) => {
     if (selected) {
@@ -31,7 +32,7 @@ const PickedDateFull = props => {
     <View style={{flexDirection: 'column'}}>
       <TouchableOpacity activeOpacity={0} onPress={() => setShow(true)}>
         <Text
-          style={{color: BiruKu, fontSize: 14, marginTop: 5, marginLeft: 8}}>
+          style={{color: BiruKu, fontSize: 16, marginTop: 2}}>
           {selectDate}
         </Text>
       </TouchableOpacity>

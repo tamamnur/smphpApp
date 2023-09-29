@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity, } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Dimensions, } from 'react-native';
 import React, {Component} from 'react';
 import { IconInput, IconInput2, } from '../../assets';
 import SDrawing from '../../components/SDrawing';
@@ -24,8 +24,8 @@ const Input = props => {
       </View>
     </TouchableOpacity>
   );
-};
-
+};  
+const height = Dimensions.get('window').height;
 class Discover extends Component {
   constructor(props) {
     super(props);
@@ -34,11 +34,11 @@ class Discover extends Component {
 
   render() {
     return (
-      <View>
+      <View style={{flex: 1, backgroundColor:'white', alignSelf: 'center'}}>
         <View style={{marginTop: 30, marginBottom: 5}}> 
           <Text style={styles.BigTitle}>Production Monitoring </Text>
         </View>
-        <ScrollView>
+        <ScrollView style={{flex: 1}}>
           <View style={styles.Wrapper}>
             <View style={styles.groupTitle}>
               <Text style={styles.Progress}>Shopdrawing Progress</Text>
@@ -175,7 +175,8 @@ const styles = StyleSheet.create({
     marginLeft: -10,
   },
   Progress: {
-    color: '#324A5E',
+    // color: '#324A5E',
+    color: BiruKu,
     fontSize: 17,
     textAlign: 'left',
     fontFamily: 'Poppins-Regular',
@@ -216,8 +217,6 @@ const styles = StyleSheet.create({
     // alignItems: 'flex-end',
   },
   BigTitle: {
-    marginHorizontal: 20,
-    marginBottom: 5,
     textAlign: 'center',
     fontSize: 28,
     fontFamily: 'Acme-Regular',

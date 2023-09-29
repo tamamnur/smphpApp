@@ -1,7 +1,9 @@
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React from 'react'
 import { IconAdd, IconSD_Approv, IconSD_Pengajuan, IconSD_Revisi } from '../assets'
 import { WarnaAbu, WarnaPutih, BiruKu } from '../utils/constant'
+
+const width = Dimensions.get('window').width;
 
 const SDrawing = ({title, active, onPress}) => {
     const Icon = () => {
@@ -11,7 +13,7 @@ const SDrawing = ({title, active, onPress}) => {
         return <IconSD_Pengajuan />
     }
     return (
-    <TouchableOpacity style={styles.pilihan(active)} onPress={onPress}>
+    <TouchableOpacity style={[styles.pilihan(active), {width: width*0.28}]} onPress={onPress}>
       <View style={styles.icon}>
           <Icon />
           <Text style={styles.titleText(active)} onPress={onPress}>{title.replace(' ', '\n')}</Text>
@@ -27,26 +29,20 @@ const styles = StyleSheet.create({
     pilihan:active => ({
         alignItems: 'center',
         borderRadius: 10,
-        // backgroundColor:active ? WarnaAbu: '#CECECE',
-        // borderWidth: active ? 0 : 3,
-        // borderColor: active ? 0:'gray',
         borderWidth: 3,
         borderColor: BiruKu,
-        marginHorizontal: 5,
+        marginHorizontal: 4,
         marginTop: 45,
-
     }),
     titleText: active => ({
-        // fontFamily: 'Poppins-Medium',
-        color: BiruKu,
-        margin: 5,
-        textAlign: 'center',
-        color: BiruKu,
         fontFamily: 'Poppins-Medium',
+        color: BiruKu,
+        // margin: 5,
+        textAlign: 'center',
     }),
     icon:{
         alignItems: 'center',
         marginTop: -40,
-        marginHorizontal: 10
+        // marginHorizontal: 10
     }
 })

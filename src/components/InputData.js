@@ -37,6 +37,7 @@ const styles=StyleSheet.create({
   txtInput:{
     borderWidth: 1,
     borderColor: BiruKu,
+    color: BiruKu,
     padding: 8,
     fontFamily: "Poppins-Regular",
     marginBottom: 5,

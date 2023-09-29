@@ -56,5 +56,6 @@ const styles = StyleSheet.create({
         fontSize: 14,
         marginLeft: 5,
         fontFamily: "Poppins-Bold",
+        textAlignVertical: 'center'
     }
 })

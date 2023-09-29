@@ -7,6 +7,8 @@ import firestore from '@react-native-firebase/firestore';
 import Title2 from '../../components/Title2';
 import PanelProjectList from '../../components/panelProjectList';
 import FormatDate from '../../components/FormatDate';
+import EndOf from '../../components/Footer';
+import PanelHeadTable from '../../components/panelHeadTable';
 
 const SD_Revision = () => {
   const navigation = useNavigation();
@@ -134,16 +136,19 @@ const SD_Revision = () => {
             <Text style={styles.headPanelName}>Panel Name</Text>
             <Text style={styles.headUpdate}>Update</Text>
           </View>
+          <PanelHeadTable />
         </>
       )}
       <ScrollView style={{marginHorizontal: 8, marginBottom: 110, height: 550}}>
-        <View style={{marginBottom: 10, borderColor: BiruKu, borderBottomWidth: 1}}>
+        <View style={{marginBottom: 10, borderColor: BiruKu, borderBottomWidth: 0}}>
           {isLoading ? (
             <View style={{marginTop: 10, marginBottom: 100}}>
-              <ActivityIndicator size="large" color={BiruKu} />
+              <ActivityIndicator color={BiruKu} size={100}/>
             </View>
-          ) : (contenToRender)}
-          <View><Text style={styles.endOfPage}>End of Page</Text></View>
+          ) : (contenToRender)
+          }
+          {/* <View><Text style={styles.endOfPage}>End of Page</Text></View> */}
+          <EndOf />
         </View>
       </ScrollView>
     </View>

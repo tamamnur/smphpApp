@@ -93,7 +93,7 @@ export default RecapProject;
 const styles = StyleSheet.create({
   container: {
     width: '98%',
-    height: '57%',
+    height: '50%',
     borderRadius: 20,
     marginHorizontal: 4,
     marginBottom: 10,

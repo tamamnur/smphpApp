@@ -1,8 +1,8 @@
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
 import React from 'react'
 import { IconKonsutruksi, IconKomponen, IconCu } from './../assets'
 import { BiruKu, WarnaAbu, WarnaPutih  } from './../utils/constant'
-
+const width = Dimensions.get('window').width;
 const Procurement = ({title, active, onPress}) => {
     const Icon = () => {
         if(title === "Konstruksi") return <IconKonsutruksi />;     //<FontAwesomeIcon icon="fa-thin fa-buildings" />
@@ -10,7 +10,7 @@ const Procurement = ({title, active, onPress}) => {
         if(title === "Komponen") return <IconKomponen />;
     }
     return (
-    <TouchableOpacity style={styles.pilihan(active)} onPress={onPress}>
+    <TouchableOpacity style={[styles.pilihan(active), {width: width*0.285}]} onPress={onPress}>
       <View style={styles.icon}>
           <Icon />
           <Text style={styles.plate(active)} onPress={onPress}>{title} </Text>
@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
     plate: active => ({
       // marginTop: 6,
       paddingBottom: 6,
-      paddingHorizontal: 5,
+      // paddingHorizontal: 5,
       borderRadius: 10,
       color: BiruKu,
       fontFamily: 'Poppins-Medium',
@@ -42,6 +42,6 @@ const styles = StyleSheet.create({
     icon:{
       alignItems:'center',
       marginTop: 8,
-      marginHorizontal: 8,
+      // marginHorizontal: 8,
     }
 })

@@ -27,14 +27,14 @@ export default function ResetPassword() {
       .then(() => {
         Alert.alert(
           'Reset Password',
-          'Email untuk reset password telah dikirim. Silahkan periksa email Anda',
+          'Konfirmasi untuk reset password telah dikirim. Silahkan periksa email Anda',
           [
             { text: 'OK', onPress: () => { navigation.navigate('Login'); }, },
           ],
         );
       })
       .catch(error => {
-        // Alert.alert('Reset Password', 'Terjadi kesalahan saat mengirim email untuk reset password.')
+        Alert.alert('Reset Password', 'Terjadi kesalahan saat mengirim email untuk reset password.')
         console.log(error);
         setError(
           'Terjadi kesalahan mengirim email untuk reset password, Pastikan email terdaftar.',
@@ -50,7 +50,7 @@ export default function ResetPassword() {
           marginHorizontal: 20,
           marginVertical: 30,
         }}>
-        <IconBack onPress={() => this.props.navigation.navigate('Akun')} />
+        <IconBack onPress={() => navigation.goBack()} />
         <LogoSmpHP style={{marginLeft: 200}} />
       </View>
       <Text style={styles.title}>RESET PASSWORD</Text>

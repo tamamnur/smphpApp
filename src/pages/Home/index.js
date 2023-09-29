@@ -1,31 +1,37 @@
-import { StyleSheet, Text, View, Image, Dimensions, TouchableOpacity } from 'react-native'
-import React, { Component, useState, useEffect } from 'react'
-import {HeaderInformation, Layanan} from '../../components'
+import { StyleSheet, Text, View, Dimensions, TouchableOpacity, } from 'react-native';
+import React, {Component, useState, useEffect} from 'react';
+import {HeaderInformation, Layanan} from '../../components';
 import RecapProject from './recapProject';
-import { BiruKu } from '../../utils/constant';
+import {BiruKu} from '../../utils/constant';
 import Memo from './Memo';
-import { LogoAdd } from '../../assets';
-import { useNavigation } from '@react-navigation/native';
+import {LogoAdd} from '../../assets';
+import {useNavigation} from '@react-navigation/native';
 
-const Home = () => { 
-  const navigation = useNavigation(); 
+const Home = () => {
+  const navigation = useNavigation();
   return (
     <View style={styles.page}>
       <View style={styles.Header}>
         <Text style={styles.selamat}>Wellcome,</Text>
-          <View style={{marginBottom: -10, marginTop: -10}}>
-            <HeaderInformation /></View>
-            <RecapProject />
-            <TouchableOpacity style={styles.iconAdd}>
-                    <LogoAdd onPress={() => navigation.navigate('ProjectCreate')}/>
-                </TouchableOpacity>
-              <Memo />
-              <TouchableOpacity style={{alignItems: 'flex-end', marginHorizontal: 14}}>
-                    <Text onPress={() => navigation.navigate('MemoPage')}
-                    style={styles.seeMore}>See More . . .</Text>
-                </TouchableOpacity>
-            </View>
-          </View>)
+        <View style={{marginBottom: -10, marginTop: -10}}>
+          <HeaderInformation />
+        </View>
+        <RecapProject />
+        <TouchableOpacity style={styles.iconAdd}>
+          <LogoAdd onPress={() => navigation.navigate('ProjectCreate')} />
+        </TouchableOpacity>
+        <Memo />
+        <TouchableOpacity
+          style={{alignItems: 'flex-end', marginHorizontal: 14}}>
+          <Text
+            onPress={() => navigation.navigate('MemoPage')}
+            style={styles.seeMore}>
+            See More . . .
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
 };
 
 export default Home;
@@ -36,49 +42,50 @@ const windowWidth = Dimensions.get('window').width;
 const styles = StyleSheet.create({
   page: {
     flex: 1,
+    // height: windowHeight * 0.7
   },
-  Header:{
+  Header: {
     paddingHorizontal: 15,
     paddingTop: 30,
   },
   smp: {
-    fontSize: 14
+    fontSize: 14,
   },
   TextBold: {
     fontSize: 16,
-    fontFamily: "Poppins-Bold"
+    fontFamily: 'Poppins-Bold',
   },
-  wrapperSMPHP:{
+  wrapperSMPHP: {
     paddingHorizontal: 30,
-    marginTop: 20
+    marginTop: 20,
   },
-  layanan:{
+  layanan: {
     flexDirection: 'row',
     paddingHorizontal: 15,
     justifyContent: 'space-between',
     marginTop: 10,
     marginLeft: 20,
-    marginRight: 20
+    marginRight: 20,
   },
-  selamat:{
+  selamat: {
     fontFamily: 'Poppins-Bold',
     fontSize: 22,
     marginLeft: 20,
-    color: BiruKu
+    color: BiruKu,
   },
 
-  iconAdd:{
+  iconAdd: {
     alignItems: 'flex-end',
     marginHorizontal: 10,
     marginTop: -30,
-    marginBottom: 30,
-    flex: 2
+    marginBottom: 40,
+    flex: 2,
   },
-  seeMore:{
+  seeMore: {
     fontFamily: 'Poppins-SemiBoldItalic',
     fontSize: 13,
     marginTop: -22,
     color: '#BA0A3F',
-    elevation: 10
-  }
+    elevation: 10,
+  },
 });

@@ -6,6 +6,7 @@ import {useNavigation} from '@react-navigation/native';
 import firestore from '@react-native-firebase/firestore';
 import Button6 from '../../components/Button6';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import FormatDate from '../../components/FormatDate';
 
 const ProjectDetailsEdit = (props) => {
   const navigation = useNavigation();
@@ -22,19 +23,13 @@ const ProjectDetailsEdit = (props) => {
       const data = doc.data();
       if (data && data.datePO) {
         const FirebaseDate = data.datePO.toDate();
-        const monthString = (month) =>  {
-          const monthName = [ 'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul','Ags', 'Sep', 'Okt', 'Nov', 'Des'];
-          return monthName[month-1]
-        }
-        const getMonth = (FirebaseDate.getMonth()+1);
-        const month = monthString(getMonth)
-        const FormatDate = FirebaseDate.getDate() +'-'+month+ '-' + FirebaseDate.getFullYear();        
+        const getDatePO = FirebaseDate ? FormatDate(FirebaseDate) : '---';        
         setProjectInfo({
           ProjectName: doc.data().projectName,
           ProjectId: doc.data().projectId,
           Customer: doc.data().customer,
           NumberPO: doc.data().numberPO,
-          DatePO: FormatDate,
+          DatePO: getDatePO,
         }),
         // console.log(projectInfo)
           setIsLoading(false);

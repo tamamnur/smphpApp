@@ -1,13 +1,13 @@
 import React from 'react';
-import {Text, StyleSheet, View} from 'react-native';
+import {Text, StyleSheet, View, Dimensions} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {BiruKu} from '../utils/constant';
-
+const width = Dimensions.get('window').width
 const PanelProjectList = props => {
   const navigation = useNavigation();
   return (
     <View
-      style={{flexDirection: 'row', marginHorizontal: 10, marginBottom: -1}}>
+      style={{flexDirection: 'row', marginHorizontal: 7, marginBottom: -1}}>
       <Text style={styles.panelProject}>{props.projectName}</Text>
       <Text style={styles.panelProject}>{props.panelName}</Text>
       <Text style={styles.status}>{props.status}</Text>
@@ -28,7 +28,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: BiruKu,
     height: 28,
-    width: 140,
+    width: width*0.365
+    // width: 140,
   },
   status: {
     fontFamily: 'Poppins-Medium',
@@ -39,6 +40,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: BiruKu,
     height: 28,
-    width: 80,
+    width: width*0.2
+    // width: 80,
   },
 });

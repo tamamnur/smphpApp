@@ -3,6 +3,8 @@ import {TextInput, StyleSheet} from 'react-native';
 import { BiruKu } from '../utils/constant';
 
 const SearchBar = ({searchKeyword, setSearchKeyword, setFilteredPanelData, panelNameData}) => {
+  const [searchKeyword, setSearchKeyword] = useState('');
+  
   const handleSearch = (keyword) => {
     setSearchKeyword(keyword);
     const filteredData = panelNameData.filter((item) => {
