@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
         marginTop: 45,
     }),
     titleText: active => ({
-        fontFamily: 'Poppins-Medium',
+        fontFamily: 'Poppins-Regular',
         color: BiruKu,
         // margin: 5,
         textAlign: 'center',

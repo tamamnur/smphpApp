@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import { StyleSheet, Text, View, ScrollView, ActivityIndicator, TextInput, } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, TextInput, Dimensions, } from 'react-native';
 import Title2 from '../../components/Title2';
 import {IconBack, LogoSmpHP} from '../../assets';
 import {BiruKu} from '../../utils/constant';
@@ -7,15 +7,16 @@ import {useNavigation} from '@react-navigation/native';
 import firestore from '@react-native-firebase/firestore';
 import PanelProjectList from '../../components/panelProjectList';
 import FormatDate from '../../components/FormatDate';
-import EndOf from '../../components/Footer'
-import LoadingComponent from '../../components/LoadingComponent';
+import EndOf from '../../components/Footer';
+import PanelHeadTable from '../../components/panelHeadTable';
+import LoadingComponent from '../../components/LoadingComponent'
 
+const height = Dimensions.get('window').height;
 const SD_Approval = () => {
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(true);
   const [panelNameData, setPanelNameData] = useState([]);
-  const [searchKeyword, setSearchKeyword] = useState('');
-
+  
   useEffect(() => {
     let isMounted = true;
     const getProject = async () => {
@@ -45,24 +46,19 @@ const SD_Approval = () => {
               const idRef = firestore().collection('Monitoring');
               const id = getId.substring(12);
               const shopdrawingRef = idRef.doc(id).collection('Shopdrawing').doc('Approval');
-              const approvalDoc = await shopdrawingRef.get();
-              if (approvalDoc.exists) {
-                const approvalData = approvalDoc.data();
-                if (approvalData.DateApprove) {
-                  const dateApprovalValue = approvalData.DateApprove;
-                  const dateApproval = FormatDate(dateApprovalValue.toDate());
+              const drawingDoc = await shopdrawingRef.get();
+              if (drawingDoc.exists) {
+                const drawingData = drawingDoc.data();
+                if (drawingData.DateApprove) {
+                  const dateValue = drawingData.DateApprove;
+                  const dateRevision = FormatDate(dateValue.toDate());
                   panelNameData.push({
                     projectName: panel.projectName,
                     panelName: panel.pnameInput,
-                    DateApproval: dateApproval,
+                    DateUpdate: dateRevision,
                   });
-                  // console.log('panel: ',panel.pnameInput,'date: ',dateSubmit)
                 }
-                // } else {
-                // console.log('Doc not found');
               }
-              // } else {
-              // console.log( 'Panel', panel.pnameInput, 'tidak memiliki dokumen monitoring');
             }
           });
           await Promise.all(fetchDatePromises);
@@ -71,7 +67,7 @@ const SD_Approval = () => {
           setIsLoading(false);
         }
       } catch (error) {
-        console.log('ERROR Fetching Data', error);
+        console.error('Error Fetching Data ', error);
         if (isMounted) {
           setIsLoading(false);
         }
@@ -83,8 +79,9 @@ const SD_Approval = () => {
     };
   }, []);
 
+  const [searchKeyword, setSearchKeyword] = useState('');
+
   const filteredPanelData = panelNameData.filter(item => {
-    // console.log('item?', item);
     const projectNameLower = item.projectName.toLowerCase();
     const panelNameLower = item.panelName.toLowerCase();
     const searchKeywordLower = searchKeyword.toLowerCase();
@@ -94,19 +91,23 @@ const SD_Approval = () => {
     );
   });
 
-  const renderedPanelList = filteredPanelData.filter(item => item.DateApproval)
-  .sort((a, b) => new Date(b.DateApproval) - new Date(a.DateApproval),              )
+  const renderedPanelList = filteredPanelData.filter(item => item.DateUpdate)
+  .sort((a, b) => new Date(b.DateUpdate) - new Date(a.DateUpdate))
   .map((item, index) => (
     <PanelProjectList
       key={index + 1}
       projectName={item.projectName}
       panelName={item.panelName}
-      status={item.DateApproval}
+      status={item.DateUpdate}
     />
   ))
-  const dataNotFound = (<Text style={styles.dataNotFound}>No matching result found.</Text>)
-  
-  const contenToRender = renderedPanelList.length > 0 ? renderedPanelList : dataNotFound
+
+  const dataNotFound = (
+    <Text style={styles.dataNotFound}>No matching result found.</Text>
+  );
+
+  const contenToRender =
+    renderedPanelList.length > 0 ? renderedPanelList : dataNotFound;
 
   return (
     <View>
@@ -114,9 +115,8 @@ const SD_Approval = () => {
         <IconBack onPress={() => navigation.navigate('Discover')} />
         <LogoSmpHP style={{marginLeft: 200}} />
       </View>
-      <Title2 TxtTitle="SHOPDRAWING" SubTitle="APPROVAL" />
-      {isLoading ? (
-        <Text></Text>
+      <Title2 TxtTitle="SHOPDRAWING" SubTitle="APPROVED" />
+      {isLoading ? ( <></>
       ) : (
         <>
           <TextInput
@@ -125,79 +125,29 @@ const SD_Approval = () => {
             value={searchKeyword}
             onChangeText={text => setSearchKeyword(text)}
           />
-          <View style={styles.wrappHead}>
-            <Text style={styles.headProjectName}>Project Name</Text>
-            <Text style={styles.headPanelName}>Panel Name</Text>
-            <Text style={styles.headUpdate}>Update</Text>
-          </View>
+          <PanelHeadTable />
         </>
       )}
-      <ScrollView style={{marginHorizontal: 8, marginBottom: 110, height: '80%'}}>
-        <View style={{marginBottom: 10, borderColor: BiruKu, borderBottomWidth: 0}}>
+      <ScrollView
+        style={{ marginHorizontal: 8, marginBottom: 110, height: height*0.65, }}>
+        <View>
           {isLoading ? (
-            // <View style={{marginTop: 20, marginBottom: 100}}>
-            //   <ActivityIndicator size="large" color={BiruKu} />
-            // </View>
             <LoadingComponent />
-          ) : ( contenToRender )}
-          {/* <View><Text style={styles.endOfPage}>End of Page</Text></View> */}
-          <EndOf /> 
+          ) : (
+            <>
+              {contenToRender}
+              <EndOf />
+            </>
+          )}
         </View>
       </ScrollView>
     </View>
   );
 };
 
+export default SD_Approval;
+
 const styles = StyleSheet.create({
-  wrappHead: {
-    flexDirection: 'row',
-    marginHorizontal: 16,
-    marginBottom: 2,
-    borderColor: BiruKu,
-    borderBottomWidth: 2,
-  },
-  headProjectName: {
-    fontFamily: 'Poppins-Medium',
-    fontSize: 13,
-    color: BiruKu,
-    textAlignVertical: 'center',
-    textAlign: 'center',
-    marginRight: -1,
-    borderWidth: 1,
-    borderColor: BiruKu,
-    height: 30,
-    width: 142,
-  },
-  headPanelName: {
-    fontFamily: 'Poppins-Medium',
-    fontSize: 13,
-    color: BiruKu,
-    textAlignVertical: 'center',
-    textAlign: 'center',
-    borderWidth: 1,
-    borderColor: BiruKu,
-    height: 30,
-    width: 140,
-  },
-  headUpdate: {
-    fontFamily: 'Poppins-Medium',
-    fontSize: 13,
-    color: BiruKu,
-    textAlignVertical: 'center',
-    textAlign: 'center',
-    paddingHorizontal: 2,
-    borderWidth: 1,
-    borderColor: BiruKu,
-    height: 30,
-    width: 79,
-  },
-  endOfPage:{
-    fontFamily: 'Poppins-Italic',
-    fontSize: 12,
-    color: BiruKu,
-    textAlign: 'center',
-    marginTop: 15,
-  },
   searchInput: {
     borderWidth: 1,
     borderColor: BiruKu,
@@ -205,20 +155,20 @@ const styles = StyleSheet.create({
     backgroundColor: '#F7F7F8',
     paddingHorizontal: 8,
     paddingVertical: 1,
-    marginHorizontal: 16,
+    marginHorizontal: 15,
     marginBottom: 5,
     height: 35,
     color: BiruKu,
     fontFamily: 'Poppins-Medium',
-    fontSize: 13
+    fontSize: 13,
   },
   dataNotFound: {
+    flex:1,
     fontFamily: 'Poppins-Italic',
     fontSize: 14,
     textAlign: 'center',
-    marginTop: 20,
+    marginVertical: 50,
+    // height: 
     color: BiruKu,
-  }
+  },
 });
-
-export default SD_Approval;

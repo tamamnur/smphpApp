@@ -5,9 +5,9 @@ import {BiruKu} from '../../utils/constant';
 import {useNavigation} from '@react-navigation/native';
 import Title2 from '../../components/Title2';
 import firestore from '@react-native-firebase/firestore';
-import PickedDateFull from '../../components/pickedDateFull';
 import CheckBox from '@react-native-community/checkbox';
 import StagesPODetail from '../../components/StagesPODetail';
+import PickedDateM from '../../components/pickedDateM';
 
 const updateError = (error, stateUpdate) => {
   stateUpdate(error);
@@ -239,7 +239,8 @@ const FormPOConstruction = (props) => {
     return (
       <View style={{flexDirection: 'row', marginLeft: 20, marginTop: 2}}>
         <CheckBox
-          style={{borderColor: '#920'}}
+          // style={{borderColor: BiruKu}}
+          tintColors={{true: BiruKu, false: 'gray'}}
           disabled={false}
           value={props.value}
           onValueChange={(newValue, index) => {
@@ -291,7 +292,7 @@ const FormPOConstruction = (props) => {
               />
             </View>
             <Text style={styles.txtInput} onChangeText={onDateChange}>
-              <PickedDateFull onChangeText={onDateChange} />
+              <PickedDateM onChangeText={onDateChange}/>
             </Text>
           </View>
         </View>

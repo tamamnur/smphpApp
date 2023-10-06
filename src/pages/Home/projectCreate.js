@@ -117,7 +117,7 @@ const ProjectCreate = props => {
         </Text>
       ) : null}
       <View>
-        <View style={{flexDirection: 'row', marginHorizontal: 10,}}>
+        <View style={{flexDirection: 'row', marginHorizontal: 10, alignSelf:'center'}}>
           <View>
             <Text style={styles.left}> SO Number</Text>
             <Text style={styles.left}> Project Name</Text>
@@ -172,8 +172,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     marginLeft: 5,
     height: 40,
-    // width: 250,
-    width: width*0.67,
+    width: width*0.65,
     color: BiruKu,
     borderWidth: 1,
     borderColor: BiruKu,

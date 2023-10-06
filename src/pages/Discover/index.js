@@ -17,7 +17,7 @@ const Input = props => {
       <View style={{flexDirection: 'row',marginTop: 8,alignSelf: 'center',marginBottom: -15,}}>
         <View style={{marginTop: 2}}><IconInput2 /></View>
         <View>
-          <Text style={{ fontFamily: 'Poppins-Medium', fontSize: 15, color: 'blue', marginLeft: 5, marginVertical: 5, }}>
+          <Text style={{ fontFamily: 'Poppins-Regular', fontSize: 15, color: 'blue', marginLeft: 5, marginVertical: 5, }}>
             {props.title}
           </Text>
         </View>
@@ -34,11 +34,11 @@ class Discover extends Component {
 
   render() {
     return (
-      <View style={{flex: 1, backgroundColor:'white', alignSelf: 'center'}}>
+      <View style={{flex: 1, backgroundColor:'white', justifyContent: 'center', alignItems: 'center'}}>
         <View style={{marginTop: 30, marginBottom: 5}}> 
           <Text style={styles.BigTitle}>Production Monitoring </Text>
         </View>
-        <ScrollView style={{flex: 1}}>
+        <ScrollView style={{flex: 1, alignSelf: 'center'}}>
           <View style={styles.Wrapper}>
             <View style={styles.groupTitle}>
               <Text style={styles.Progress}>Shopdrawing Progress</Text>
@@ -120,9 +120,7 @@ class Discover extends Component {
             </View>
           </View>
           <View style={styles.Wrapper}>
-            <View style={styles.groupTitle}>
-              <Text style={styles.Progress}> Finishing</Text>
-            </View>
+            <View><Text style={styles.Progress}> Finishing</Text></View>
             <View style={{ flexDirection: 'row', alignSelf: 'center', justifyContent: 'center', marginBottom: -10, marginTop: 5}}>
               <TouchableOpacity 
                 onPress={() => this.props.navigation.navigate('FormFinishing')} 
@@ -130,7 +128,7 @@ class Discover extends Component {
                 <View >
                   <MaterialIcons name='input' color={'black'} size={35}/>
                 </View>
-                <Text style={{ color: '#10324A', fontFamily: 'Poppins-Medium', fontSize: 14, }}>
+                <Text style={{ color: '#10324A', fontFamily: 'Poppins-Regular', fontSize: 14, }}>
                   Input Progress
                 </Text>
               </TouchableOpacity>
@@ -141,7 +139,7 @@ class Discover extends Component {
                 <View>
                   <AntDesign name="switcher" color={'#10324A'} size={35} />
                 </View>
-                <Text style={{ color: '#10324A', fontFamily: 'Poppins-Medium', fontSize: 14, }}>
+                <Text style={{ color: '#10324A', fontFamily: 'Poppins-Regular', fontSize: 14, }}>
                   Tested
                 </Text>
               </TouchableOpacity>
@@ -153,7 +151,7 @@ class Discover extends Component {
                 <View>
                   <MaterialCommunityIcons name="truck-delivery-outline" color={Darkred} size={35} />
                 </View>
-                <Text style={{ color: '#10324A', fontFamily: 'Poppins-Medium', fontSize: 14, paddingHorizontal: 10, }}>
+                <Text style={{ color: '#10324A', fontFamily: 'Poppins-Regular', fontSize: 14, paddingHorizontal: 10, }}>
                   Delivery
                 </Text>
               </TouchableOpacity>
@@ -171,21 +169,18 @@ export default Discover;
 const styles = StyleSheet.create({
   groupTitle: {
     paddingTop: 5,
-    paddingHorizontal: 20,
-    marginLeft: -10,
+    // paddingHorizontal: 20,
+    // marginLeft: -10,
   },
   Progress: {
-    // color: '#324A5E',
+    paddingHorizontal: 10,
+    paddingTop: 5,
     color: BiruKu,
-    fontSize: 17,
-    textAlign: 'left',
-    fontFamily: 'Poppins-Regular',
-    fontWeight: 'bold',
-  },
-  smp: {
-    fontSize: 17,
-    fontWeight: 'bold',
-    fontFamily: 'Acme-Regular',
+    fontSize: 16,
+    // textAlign: 'left',
+    fontFamily: 'Poppins-SemiBold',
+    // fontFamily: 'Acme-Regular',
+    // fontWeight: 'bold',
   },
   SDWrapp: {
     flexDirection: 'row',
@@ -193,28 +188,20 @@ const styles = StyleSheet.create({
 
   POWrapp: {
     flexDirection: 'row',
-    marginHorizontal: -2,
+    // marginHorizontal: 2,
     marginTop: -15,
   },
   PabWrapp: {
     flexDirection: 'row',
     marginHorizontal: 8,
-    // paddingRight: 10,
     marginTop: -15,
   },
   Wrapper: {
     backgroundColor: '#D4D6D3',
     marginVertical: 5,
-    marginHorizontal: 20,
+    // marginHorizontal: 10,
     paddingBottom: 15,
     borderRadius: 20,
-  },
-  LogoSmpHP: {
-    marginTop: 30,
-    marginBottom: 10,
-    marginHorizontal: 20,
-    // flex: 2,
-    // alignItems: 'flex-end',
   },
   BigTitle: {
     textAlign: 'center',

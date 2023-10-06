@@ -74,20 +74,6 @@ const ProjectDetails = (props) => {
             <InfoProject label={'Customer'} value={projectInfo.Customer}/>
             <InfoProject label={'Number PO'} value={projectInfo.NumberPO}/>
             <InfoProject label={'Date PO'} value={projectInfo.DatePO}/>
-            {/* <View style={styles.projectId}>
-              <View>
-                <Text style={styles.left}>Number SO</Text>
-                <Text style={styles.left}>Customer</Text>
-                <Text style={styles.left}>Number PO</Text>
-                <Text style={styles.left}>Date PO</Text>
-              </View>
-              <View>
-                <Text style={styles.right}>{projectInfo.ProjectId}</Text>
-                <Text style={styles.right}>{projectInfo.Customer}</Text>
-                <Text style={styles.right}>{projectInfo.NumberPO}</Text>
-                <Text style={styles.right}>{projectInfo.DatePO}</Text>
-              </View>
-            </View> */}
             <View style={{flexDirection: 'row'}}>
               <View> 
                 <Text style={styles.pnameTitle}>Panel Name's :</Text> 
@@ -129,36 +115,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontFamily: 'Poppins-Regular',
     fontSize: 14,
-    color: BiruKu,
-  },
-  projectId: {
-    marginHorizontal: 10,
-    paddingRight: 20,
-    flexDirection: 'row',
-  },
-  left: {
-    fontFamily: 'Poppins-Medium',
-    fontSize: 12,
-    marginVertical: 4,
-    padding: 2,
-    color: BiruKu,
-    height: 25,
-    width: width* 0.2
-  },
-  right: {
-    fontFamily: 'Poppins-SemiBold',
-    fontSize: 12,
-    borderWidth: 1,
-    borderColor: BiruKu,
-    borderRadius: 2,
-    // marginLeft: 15,
-    height: 25,
-    width: width * 0.7,
-    // width: 250,
-    marginHorizontal:10,
-    padding: 2,
-    paddingHorizontal: 5,
-    marginVertical: 3,
     color: BiruKu,
   },
   pnameTitle: {

@@ -6,8 +6,6 @@ import { Home, Akun, Discover, Splash, Signup } from '../pages'
 import { BottomTabNavigator } from '../components'
 import ProjectCreate from '../pages/Home/projectCreate'
 import PanelNameInput from '../pages/Home/panelNameInput'
-import CreateSPG from '../pages/Discover/CreateSPG'
-import CreateSPK from '../pages/Discover/CreateSPK'
 import SD_Submission from '../pages/Discover/SD_Submission'
 import SD_Approval from '../pages/Discover/SD_Approval'
 import SD_Revisi from '../pages/Discover/SD_Revisi.js'
@@ -36,7 +34,7 @@ import FormFBMechanic from '../pages/Discover/FormFBMechanic'
 import FormFBWiring from '../pages/Discover/FormFBWiring'
 import PageWiring from '../pages/Discover/pageWiring'
 import PageMechanic from '../pages/Discover/pageMechanic'
-import FormFinishing from '../pages/Discover/FormFinishing'
+import FormFinishing from '../pages/Discover/FormEndFinish'
 import ComponentSchedule from '../pages/Discover/componentSchedule'
 import ComponentRealized from '../pages/Discover/componentRealized'
 import BusbarOrder from '../pages/Discover/busbarOrder' 
@@ -67,8 +65,8 @@ const SecuredNav = () => {
       <Stack.Screen name="ProjectCreate" component={ProjectCreate}options={{ headerShown: false}}/>
       <Stack.Screen name="PanelNameInput" component={PanelNameInput} options={{ headerShown: false}}/>
 
-      <Stack.Screen name="CreateSPG" component={CreateSPG} options={{ headerShown: false}}/>
-      <Stack.Screen name="CreateSPK" component={CreateSPK} options={{ headerShown: false}}/>
+      {/* <Stack.Screen name="CreateSPG" component={CreateSPG} options={{ headerShown: false}}/>
+      <Stack.Screen name="CreateSPK" component={CreateSPK} options={{ headerShown: false}}/> */}
 
       <Stack.Screen name="SD_Submission" component={SD_Submission} options={{ headerShown: false}}/>
       <Stack.Screen name="SD_Approval" component={SD_Approval} options={{ headerShown: false}}/>

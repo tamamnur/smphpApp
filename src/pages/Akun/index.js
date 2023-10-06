@@ -144,16 +144,16 @@ export default User;
 
 const styles = StyleSheet.create({
   LogoSmpHP: {
-    marginTop: 30,
+    marginTop: 35,
     flex: 1,
-    alignItems: 'flex-end',
+    // alignItems: 'flex-end',
     alignItems: 'center',
-    justifyContent: 'center',
+    // justifyContent: 'center',
     marginBottom: 20,
   },
   container: {
     flexDirection: 'row',
-    marginHorizontal: 20,
+    alignSelf: 'center'
   },
   left: {
     fontFamily: 'Poppins-Medium',
@@ -171,8 +171,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     marginBottom: 15,
     height: 45,
-    // width: 230,
-    width: width*0.6,
+    width: width*0.7,
     padding: 10,
     color: BiruKu,
   },
@@ -207,7 +206,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     alignSelf: 'flex-end',
     paddingTop: 6,
-    marginHorizontal: 45,
+    marginHorizontal:20,
     marginBottom: -10,
     borderRadius: 9,
     backgroundColor: BiruKu,

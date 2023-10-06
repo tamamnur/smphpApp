@@ -5,7 +5,7 @@ import {BiruKu} from '../../utils/constant';
 import {useNavigation} from '@react-navigation/native';
 import Title2 from '../../components/Title2';
 import firestore from '@react-native-firebase/firestore';
-import PickedDateFull from '../../components/pickedDateFull';
+import PickedDateM from '../../components/pickedDateM';
 import StagesSD from '../../components/StagesSD';
 import CheckBox from '@react-native-community/checkbox';
 
@@ -58,12 +58,9 @@ const FormShopdrawing = props => {
     setShopdrawingInfo({...shopdrawingInfo, [fieldName]: value});
     if (fieldName === 'stages') {
       setIsLoading(true);
-      // const selectedStage = shopdrawingInfo.stages;
-      // console.log(selectedStage)
       shopdrawingInfo.Panels.forEach(async item => {
         if (item.MonitoringID) {
           const MonitoringID = item.MonitoringID.substring(1);
-          // console.log(MonitoringID)
           const _Data = await firestore()
             .collection(MonitoringID + '/Shopdrawing').doc(value).get();
           const isExist = _Data.exists;
@@ -96,9 +93,12 @@ const FormShopdrawing = props => {
   };
 
   const handleFormShopdrawing = async () => {
+    if (isMountedRef.current) {
     let panelSelected = false;
     let hasPanelWithoutSD = false;
+    
     for (const value of shopdrawingInfo.Panels) {
+      if (isMountedRef.current) {
       if (value.selected === true) {
       let MonitoringID = null;
         if (value.MonitoringID) {
@@ -154,14 +154,15 @@ const FormShopdrawing = props => {
             MonitoringID: '/Monitoring/' + MonitoringID,
           });
         panelSelected = true;
+      }   
+      }
+    } if (!panelSelected) {
+      updateError('Make sure you select at least one panel, \n and all the panels you have chosen are Submitted.', setError);
+      return;
+    } if (hasPanelWithoutSD) {
+      updateError('Make sure you select at least one panel, \n and all the panels you have chosen are Submitted.', setError);
+      return;
     }
-  } if (!panelSelected) {
-    // updateError('You have not selected a Panel yet \n Some panels that were selected not been Submission yet', setError);
-    updateError('Make sure you select at least one panel, \n and all the panels you have chosen are Submitted.', setError);
-    return;
-  } if (hasPanelWithoutSD) {
-    updateError('Make sure you select at least one panel, \n and all the panels you have chosen are Submitted.', setError);
-    return;
   }
   ToastAndroid.show('Shopdrawing Procces Updated', ToastAndroid.SHORT)
   if (stages === 'Submission') {
@@ -170,6 +171,7 @@ const FormShopdrawing = props => {
     navigation.navigate('SD_Revisi');
   } if (stages === 'Approval') {
     navigation.navigate('SD_Approval');
+    // navigation.reset({ index:0, routes: [{ name: 'SD_Approval'}] });
   }   
   };
 
@@ -197,7 +199,6 @@ const FormShopdrawing = props => {
             selected: false,
           };
         });
-        // console.log('Panel',Panels)
         return {
           id: doc.id,
           ...doc.data(),
@@ -251,7 +252,7 @@ const FormShopdrawing = props => {
     return (
       <View style={{flexDirection: 'row', marginLeft: 20, marginTop: 2}}>
         <CheckBox
-          style={{borderColor: '#920'}}
+          tintColors={{true: BiruKu, false: BiruKu}}
           disabled={false}
           value={props.value}
           onValueChange={(newValue, index) => {
@@ -274,19 +275,12 @@ const FormShopdrawing = props => {
       </View>
       <Title2 TxtTitle="SHOP DRAWING" />
       {error ? (
-        <Text
-          style={{
-            color: 'red',
-            fontSize: 13,
-            textAlign: 'center',
-            marginBottom: 10,
-            marginTop: -20,
-          }}>
+        <Text style={{ color: 'red', fontSize: 13, textAlign: 'center', marginBottom: 10, marginTop: -20, }}>
           {error}
         </Text>
       ) : null}
       <View>
-        <View style={{flexDirection: 'row', marginHorizontal: 20}}>
+        <View style={{flexDirection: 'row', marginHorizontal: 20, }}>
           <View>
             <Text style={styles.left}>Project Name </Text>
             <Text style={styles.left}>Customer </Text>
@@ -308,7 +302,7 @@ const FormShopdrawing = props => {
               />
             </View>
             <Text style={styles.txtInput} onChangeText={onDateChange}>
-              <PickedDateFull onChangeText={onDateChange} />
+              <PickedDateM onChangeText={onDateChange} />
             </Text>
           </View>
         </View>
@@ -322,7 +316,6 @@ const FormShopdrawing = props => {
                 fullname.includes(searchTerm) &&
                 fullname !== searchTerm
               );
-              // console.log(projectName);
             }).map(item => (
               <TouchableOpacity
                 key={item.id}
@@ -343,12 +336,7 @@ const FormShopdrawing = props => {
         ) : (
           <View>
             <View style={styles.wrappPanelTitle}>
-              <Text
-                style={{
-                  fontFamily: 'Poppins-Medium',
-                  color: BiruKu,
-                  fontSize: 13,
-                }}>
+              <Text style={{ fontFamily: 'Poppins-Medium', color: BiruKu, fontSize: 13, }}>
                 Panel Name
               </Text>
             </View>
@@ -399,6 +387,7 @@ export default FormShopdrawing;
 const styles = StyleSheet.create({
   page: {
     marginTop: 20,
+    // alignContent: 'center'
   },
   header: {
     flexDirection: 'row',
@@ -434,7 +423,7 @@ const styles = StyleSheet.create({
     borderColor: BiruKu,
     borderRadius: 5,
     height: 33,
-    padding: -10,
+    // padding: -10,
     marginVertical: 4,
     fontSize: 13,
     marginLeft: 5,

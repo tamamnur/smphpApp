@@ -9,13 +9,16 @@ import PanelProjectList from '../../components/panelProjectList';
 import FormatDate from '../../components/FormatDate';
 import EndOf from '../../components/Footer';
 import PanelHeadTable from '../../components/panelHeadTable';
-import LoadingComponent from '../../components/LoadingComponent'
+import LoadingComponent from '../../components/LoadingComponent';
+import DataNotFound from '../../components/dataNotFound';
+import SearchBar from '../../components/SearchBar';
 
 const height = Dimensions.get('window').height;
 const SD_Submission = () => {
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(true);
   const [panelNameData, setPanelNameData] = useState([]);
+
   useEffect(() => {
     let isMounted = true;
     const getProject = async () => {
@@ -24,15 +27,12 @@ const SD_Submission = () => {
         const idRef = await firestore().collection('Project').get();
         const idDoc = idRef.docs.map(doc => ({id: doc.id, ...doc.data()}));
         idDoc.forEach(docIdRef => {
-          // console.log('projectName? ', docIdRef.projectName)
           projectNameData.push(docIdRef.projectName);
         });
         const panelNameData = [];
         for (const doc of idDoc) {
-          const projectRef = firestore()
-            .collection('Project')
-            .doc(doc.id)
-            .collection('PanelName');
+          const projectRef = firestore().collection('Project')
+            .doc(doc.id).collection('PanelName');
           const panelIdRef = await projectRef.get();
           const panelIdData = panelIdRef.docs.map(panelIdDoc => ({
             panelId: panelIdDoc.id,
@@ -40,21 +40,16 @@ const SD_Submission = () => {
             projectName: doc.projectName,
           }));
           const fetchDatePromises = panelIdData.map(async panel => {
-            // console.log('panelId', panel.panelId, 'panelName', panel.pnameInput, 'monitoringID- ', panel.MonitoringID)
             panelNameData.push({
               projectName: doc.projectName,
               panelName: panel.pnameInput,
             });
             const getId = panel.MonitoringID;
-            // console.log('MonitoringID-',getId)
             if (getId) {
               const idRef = firestore().collection('Monitoring');
               const id = getId.substring(12);
-              // console.log('id?',id)
-              const shopdrawingRef = idRef
-                .doc(id)
-                .collection('Shopdrawing')
-                .doc('Submission');
+              const shopdrawingRef = idRef.doc(id)
+                .collection('Shopdrawing').doc('Submission');
               const submissionDoc = await shopdrawingRef.get();
               if (submissionDoc.exists) {
                 const submissionData = submissionDoc.data();
@@ -62,26 +57,16 @@ const SD_Submission = () => {
                   const dateSubmissionValue = submissionData.DateSubmit;
                   const dateSubmit = FormatDate(dateSubmissionValue.toDate());
                   panelNameData.push({
-                    DateSubmit: dateSubmit,
                     projectName: panel.projectName,
                     panelName: panel.pnameInput,
+                    DateSubmit: dateSubmit,
                   });
-                  // console.log('panel: ',panel.pnameInput,'date: ',dateSubmit)
                 }
-                // } else {
-                // console.log('Doc not found');
               }
-              // } else {
-              // console.log( 'Panel', panel.pnameInput, 'tidak memiliki dokumen monitoring');
             }
           });
           await Promise.all(fetchDatePromises);
         }
-        panelNameData.sort((a, b) => {
-          const dateA = new Date(a.DateSubmit);
-          const dateB = new Date(b.DateSubmit);
-          return dateB - dateA;
-        });
         if (isMounted) {
           setPanelNameData(panelNameData);
           setIsLoading(false);
@@ -100,7 +85,6 @@ const SD_Submission = () => {
   }, []);
 
   const [searchKeyword, setSearchKeyword] = useState('');
-
   const filteredPanelData = panelNameData.filter(item => {
     const projectNameLower = item.projectName.toLowerCase();
     const panelNameLower = item.panelName.toLowerCase();
@@ -116,19 +100,16 @@ const SD_Submission = () => {
     .sort((a, b) => new Date(b.DateSubmit) - new Date(a.DateSubmit))
     .map((item, index) => (
       <PanelProjectList
-        key={index}
+        key={index + 1}
         projectName={item.projectName}
         panelName={item.panelName}
         status={item.DateSubmit}
       />
     ));
 
-  const dataNotFound = (
-    <Text style={styles.dataNotFound}>No matching result found.</Text>
-  );
-
   const contenToRender =
-    renderedPanelList.length > 0 ? renderedPanelList : dataNotFound;
+    // renderedPanelList.length > 0 ? renderedPanelList : dataNotFound;
+    renderedPanelList.length > 0 ? renderedPanelList : <DataNotFound />;
 
   return (
     <View>
@@ -137,26 +118,31 @@ const SD_Submission = () => {
         <LogoSmpHP style={{marginLeft: 200}} />
       </View>
       <Title2 TxtTitle="SHOPDRAWING" SubTitle="SUBMISSION" />
-      {isLoading ? ( <></>
+      {isLoading ? (
+        <></>
       ) : (
         <>
-          <TextInput
+          {/* <TextInput
             style={styles.searchInput}
             placeholder="Search by project or panel name....."
+            value={searchKeyword}
+            onChangeText={text => setSearchKeyword(text)}
+          /> */}
+          <SearchBar 
             value={searchKeyword}
             onChangeText={text => setSearchKeyword(text)}
           />
           <PanelHeadTable />
         </>
       )}
-      <ScrollView
-        style={{ marginHorizontal: 8, marginBottom: 110, height: height*0.65, }}>
+      {/* <ScrollView style={styles.dataProject}> */}
+      <ScrollView style={{marginHorizontal: 8, height:height*0.65}}>
         <View>
           {isLoading ? (
             <LoadingComponent />
           ) : (
             <>
-              {contenToRender}
+              {contenToRender} 
               <EndOf />
             </>
           )}
@@ -182,12 +168,5 @@ const styles = StyleSheet.create({
     color: BiruKu,
     fontFamily: 'Poppins-Medium',
     fontSize: 13,
-  },
-  dataNotFound: {
-    fontFamily: 'Poppins-Italic',
-    fontSize: 14,
-    textAlign: 'center',
-    marginTop: 20,
-    color: BiruKu,
-  },
+  }
 });

@@ -8,6 +8,7 @@ import firestore from '@react-native-firebase/firestore';
 import PickedDateFull from '../../components/pickedDateFull';
 import CheckBox from '@react-native-community/checkbox';
 import StagesPODetail from '../../components/StagesPODetail';
+import PickedDateM from '../../components/pickedDateM';
 
 const updateError = (error, stateUpdate) => {
   stateUpdate(error);
@@ -292,7 +293,7 @@ const FormPOComponent = (props) => {
               />
             </View>
             <Text style={styles.txtInput} onChangeText={onDateChange}>
-              <PickedDateFull onChangeText={onDateChange} />
+              <PickedDateM onChangeText={onDateChange}/>
             </Text>
           </View>
         </View>
