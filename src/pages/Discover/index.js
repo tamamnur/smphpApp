@@ -1,6 +1,6 @@
 import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Dimensions, } from 'react-native';
 import React, {Component} from 'react';
-import { IconInput, IconInput2, } from '../../assets';
+import { LogoSmpHP, IconInput, IconInput2, } from '../../assets';
 import SDrawing from '../../components/SDrawing';
 import Procurement from '../../components/Procurement';
 import Fabrication from '../../components/Fabrication';
@@ -35,7 +35,7 @@ class Discover extends Component {
   render() {
     return (
       <View style={{flex: 1, backgroundColor:'white', justifyContent: 'center', alignItems: 'center'}}>
-        <View style={{marginTop: 30, marginBottom: 5}}> 
+        <View style={{marginTop: 50, marginBottom: 15}}> 
           <Text style={styles.BigTitle}>Production Monitoring </Text>
         </View>
         <ScrollView style={{flex: 1, alignSelf: 'center'}}>
@@ -193,7 +193,7 @@ const styles = StyleSheet.create({
   },
   PabWrapp: {
     flexDirection: 'row',
-    marginHorizontal: 8,
+    // marginHorizontal: 2,
     marginTop: -15,
   },
   Wrapper: {

@@ -29,7 +29,8 @@ const FormShopdrawing = props => {
   const isValidForm = () => {
     if (!projectName.trim() || projectName.length === 0)
       return updateError('Invalid name of project', setError);
-    if (!stages.trim() || stages.length === 0)
+    // if (!stages.trim() || stages.length === 0)
+    if (!stages)
       return updateError('Required to choice Stages of Shopdrawing', setError);
     if (!date)
       return updateError('Required to choice Date of Proccess!', setError);
@@ -93,12 +94,12 @@ const FormShopdrawing = props => {
   };
 
   const handleFormShopdrawing = async () => {
-    if (isMountedRef.current) {
+    // if (isMountedRef.current) {
     let panelSelected = false;
     let hasPanelWithoutSD = false;
     
     for (const value of shopdrawingInfo.Panels) {
-      if (isMountedRef.current) {
+      // if (isMountedRef.current) {
       if (value.selected === true) {
       let MonitoringID = null;
         if (value.MonitoringID) {
@@ -155,7 +156,7 @@ const FormShopdrawing = props => {
           });
         panelSelected = true;
       }   
-      }
+      // }
     } if (!panelSelected) {
       updateError('Make sure you select at least one panel, \n and all the panels you have chosen are Submitted.', setError);
       return;
@@ -163,7 +164,7 @@ const FormShopdrawing = props => {
       updateError('Make sure you select at least one panel, \n and all the panels you have chosen are Submitted.', setError);
       return;
     }
-  }
+  // }
   ToastAndroid.show('Shopdrawing Procces Updated', ToastAndroid.SHORT)
   if (stages === 'Submission') {
     navigation.navigate('SD_Submission');

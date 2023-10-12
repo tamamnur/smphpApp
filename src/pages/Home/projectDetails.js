@@ -30,14 +30,10 @@ const ProjectDetails = (props) => {
   const [isLoading, setIsLoading] = useState(true);
   useEffect (() => {
     const id = props.route.params.id;
-    const unsubscribe = firestore().collection('Project').doc(id)
+    const projectUnsubscribe = firestore().collection('Project').doc(id)
       .onSnapshot(async doc => {
         const FirebaseDate = doc.data().datePO ? doc.data().datePO.toDate() : null;
         const getDatePO = FirebaseDate ? FormatDate(FirebaseDate) : ' ---';
-        const panelName = await doc.ref.collection('PanelName').get();
-        const PanelNames = panelName.docs.map(item => ({
-          id: item.id, ...item.data(),
-        }));
         setProjectInfo({
           ProjectName: doc.data().projectName,
           ProjectId: doc.data().projectId,
@@ -45,12 +41,21 @@ const ProjectDetails = (props) => {
           NumberPO: doc.data().numberPO,
           DatePO: getDatePO
         }),
-        setListPanel(PanelNames);
         setIsLoading(false);
-        // console.log(panelName.docs.map(item => ({id: item.id, ...item.data() })));
-      });
+      })
+      const panelUnsubscribe = firestore().collection('Project').doc(id)
+      .collection('PanelName').onSnapshot(async snapshot => {
+        const PanelNames = snapshot.docs.map(item => ({
+          id: item.id, ...item.data(),
+        }))
+        const sortedPanelNames = PanelNames.sort((a,b) => {
+          return a.id - b.id
+        })
+        setListPanel(sortedPanelNames);
+      })
       return () => {
-        unsubscribe();
+        projectUnsubscribe();
+        panelUnsubscribe()
       };
     }, [props.route.params.id]);
       
@@ -66,7 +71,7 @@ const ProjectDetails = (props) => {
         ) : (
           <View>
             <Text style={styles.title}>{projectInfo.ProjectName}</Text>
-            <Text style={styles.subtitle}>"Project Details"</Text>
+            <Text style={styles.subtitle}>Project Details</Text>
             <View style={{ marginVertical: 2, marginHorizontal: 20, alignItems: 'flex-end', }}>
               <EditButton onPress={() => navigation.navigate('ProjectDetailsEdit', {id: props.route.params.id} )}/>
             </View>
@@ -74,15 +79,13 @@ const ProjectDetails = (props) => {
             <InfoProject label={'Customer'} value={projectInfo.Customer}/>
             <InfoProject label={'Number PO'} value={projectInfo.NumberPO}/>
             <InfoProject label={'Date PO'} value={projectInfo.DatePO}/>
-            <View style={{flexDirection: 'row'}}>
-              <View> 
-                <Text style={styles.pnameTitle}>Panel Name's :</Text> 
-              </View>
-              <View style={{ marginTop: 15, marginHorizontal: 180, alignItems: 'flex-end', }}>
-                <EditButton onPress={() => navigation.navigate('PanelNameEdit', {id: props.route.params.id}) } />
-              </View>
+            <View> 
+              <Text style={styles.pnameTitle}>Panel Name's :</Text> 
             </View>
-            <ScrollView style={{marginBottom: 50,}}>
+            <View style={{ marginTop: -20, marginBottom: 5, marginHorizontal: 30, alignItems: 'flex-end', }}>
+              <EditButton onPress={() => navigation.navigate('PanelNameInputEdit', {id: props.route.params.id}) } />
+            </View>
+            <ScrollView style={{marginBottom: 50,height:'55%'}}>
               {ListPanel.map(item => {
                 return (
                   <Panel
@@ -113,7 +116,7 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     textAlign: 'center',
-    fontFamily: 'Poppins-Regular',
+    fontFamily: 'Poppins-Italic',
     fontSize: 14,
     color: BiruKu,
   },

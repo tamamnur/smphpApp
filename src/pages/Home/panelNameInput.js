@@ -7,12 +7,13 @@ import {
 } from 'react-native';
 import React, {Component, useState} from 'react';
 import {IconBack, IconAdd, LogoSmpHP} from '../../assets';
-import {BiruKu} from '../../utils/constant';
+import {BiruKu, Darkred} from '../../utils/constant';
 import InputDataProject from '../../components/InputDataProject';
 import {useNavigation, useRoute} from '@react-navigation/native';
 import firestore from '@react-native-firebase/firestore';
 import Title2 from '../../components/Title2';
 import Button6 from '../../components/Button6';
+import AntDesign from 'react-native-vector-icons/AntDesign';
 
 const PanelNameInput = () => {
   const navigation = useNavigation();
@@ -30,24 +31,18 @@ const PanelNameInput = () => {
     setPnameInput(updatedPanelName);
 
     const updatedErrorText = [...errorText];
-    // updatedErrorText[index] = ''
     if (!value.trim()) {
-      updatedErrorText[index] = 'Please fill in this panel name';
+      updatedErrorText[index] = 'Please enter the panel name !';
     } else {
       updatedErrorText[index] = '';
     }
     setErrorText(updatedErrorText);
-
-    // if (updatedPanelName.some(item => item.trim() ==='')) {
-    //   setErrorText('Please fill in all panel names');
-    // } else {
-    //   setErrorText('');
-    // }
   };
 
+
   const removeForm = index => {
-    const updatedForms = [...forms];
-    updatedForms.splice(index, 1);
+    // const updatedForms = [...forms];
+    // updatedForms.splice(index, 1);
 
     const updatedPnameInput = [...pnameInput];
     updatedPnameInput.splice(index, 1);
@@ -56,28 +51,31 @@ const PanelNameInput = () => {
     updatedErrorText.splice(index, 1);
 
     setFormQty(formQty - 1);
-    // setForms(updatedForms);
     setPnameInput(updatedPnameInput);
     setErrorText(updatedErrorText);
   };
+  const addForm =()=> {
+    setFormQty(prev => prev+1)
+    setPnameInput(prev => [...prev, ''])
+    setErrorText(prev => [...prev, ''])
+  }
 
   const handlePnameInput = async () => {
     if (pnameInput.some(item => !item.trim())) {
-      // setErrorText('Please fill in all panel names');
       setErrorText(
         pnameInput.map(item =>
-          !item.trim() ? 'Please fill in this panel name' : '',
+          !item.trim() ? 'Please enter the panel name !' : '',
         ),
       );
       return;
     }
-    const projectId = route.params.projectId;
-    console.log('project Id', projectId);
+    const id = route.params.projectId;
+    console.log('project Id', id);
     try {
       const batch = firestore().batch();
       pnameInput.forEach((item, index) => {
         batch.set(
-          firestore().doc(`Project/${projectId}/PanelName/${index + 1}`),
+          firestore().doc(`Project/${id}/PanelName/${index + 1}`),
           {pnameInput: item},
         );
       });
@@ -97,40 +95,46 @@ const PanelNameInput = () => {
       </View>
       <Title2 TxtTitle="PANEL NAMES INPUT" />
 
-      <ScrollView style={{height: 450}}>
-        {forms.map((item, index) => {
+      <ScrollView style={{height: '82%', marginTop: -15}}>
+        {forms.map((_, index) => {
           return (
-            <View key={index.toString()}>
+            <>
+            <View style={{flexDirection: 'row', alignSelf: 'center', alignItems: 'center'}}>
+              {/* // key={index.toString()}> */}
               <InputDataProject
+                key={index+1}
                 label={`Panel - ${index + 1}`}
-                // key={index.toString()}
-                onChangeText={value => {
-                  onPnameInputChange(value, index);
-                }}
+                value={pnameInput[index]}
+                onChangeText={value => {onPnameInputChange(value, index)}}
               />
-              {errorText[index] !== '' && <Text>{errorText[index]}</Text>}
-              <TouchableOpacity onPress={() => removeForm(index)}>
-                <Text style={{color: 'red'}}>Delete</Text>
+
+              <TouchableOpacity style={styles.iconDel} 
+                onPress={() => removeForm(index)}>
+                <AntDesign name="closecircle" color={Darkred} size={20} />
               </TouchableOpacity>
+
             </View>
+              <View style={{flex: 1, alignSelf: 'flex-end', marginRight: 55}}>
+                {errorText[index] !== '' && <Text style={styles.errMessage}>{errorText[index]}</Text>}
+              </View>
+                </>
           );
         })}
-        <TouchableOpacity style={styles.iconAdd}>
-          <IconAdd onPress={() => setFormQty(prev => prev + 1)} />
+        <TouchableOpacity 
+          style={{marginLeft: 99, marginVertical: 5, flex: 2}}
+        // style={styles.iconAdd} 
+          // onPress={() => setFormQty(prev => prev + 1)}>
+          onPress={addForm}>
+          <AntDesign name="pluscircle" color={BiruKu} size={30} />
         </TouchableOpacity>
-      </ScrollView>
 
-      {/* {errorText !== '' && (
-        <Text style={{color: 'red', textAlign: 'center', marginVertical: 10}}>
-          {errorText}
-        </Text>
-      )} */}
       <Button6
         text={'CREATE PROJECT'}
         bgColor={BiruKu}
         fontColor={'white'}
         onPress={handlePnameInput}
-      />
+        />
+        </ScrollView>
     </View>
   );
 };
@@ -138,22 +142,16 @@ const PanelNameInput = () => {
 export default PanelNameInput;
 
 const styles = StyleSheet.create({
-  btn: {
-    color: '#FFF',
-    backgroundColor: BiruKu,
-    marginTop: 35,
-    marginHorizontal: 55,
-    paddingHorizontal: 10,
-    paddingVertical: 14,
-    elevation: 10,
-    borderRadius: 10,
-    fontSize: 16,
-    fontFamily: 'Poppins-Bold',
-    textAlign: 'center',
-  },
   iconAdd: {
     marginLeft: 105,
     marginBottom: 45,
     flex: 2,
   },
+  errMessage: {
+    fontFamily: 'Poppins-Italic',
+    fontSize: 12,
+    color: Darkred,
+    marginTop: -32,
+    // marginBottom: -6
+  }
 });

@@ -60,8 +60,13 @@ const ProjectCreate = props => {
         })
         .then((response) =>{
           ToastAndroid.show('Project Created, Continue to adding Panel Name Forms', ToastAndroid.SHORT)
-          navigation.navigate('PanelNameInput', {projectId: response.id})
+            navigation.replace('PanelNameInput', {projectId: response.id})
         })
+        // navigation.reset({
+        //   index: 0,
+        //   routes: [{name:'PanelNameInput', params: {projectId: response.id}}],
+        // })
+        // ToastAndroid.show('Project Created, Continue to adding Panel Name Forms', ToastAndroid.SHORT)
     } catch (error) {
       console.error(error);
     }
@@ -86,7 +91,7 @@ const ProjectCreate = props => {
                 } catch (error) {
                   Alert.alert(
                     'Error',
-                    'Terjadi kesalahan saat menghapus Project.',
+                    'Terjadi kesalahan saat menambahkan Project.',
                   );
                 }
               },

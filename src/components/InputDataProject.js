@@ -3,10 +3,10 @@ import React from 'react';
 import {BiruKu} from '../utils/constant';
 
 const InputDataProject = props => {
-  const {width} = Dimensions.get('screen');
-  const containerWidth = width * 0.9;
-  const labelWidth = containerWidth * 0.2;
-  const inputWidth = containerWidth * 0.8;
+  const {width} = Dimensions.get('window');
+  const containerWidth = width * 0.85;
+  const labelWidth = containerWidth * 0.23;
+  const inputWidth = containerWidth * 0.75;
   return (
     <View style={[styles.container, {width: containerWidth}]}>
       <Text style={[styles.label, {width: labelWidth}]}>{props.label}</Text>
@@ -16,6 +16,7 @@ const InputDataProject = props => {
         onChangeText={props.onChangeText}
         value={props.value}
         ref={props.ref}
+        key={props.key}
       />
     </View>
   );
@@ -27,22 +28,22 @@ const styles = StyleSheet.create({
   container: {
     alignSelf: 'center',
     flexDirection: 'row',
+    marginVertical: 5,
   },
   label: {
-    fontSize: 14,
-    fontFamily: 'Poppins-Regular',
-    marginBottom: 5,
+    fontSize: 13,
+    fontFamily: 'Poppins-Medium',
     color: BiruKu,
     textAlignVertical: 'center',
   },
   txtInput: {
     borderWidth: 1,
     borderColor: BiruKu,
-    color: BiruKu,
+    color: 'blue',
     borderRadius: 5,
     height: 35,
-    padding: 10,
-    marginVertical: 5,
-    fontSize: 15,
+    padding: 5,
+    fontSize: 13,
+    fontFamily: 'Poppins-MediumItalic'
   },
 });

@@ -1,8 +1,7 @@
 import React, {useState, useEffect} from 'react';
-import { StyleSheet, Text, View, ScrollView, TextInput, Dimensions, } from 'react-native';
+import { View, ScrollView, Dimensions, } from 'react-native';
 import Title2 from '../../components/Title2';
 import {IconBack, LogoSmpHP} from '../../assets';
-import {BiruKu} from '../../utils/constant';
 import {useNavigation} from '@react-navigation/native';
 import firestore from '@react-native-firebase/firestore';
 import PanelProjectList from '../../components/panelProjectList';
@@ -97,7 +96,7 @@ const SD_Submission = () => {
 
   const renderedPanelList = filteredPanelData
     .filter(item => item.DateSubmit)
-    .sort((a, b) => new Date(b.DateSubmit) - new Date(a.DateSubmit))
+    .sort((a, b) => new Date(a.DateSubmit) - new Date(b.DateSubmit))
     .map((item, index) => (
       <PanelProjectList
         key={index + 1}
@@ -108,7 +107,6 @@ const SD_Submission = () => {
     ));
 
   const contenToRender =
-    // renderedPanelList.length > 0 ? renderedPanelList : dataNotFound;
     renderedPanelList.length > 0 ? renderedPanelList : <DataNotFound />;
 
   return (
@@ -118,34 +116,19 @@ const SD_Submission = () => {
         <LogoSmpHP style={{marginLeft: 200}} />
       </View>
       <Title2 TxtTitle="SHOPDRAWING" SubTitle="SUBMISSION" />
-      {isLoading ? (
-        <></>
-      ) : (
-        <>
-          {/* <TextInput
-            style={styles.searchInput}
-            placeholder="Search by project or panel name....."
-            value={searchKeyword}
-            onChangeText={text => setSearchKeyword(text)}
-          /> */}
-          <SearchBar 
-            value={searchKeyword}
-            onChangeText={text => setSearchKeyword(text)}
-          />
-          <PanelHeadTable />
-        </>
-      )}
-      {/* <ScrollView style={styles.dataProject}> */}
+      {isLoading ? (<></>) :
+      (<>
+        <SearchBar value={searchKeyword}
+          onChangeText={text => setSearchKeyword(text)} />
+        <PanelHeadTable />
+      </>)}
       <ScrollView style={{marginHorizontal: 8, height:height*0.65}}>
         <View>
-          {isLoading ? (
-            <LoadingComponent />
-          ) : (
-            <>
-              {contenToRender} 
-              <EndOf />
-            </>
-          )}
+          {isLoading ? (<LoadingComponent />) : 
+          (<>
+            {contenToRender} 
+            <EndOf />
+          </>)}
         </View>
       </ScrollView>
     </View>
@@ -153,20 +136,3 @@ const SD_Submission = () => {
 };
 
 export default SD_Submission;
-
-const styles = StyleSheet.create({
-  searchInput: {
-    borderWidth: 1,
-    borderColor: BiruKu,
-    borderRadius: 6,
-    backgroundColor: '#F7F7F8',
-    paddingHorizontal: 8,
-    paddingVertical: 1,
-    marginHorizontal: 15,
-    marginBottom: 5,
-    height: 35,
-    color: BiruKu,
-    fontFamily: 'Poppins-Medium',
-    fontSize: 13,
-  }
-});

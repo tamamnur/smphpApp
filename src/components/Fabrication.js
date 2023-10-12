@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
       backgroundColor:active ? WarnaAbu: '#CECECE',
       borderWidth: active ? 0 : 3,
       borderColor: BiruKu,
-      marginHorizontal: 3,
+      marginHorizontal: 5,
       marginTop: 20,
   }),
   plate: active => ({

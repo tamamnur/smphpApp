@@ -87,10 +87,10 @@ const FormPOConstruction = (props) => {
     
     for (const value of constructionInfo.Panels) {
       if (value.selected === true) {
-        if (!value.stageExist) {
-          hasPanelWithoutPO = true;
-          break;
-        }
+        // if (!value.stageExist) {
+        //   hasPanelWithoutPO = true;
+        //   break;
+        // }
 
         let MonitoringID = null;
         if (value.MonitoringID) {
@@ -121,7 +121,7 @@ const FormPOConstruction = (props) => {
         if (constructionInfo.stagesPODetails === 'Schedule') {
           await Procurement.doc('Construction').update({
             Schedule: firestore.Timestamp.fromDate(date),
-          });
+          })
           await firestore().collection('Project').doc(constructionInfo.FSProjectId).update({
             status: 'Procurement Construction - Scheduled',
             updatedAt: firestore.Timestamp.fromDate(date),

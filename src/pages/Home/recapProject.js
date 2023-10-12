@@ -9,7 +9,7 @@ const Project = props => {
   const navigation = useNavigation();
   return (
     <View style={styles.recap}>
-      <View style={{width: 250}}>
+      <View style={{width: '80%'}}>
         <TouchableOpacity
           onPress={() => navigation.navigate('ProjectDetails', {id: props.id})}>
           <Text style={styles.projectName}>{props.ProjectName} </Text>
@@ -44,7 +44,6 @@ class RecapProject extends Component {
       const projects = snapshot.docs.map(document => {
         const data = document.data();
         const updatedAt = data.updatedAt.toDate();
-        // const progres = data.
         return {
           id: document.id, ...data, updatedAt: FormatDate(updatedAt)
         }
@@ -110,8 +109,8 @@ const styles = StyleSheet.create({
     elevation: 8,
   },
   title: { fontFamily: 'Acme-Regular', fontSize: 20, color: '#FFF', marginHorizontal: 20, },
-  recap: { marginHorizontal: 15, marginVertical: 6, flexDirection: 'row', },
-  projectName: { color: BiruKu, fontFamily: 'Poppins-Medium', fontSize: 13, },
-  status: { color: BiruKu, fontFamily: 'Poppins-Regular', fontSize: 11, marginHorizontal: 5, },
-  update: { color: BiruKu, fontFamily: 'Poppins-Medium', fontSize: 10, marginTop: 22, textAlign: 'right', },
+  recap: { marginHorizontal: 10, marginVertical: 5, flexDirection: 'row', },
+  projectName: { color: BiruKu, fontFamily: 'Poppins-Medium', fontSize: 13,},
+  status: { color: BiruKu, fontFamily: 'Poppins-Regular', fontSize: 11, marginHorizontal: 5,},
+  update: { color: BiruKu, fontFamily: 'Poppins-Medium', fontSize: 10, marginTop: 22, width: '22%',},
 });

@@ -122,7 +122,7 @@ const User = props => {
       <TouchableOpacity onPress={() => handleReload()}>
         <Text style={styles.btnRefresh}>Refresh</Text>
       </TouchableOpacity>
-      <View style={{marginHorizontal: 30, width: 200}}>
+      <View style={{marginHorizontal: 15, width: 200}}>
         <TouchableOpacity onPress={() => navigation.navigate('Profile Edit')}>
           <Text style={styles.btnR}>Edit Profil</Text>
         </TouchableOpacity>
@@ -159,7 +159,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Poppins-Medium',
     fontSize: 16,
     marginBottom: 13,
-    padding: 10,
+    paddingVertical: 10,
     color: BiruKu,
     height: 45,
   },
@@ -169,6 +169,7 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     borderColor: BiruKu,
     borderRadius: 5,
+    marginLeft: 5,
     marginBottom: 15,
     height: 45,
     width: width*0.7,

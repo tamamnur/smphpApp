@@ -94,7 +94,7 @@ const ConstructionSchedule = () => {
   });
 
   const renderedPanelList = filteredPanelData.filter(item => item.DateMonitoring)
-  .sort((a, b) => new Date(b.DateMonitoring) - new Date(a.DateMonitoring))
+  .sort((b, a) => new Date(a.DateMonitoring) - new Date(b.DateMonitoring))
   .map((item, index) => (
     <PanelProjectList
       key={index + 1}

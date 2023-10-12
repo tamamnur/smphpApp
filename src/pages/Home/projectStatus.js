@@ -1,9 +1,4 @@
-import {
-  Text,
-  StyleSheet,
-  View,
-  ScrollView,
-} from 'react-native';
+import { Text, StyleSheet, View, ScrollView, } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {IconBack, LogoSmpHP} from '../../assets';
 import {BiruKu} from '../../utils/constant';

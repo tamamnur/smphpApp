@@ -51,6 +51,7 @@ import WiringFinish from '../pages/Discover/fabWiringFinish'
 import WiringStart from '../pages/Discover/fabWiringStart'
 import TestReport from '../pages/Discover/endTested'
 import DeliveryReport from '../pages/Discover/endDelivery'
+import PanelNameInputEdit from '../pages/Home/panelNameInputEdit'
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -76,7 +77,8 @@ const SecuredNav = () => {
       <Stack.Screen name="ProjectStatus" component={ProjectStatus} options={{ headerShown: false}}/>
 
       <Stack.Screen name="ProjectDetailsEdit" component={ProjectDetailsEdit} options={{ headerShown: false}}/>
-      <Stack.Screen name="PanelNameEdit" component={PanelNameEdit} options={{ headerShown: false}}/>
+      <Stack.Screen name="PanelNameInputEdit" component={PanelNameInputEdit} options={{ headerShown: false}}/>
+      {/* <Stack.Screen name="PanelNameEdit" component={PanelNameEdit} options={{ headerShown: false}}/> */}
       
       <Stack.Screen name="FormShopdrawing" component={FormShopdrawing} options={{ headerShown: false}}/>
       <Stack.Screen name="FormProcurement" component={FormProcurement} options={{ headerShown: false}}/>
