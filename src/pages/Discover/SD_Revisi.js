@@ -91,28 +91,29 @@ const SD_Revision = () => {
     );
   });
 
-  // const renderedPanelList = filteredPanelData
-  //   .filter(item => item.DateSubmit)
-  //   .sort((a, b) => new Date(b.DateSubmit) - new Date(a.DateSubmit))
-  //   .map((item, index) => (
-  //     <PanelProjectList
-  //       key={index+1}
-  //       projectName={item.projectName}
-  //       panelName={item.panelName}
-  //       status={item.DateSubmit}
-  //     />
-  //   ));
+  const renderedPanelList = filteredPanelData
+    .filter(item => item.DateUpdate)
+    // .sort((a, b) => new Date(a.DateUpdate) - new Date(b.DateUpdate))
+    .sort((a, b) => new Date(b.DateUpdate) - new Date(a.DateUpdate))
+    .map((item, index) => (
+      <PanelProjectList
+        key={index+1}
+        projectName={item.projectName}
+        panelName={item.panelName}
+        status={item.DateUpdate}
+      />
+    ));
 
-  const renderedPanelList = filteredPanelData.filter(item => item.DateUpdate)
-  .sort((a, b) => new Date(b.DateUpdate) - new Date(a.DateUpdate))
-  .map((item, index) => (
-    <PanelProjectList
-      key={index + 1}
-      projectName={item.projectName}
-      panelName={item.panelName}
-      status={item.DateUpdate}
-    />
-  ))
+  // const renderedPanelList = filteredPanelData.filter(item => item.DateUpdate)
+  // .sort((a, b) => new Date(b.DateUpdate) - new Date(a.DateUpdate))
+  // .map((item, index) => (
+  //   <PanelProjectList
+  //     key={index + 1}
+  //     projectName={item.projectName}
+  //     panelName={item.panelName}
+  //     status={item.DateUpdate}
+  //   />
+  // ))
 
   const dataNotFound = (
     <Text style={styles.dataNotFound}>No matching result found.</Text>

@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, Dimensions, TouchableOpacity, } from 'react-native';
+import {StyleSheet, Text, View, Dimensions, TouchableOpacity, ScrollView} from 'react-native';
 import React, {Component, useState, useEffect} from 'react';
 import {HeaderInformation, Layanan} from '../../components';
 import RecapProject from './recapProject';
@@ -11,6 +11,7 @@ const Home = () => {
   const navigation = useNavigation();
   return (
     <View style={styles.page}>
+    {/* <ScrollView style={styles.page}> */}
       <View style={styles.Header}>
         <Text style={styles.selamat}>Wellcome,</Text>
         <View style={{marginBottom: -10, marginTop: -10}}>
@@ -30,6 +31,7 @@ const Home = () => {
           </Text>
         </TouchableOpacity>
       </View>
+    {/* </ScrollView> */}
     </View>
   );
 };
@@ -69,8 +71,9 @@ const styles = StyleSheet.create({
   },
   selamat: {
     fontFamily: 'Poppins-Bold',
-    fontSize: 22,
+    fontSize: 20,
     marginLeft: 20,
+    marginBottom: 5,
     color: BiruKu,
   },
 

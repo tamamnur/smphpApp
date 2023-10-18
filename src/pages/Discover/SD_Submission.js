@@ -11,6 +11,7 @@ import PanelHeadTable from '../../components/panelHeadTable';
 import LoadingComponent from '../../components/LoadingComponent';
 import DataNotFound from '../../components/dataNotFound';
 import SearchBar from '../../components/SearchBar';
+import Header from '../../components/Header';
 
 const height = Dimensions.get('window').height;
 const SD_Submission = () => {
@@ -111,10 +112,7 @@ const SD_Submission = () => {
 
   return (
     <View>
-      <View style={{flexDirection: 'row', marginHorizontal: 20, marginTop: 30}}>
-        <IconBack onPress={() => navigation.navigate('Discover')} />
-        <LogoSmpHP style={{marginLeft: 200}} />
-      </View>
+      <Header/>
       <Title2 TxtTitle="SHOPDRAWING" SubTitle="SUBMISSION" />
       {isLoading ? (<></>) :
       (<>

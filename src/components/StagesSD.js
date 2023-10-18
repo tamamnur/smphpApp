@@ -29,30 +29,29 @@ export default StagesSD
 
 const styles = StyleSheet.create({
     area:{
-        backgroundColor: '#EDEDED', 
+        // backgroundColor: '#EDEDED', 
         borderRadius:5,
         borderWidth: 1,
         borderColor: BiruKu,
         marginVertical: 1,
         marginLeft: 5, 
         marginRight: -5, 
-        elevation: 1,
         height: 33,
         // fontSize: 13,
       },
       picked:{
         // fontSize: 13,
         // fontFamily: 'Poppins-Medium',
-        marginTop:-10,
-        marginLeft: -8
+        marginTop:-13,
+        marginLeft: -9
     },
     pickerItem:{
-      fontSize: 14,
-      fontFamily: 'Poppins-Medium',
+      fontSize: 17,
+      // fontFamily: 'Poppins-Medium',
       color: BiruKu
     },
     pickerItem0:{
-      fontSize: 14,
+      // fontSize: 15,
       fontFamily: 'Poppins-Italic',
       color: BiruKu
     }

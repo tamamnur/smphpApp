@@ -31,10 +31,12 @@ const PickedDateEdit = (props) => {
 
   return (
     <View style={styles.container}>
-    <View style={{width: width * 0.3}}>
+    {/* <View style={{width: width * 0.3}}> */}
+    <View style={{width: '30%'}}>
       <Text style={styles.label}>Date PO</Text>
     </View>
-    <View style={{width: width * 0.63}}>
+    {/* <View style={{width: width * 0.63}}> */}
+    <View style={{width: '70%'}}>
     <TouchableOpacity activeOpacity={0} onPress={() => setShow(true)}>
       <Text style={styles.value}>{selectDate}</Text>
     </TouchableOpacity>
@@ -71,7 +73,7 @@ const styles = StyleSheet.create({
     height: 32,
     paddingVertical: 4,
     paddingHorizontal: 6,
-    color: 'blue',
+    color: 'orange',
     textAlignVertical: 'center',
   },
 })

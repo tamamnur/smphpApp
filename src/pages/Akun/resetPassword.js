@@ -2,10 +2,11 @@ import {StyleSheet, Text, View, ScrollView, Alert} from 'react-native';
 import React, {useState} from 'react';
 import {LogoSmpHP, IconBack} from '../../assets';
 import {BiruKu} from '../../utils/constant';
-import InputData from '../../components/InputData';
+import InputDataUser from '../../components/InputDataUser';
 import Button6 from '../../components/Button6';
 import {useNavigation} from '@react-navigation/native';
 import firebase from '@react-native-firebase/app';
+import Header from '../../components/Header';
 
 export default function ResetPassword() {
   const navigation = useNavigation();
@@ -16,7 +17,7 @@ export default function ResetPassword() {
   const handleResetPassword = () => {
     if (email === '') {
       setEmailErr(true);
-      setError('Anda belum memasukan alamat email anda.');
+      setError('You have not entered your email address.');
       return;
     }
     setEmailErr(false);
@@ -27,24 +28,25 @@ export default function ResetPassword() {
       .then(() => {
         Alert.alert(
           'Reset Password',
-          'Konfirmasi untuk reset password telah dikirim. Silahkan periksa email Anda',
+          'The password reset confirmation has been sent. \n Please check your email',
           [
             { text: 'OK', onPress: () => { navigation.navigate('Login'); }, },
           ],
         );
       })
       .catch(error => {
-        Alert.alert('Reset Password', 'Terjadi kesalahan saat mengirim email untuk reset password.')
-        console.log(error);
+        Alert.alert('Reset Password', 'An error occurred while sending the email for password reset.')
+        navigation.navigate('Login')
+        // console.log(error);
         setError(
-          'Terjadi kesalahan mengirim email untuk reset password, Pastikan email terdaftar.',
+          'There was an error sending the email for password reset. Please make sure the email is registered.',
         );
       });
   };
 
   return (
     <ScrollView>
-      <View
+      {/* <View
         style={{
           flexDirection: 'row',
           marginHorizontal: 20,
@@ -52,9 +54,10 @@ export default function ResetPassword() {
         }}>
         <IconBack onPress={() => navigation.goBack()} />
         <LogoSmpHP style={{marginLeft: 200}} />
-      </View>
+      </View> */}
+      <Header />
       <Text style={styles.title}>RESET PASSWORD</Text>
-      <InputData label="Email" onChangeText={email => setEmail(email)} />
+      <InputDataUser label="Email" onChangeText={email => setEmail(email)} />
       {error ? (
         <Text style={{color: 'red', fontSize: 14, textAlign: 'center'}}>
           {error}

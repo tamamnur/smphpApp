@@ -32,7 +32,7 @@ const PickedDateM = props => {
     <View style={{flexDirection: 'column'}}>
       <TouchableOpacity activeOpacity={0} onPress={() => setShow(true)}>
         <Text
-          style={{color: BiruKu, fontSize: 14, padding: 5, margin: 2}}>
+          style={{color: BiruKu, fontSize: 16, padding: 5, margin: 2}}>
           {selectDate}
         </Text>
       </TouchableOpacity>

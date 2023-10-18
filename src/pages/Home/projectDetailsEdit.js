@@ -1,6 +1,5 @@
-import {View, ToastAndroid, Alert, Text} from 'react-native';
+import {View, ToastAndroid, Alert, Text, ScrollView} from 'react-native';
 import React, {useState, useEffect} from 'react';
-import {IconBack, LogoSmpHP} from '../../assets';
 import {BiruKu, Darkred} from '../../utils/constant';
 import {useNavigation} from '@react-navigation/native';
 import firestore from '@react-native-firebase/firestore';
@@ -10,6 +9,7 @@ import Title2 from '../../components/Title2';
 import InfoProjectEdit from '../../components/InfoProjectEdit';
 import LoadingComponent from '../../components/LoadingComponent';
 import PickedDateEdit from '../../components/pickedDateEdit';
+import Header from '../../components/Header';
 
 const ProjectDetailsEdit = props => {
   const id = props.route.params.id;
@@ -113,15 +113,12 @@ const ProjectDetailsEdit = props => {
     }
   };
   return (
-    <View style={{flex: 1}}>
-      <View style={{flexDirection: 'row', marginTop: 30, marginHorizontal: 30}}>
-        <IconBack onPress={() => navigation.goBack()} />
-        <LogoSmpHP style={{marginLeft: 200}} />
-      </View>
+    <View style={{flex: 1, marginBottom: 0}}>
+      <Header />
       {isLoading ? (
         <LoadingComponent />
       ) : (
-        <View>
+        <ScrollView>
           <Title2 TxtTitle={'EDIT PROJECT DETAILS'} />
           <InfoProjectEdit
             label={'Number SO'}
@@ -157,7 +154,7 @@ const ProjectDetailsEdit = props => {
               setProjectInfo({...projectInfo, DatePO: selected})
             }
           />
-          <View style={{marginTop: 60}}>
+          <View style={{marginTop: 30}}>
             {error ? (
               <Text style={{color: 'red',fontSize: 15,textAlign: 'center', marginBottom:-15}}>
                 {error}</Text> ) : null}
@@ -171,7 +168,7 @@ const ProjectDetailsEdit = props => {
               fontColor={'white'} onPress={handleDeleteProject}
             />
           </View>
-        </View>
+        </ScrollView>
       )}
     </View>
   );

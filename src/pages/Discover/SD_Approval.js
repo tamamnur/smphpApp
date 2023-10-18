@@ -6,7 +6,7 @@ import {BiruKu} from '../../utils/constant';
 import {useNavigation} from '@react-navigation/native';
 import firestore from '@react-native-firebase/firestore';
 import PanelProjectList from '../../components/panelProjectList';
-import FormatDate from '../../components/FormatDate';
+import FormatDate2 from '../../components/FormatDate2';
 import EndOf from '../../components/Footer';
 import PanelHeadTable from '../../components/panelHeadTable';
 import LoadingComponent from '../../components/LoadingComponent'
@@ -51,7 +51,7 @@ const SD_Approval = () => {
                 const drawingData = drawingDoc.data();
                 if (drawingData.DateApprove) {
                   const dateValue = drawingData.DateApprove;
-                  const dateRevision = FormatDate(dateValue.toDate());
+                  const dateRevision = FormatDate2(dateValue.toDate());
                   panelNameData.push({
                     projectName: panel.projectName,
                     panelName: panel.pnameInput,

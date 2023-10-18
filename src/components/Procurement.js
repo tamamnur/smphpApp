@@ -28,13 +28,11 @@ const styles = StyleSheet.create({
         backgroundColor:active ? WarnaAbu: '#CECECE',
         borderWidth: active ? 0 : 3,
         borderColor: active ? 0: BiruKu,
-        marginLeft: 5,
+        marginHorizontal: 5,
         marginTop: 20,
     }),
     plate: active => ({
-      // marginTop: 6,
       paddingBottom: 6,
-      // paddingHorizontal: 5,
       borderRadius: 10,
       color: BiruKu,
       fontFamily: 'Poppins-Medium',
@@ -42,6 +40,5 @@ const styles = StyleSheet.create({
     icon:{
       alignItems:'center',
       marginTop: 8,
-      // marginHorizontal: 8,
     }
 })

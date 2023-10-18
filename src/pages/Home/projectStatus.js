@@ -1,19 +1,22 @@
-import { Text, StyleSheet, View, ScrollView, } from 'react-native';
+import { Text, StyleSheet, View, ScrollView, Dimensions, } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {IconBack, LogoSmpHP} from '../../assets';
 import {BiruKu} from '../../utils/constant';
 import {useNavigation} from '@react-navigation/native';
 import firestore from '@react-native-firebase/firestore';
-import FormatDate from '../../components/FormatDate';
+import FormatDate2 from '../../components/FormatDate2';
 import LoadingComponent from '../../components/LoadingComponent';
-import StagesSwitch from '../../components/SwitchView';
+import StagesSwitch from '../../components/StageSwitchView';
 import StatusPre from './projStatusPre';
 import StatusPro from './projStatusPro';
 import StatusFull from './projStatusFull';
 import EndOf from '../../components/Footer';
+import Header from '../../components/Header';
+import Title2 from '../../components/Title2'
 
 const ProjectStatus = props => {
   const navigation = useNavigation();
+  const height = Dimensions.get('screen')
   const [isMounted, setIsMounted] = useState(true);
   const [selectedStage, setSelectedStage] = useState('Full Stages');
   const [state, setState] = useState({
@@ -116,45 +119,45 @@ const ProjectStatus = props => {
 
               const Result = {
                 SubmissionDate: SubmissionDate
-                  ? FormatDate(SubmissionDate.toDate()) : '---',
+                  ? FormatDate2(SubmissionDate.toDate()) : '---',
                 RevisionDate: RevisionDate
-                  ? FormatDate(RevisionDate.toDate()) : '---',
+                  ? FormatDate2(RevisionDate.toDate()) : '---',
                 ApprovalDate: ApprovalDate
-                  ? FormatDate(ApprovalDate.toDate()) : '---',
+                  ? FormatDate2(ApprovalDate.toDate()) : '---',
                 ConstPO: ConstPO 
-                  ? FormatDate(ConstPO.toDate()) : '---',
+                  ? FormatDate2(ConstPO.toDate()) : '---',
                 ConstSched: ConstSched
-                  ? FormatDate(ConstSched.toDate()) : '---',
+                  ? FormatDate2(ConstSched.toDate()) : '---',
                 ConstReali: ConstReali
-                  ? FormatDate(ConstReali.toDate()) : '---',
+                  ? FormatDate2(ConstReali.toDate()) : '---',
                 BusbarPO: BusbarPO 
-                  ? FormatDate(BusbarPO.toDate()) : '---',
+                  ? FormatDate2(BusbarPO.toDate()) : '---',
                 BusbarSched: BusbarSched
-                  ? FormatDate(BusbarSched.toDate()) : '---',
+                  ? FormatDate2(BusbarSched.toDate()) : '---',
                 BusbarReali: BusbarReali
-                  ? FormatDate(BusbarReali.toDate()) : '---',
+                  ? FormatDate2(BusbarReali.toDate()) : '---',
                 ComponentPO: ComponentPO
-                  ? FormatDate(ComponentPO.toDate()) : '---',
+                  ? FormatDate2(ComponentPO.toDate()) : '---',
                 ComponentSched: ComponentSched
-                  ? FormatDate(ComponentSched.toDate()) : '---',
+                  ? FormatDate2(ComponentSched.toDate()) : '---',
                 ComponentReali: ComponentReali
-                  ? FormatDate(ComponentReali.toDate()) : '---',
+                  ? FormatDate2(ComponentReali.toDate()) : '---',
                 LayoutingStart: LayoutStart
-                  ? FormatDate(LayoutStart.toDate()) : '---',
+                  ? FormatDate2(LayoutStart.toDate()) : '---',
                 LayoutingFinish: LayoutFinish
-                  ? FormatDate(LayoutFinish.toDate()) : '---',
+                  ? FormatDate2(LayoutFinish.toDate()) : '---',
                 MechanicStart: MechStart
-                  ? FormatDate(MechStart.toDate()) : '---',
+                  ? FormatDate2(MechStart.toDate()) : '---',
                 MechanicFinish: MechFinish
-                  ? FormatDate(MechFinish.toDate()) : '---',
+                  ? FormatDate2(MechFinish.toDate()) : '---',
                 WiringStart: WiringStart
-                  ? FormatDate(WiringStart.toDate()) : '---',
+                  ? FormatDate2(WiringStart.toDate()) : '---',
                 WiringFinish: WiringFinish
-                  ? FormatDate(WiringFinish.toDate()) : '---',
+                  ? FormatDate2(WiringFinish.toDate()) : '---',
                 TestedPanel: TestedPanel
-                  ? FormatDate(TestedPanel.toDate()) : '---',
+                  ? FormatDate2(TestedPanel.toDate()) : '---',
                 SentPanel: SentPanel 
-                  ? FormatDate(SentPanel.toDate()) : '---',
+                  ? FormatDate2(SentPanel.toDate()) : '---',
               };
               return {id: item.id, ...item.data(), monitoring: Result};
             }
@@ -215,7 +218,7 @@ const ProjectStatus = props => {
       return (
         <View style={{flexDirection: 'row', marginHorizontal: 9}}>
           <Text style={styles.SDHeaderNo}>No.</Text>
-          <Text style={styles.SDHeaderPanelName}>Panel Name</Text>
+          <Text style={styles.FABHeaderPanelName}>Panel Name</Text>
           <Text style={styles.FABHeaderStatus}>Start</Text>
           <Text style={styles.FABHeaderStatus}>Finish</Text>
         </View>
@@ -225,14 +228,16 @@ const ProjectStatus = props => {
       return (
         <View style={{flexDirection: 'row', marginHorizontal: 9}}>
           <Text style={styles.SDHeaderNo}>No.</Text>
-          <Text style={styles.SDHeaderPanelName}>Panel Name</Text>
+          <Text style={styles.FABHeaderPanelName}>Panel Name</Text>
           <Text style={styles.FABHeaderStatus}>Tested</Text>
           <Text style={styles.FABHeaderStatus}>Delivered</Text>
         </View>
       );
-    } else {
+    } 
+    else {
       return (
         <View style={{flexDirection: 'row', marginHorizontal: 9}}>
+        {/* <View style={{flexDirection: 'row', marginLeft: 8, marginRight: 27}}> */}
           <Text style={styles.headTableNo}>No.</Text>
           <Text style={styles.headTablePanelName}>Panel Name</Text>
           <Text style={styles.headTableStatus}>Status</Text>
@@ -243,21 +248,24 @@ const ProjectStatus = props => {
 
   return (
     <View>
-      <View style={{flexDirection: 'row', marginTop: 30, marginHorizontal: 30}}>
+      {/* <View style={{flexDirection: 'row', marginTop: 30, marginHorizontal: 30}}>
         <IconBack onPress={() => navigation.navigate('Home')} />
         <LogoSmpHP style={{marginLeft: 180}} />
-      </View>
+      </View> */}
+      <Header/>
       {state.isLoading ? (
         <LoadingComponent />
       ) : (
-        <View>
-          <Text style={styles.title}>{state.Project.ProjectName}</Text>
-          <Text style={styles.subtitle}>Project Status</Text>
+        // <View>
+        <View style={{marginTop: -18, marginBottom: 20}}>
+          <Title2 TxtTitle={state.Project.ProjectName} SubTitle={'Project Status'}/>
+          {/* <Text style={styles.title}>{state.Project.ProjectName}</Text>
+          <Text style={styles.subtitle}>Project Status</Text> */}
           <StagesSwitch onSelect={selected => setSelectedStage(selected)} />
           {selectedStage === 'Shopdrawing' ? (
             <View>
               {headerStatus()}
-              <ScrollView>
+              <ScrollView style={{height: '80%'}}>
                 {state.ListPanel.map((item, index) => (
                   <StatusPre
                     key={item.id}
@@ -373,7 +381,7 @@ const ProjectStatus = props => {
           ) : selectedStage === 'Finishing' ? (
             <View>
               {headerStatus()}
-              <ScrollView>
+              <ScrollView style={{height: '75%'}}>
                 {state.ListPanel.map((item, index) => (
                   <StatusPro
                     key={item.id}
@@ -383,13 +391,15 @@ const ProjectStatus = props => {
                     proNd={item.monitoring?.SentPanel || '---'}
                   />
                 ))}
-              </ScrollView>
               <EndOf />
+
+              </ScrollView>
+              {/* <EndOf /> */}
             </View>
           ) : (
             <View>
               {headerStatus()}
-              <ScrollView style={{height: 550}}>
+              <ScrollView style={{height: '75%'}}>
                 {state.ListPanel.map((item, index) => {
                   return (
                     <StatusFull
@@ -419,8 +429,8 @@ const ProjectStatus = props => {
                     />
                   );
                 })}
-              <EndOf />
               </ScrollView>
+              <EndOf />
             </View>
           )}
         </View>
@@ -448,90 +458,107 @@ const styles = StyleSheet.create({
     color: BiruKu,
   },
   headTableNo: {
-    fontFamily: 'Poppins-Medium',
-    fontSize: 12,
+    fontFamily: 'Poppins-SemiBold',
+    fontSize: 13,
     marginVertical: 2,
     paddingVertical: 5,
     color: BiruKu,
     borderWidth: 1,
     borderColor: BiruKu,
-    width: 25,
+    // width: '8%',
+    width: 30,
     height: 30,
     textAlign: 'center',
   },
   headTablePanelName: {
-    fontFamily: 'Poppins-Medium',
-    fontSize: 12,
+    fontFamily: 'Poppins-SemiBold',
+    fontSize: 14,
     marginVertical: 2,
-    paddingLeft: 10,
+    marginLeft: -1,
+    // paddingLeft: 10,
     color: BiruKu,
     borderWidth: 1,
     borderColor: BiruKu,
-    width: 220,
+    width: '56%',
     height: 30,
     textAlignVertical: 'center',
     textAlign: 'center',
   },
   headTableStatus: {
-    fontFamily: 'Poppins-Medium',
-    fontSize: 12,
+    fontFamily: 'Poppins-SemiBold',
+    fontSize: 14,
     marginVertical: 2,
     marginLeft: -1,
     color: BiruKu,
     borderWidth: 1,
     borderColor: BiruKu,
-    width: 130,
+    width: '37%',
     height: 30,
     textAlignVertical: 'center',
     textAlign: 'center',
   },
   SDHeaderNo: {
-    fontFamily: 'Poppins-Medium',
-    fontSize: 12,
+    fontFamily: 'Poppins-SemiBold',
+    fontSize: 13,
     marginVertical: 2,
     paddingVertical: 5,
     color: BiruKu,
     borderWidth: 1,
     borderColor: BiruKu,
+    // width: 25,
     width: 25,
     height: 30,
     textAlign: 'center',
   },
   SDHeaderPanelName: {
-    fontFamily: 'Poppins-Medium',
-    fontSize: 12,
+    fontFamily: 'Poppins-SemiBold',
+    fontSize: 14,
     marginVertical: 2,
     paddingLeft: 10,
     color: BiruKu,
     borderWidth: 1,
     borderColor: BiruKu,
-    width: 145,
+    // width: 145,
+    width: '40%',
     height: 30,
     textAlignVertical: 'center',
     textAlign: 'center',
   },
   SDHeaderStatus: {
-    fontFamily: 'Poppins-Medium',
-    fontSize: 12,
+    fontFamily: 'Poppins-SemiBold',
+    fontSize: 13,
     marginVertical: 2,
     marginLeft: -1,
     color: BiruKu,
     borderWidth: 1,
     borderColor: BiruKu,
-    width: 69,
+    width: '18%',
+    height: 30,
+    textAlignVertical: 'center',
+    textAlign: 'center',
+  },
+  FABHeaderPanelName: {
+    fontFamily: 'Poppins-SemiBold',
+    fontSize: 14,
+    marginVertical: 2,
+    marginLeft: -1,
+    color: BiruKu,
+    borderWidth: 1,
+    borderColor: BiruKu,
+    width: '53%',
     height: 30,
     textAlignVertical: 'center',
     textAlign: 'center',
   },
   FABHeaderStatus: {
-    fontFamily: 'Poppins-Medium',
-    fontSize: 12,
+    fontFamily: 'Poppins-SemiBold',
+    fontSize: 14,
     marginVertical: 2,
     marginLeft: -1,
     color: BiruKu,
     borderWidth: 1,
     borderColor: BiruKu,
-    width: 102,
+    width: '20%',
     height: 30,
     textAlignVertical: 'center',
     textAlign: 'center',

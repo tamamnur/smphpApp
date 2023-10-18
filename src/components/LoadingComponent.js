@@ -4,7 +4,7 @@ import { View, ActivityIndicator } from 'react-native';
 const LoadingComponent = () => {
   return (
     <View>
-      <ActivityIndicator size={'large'} marginTop={170} />
+      <ActivityIndicator size={'large'} color={'#427583'} marginTop={170} />
     </View>
   );
 };

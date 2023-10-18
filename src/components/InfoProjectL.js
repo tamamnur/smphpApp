@@ -2,46 +2,44 @@ import {StyleSheet, Text, View} from 'react-native';
 import React from 'react';
 import {BiruKu} from '../utils/constant';
 
-const InfoProject = props => {
+const InfoProjectL = props => {
   return (
     <View style={styles.container}>
-      <View style={{width: '25%'}}>
+      <View style={{width: '29%'}}>
         <Text style={styles.label}>{props.label}</Text>
       </View>
-      <View style={{width: '70%'}}>
+      <View style={{width: '66%'}}>
         <Text style={styles.value}>{props.value}</Text>
       </View>
     </View>
   );
 };
 
-export default InfoProject;
+export default InfoProjectL;
 
 const styles = StyleSheet.create({
   container: {
-    marginHorizontal: 10,
     flexDirection: 'row',
     alignItems: 'center',
+    marginVertical: 4,
   },
   label: {
     fontFamily: 'Poppins-Medium',
-    fontSize: 12,
-    marginVertical: 4,
-    padding: 2,
+    fontSize: 15,
+    padding: 10,
     color: BiruKu,
-    height: 25,
+    height: 45,
     textAlignVertical: 'center',
   },
   value: {
     fontFamily: 'Poppins-SemiBold',
-    fontSize: 12,
-    borderWidth: 1,
-    borderColor: BiruKu,
-    borderRadius: 2,
-    height: 25,
-    padding: 2,
-    paddingHorizontal: 5,
-    color: BiruKu,
+    fontSize: 15,
+    paddingLeft: 10,
     textAlignVertical: 'center',
+    borderWidth: 1.5,
+    borderColor: BiruKu,
+    borderRadius: 5,
+    height: 45,
+    color: BiruKu,
   },
 });

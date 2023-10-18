@@ -2,6 +2,7 @@ import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import React, {useState} from 'react';
 import {BiruKu} from '../../utils/constant';
 import Icon from 'react-native-vector-icons/AntDesign';
+import Icon_O from 'react-native-vector-icons/FontAwesome'
 
 const StatusFull = props => {
   const [togglePanel, setTogglePanel] = useState(false);
@@ -14,6 +15,7 @@ const StatusFull = props => {
   const [toggleFABLay, setToggleFABLay] = useState(false);
   const [toggleFABMec, setToggleFABMec] = useState(false);
   const [toggleFABWir, setToggleFABWir] = useState(false);
+  const IconO = () => { return <Icon_O name={'circle'} color={BiruKu} size={8}/>}
   const IconV = ({toggle}) => {
     return <Icon name={toggle ? 'right' : 'down'} color={'#BA0A3F'} />;
   };
@@ -75,19 +77,19 @@ const StatusFull = props => {
   return (
     <View>
       <View style={{marginTop: 0.5}}>
-        <View style={{flexDirection: 'row', marginHorizontal: 9}}>
+        <View style={{flexDirection: 'row', marginHorizontal: 8, width: '99%'}}>
           <Text style={styles.rowNo}>{props.nomorPanel}</Text>
           <View style={styles.rowPanelName}>
             <TouchableOpacity onPress={() => setTogglePanel(!togglePanel)}>
-              <View>
+              <View style={{flexDirection: 'row'}}>
                 <Text style={styles.tPanelName}>{props.panelName}</Text>
-              </View>
-              <View style={{width: 30, marginLeft: 190, marginTop: -15}}>
+                <View style={{marginTop: 8}}>
                 <Icon
                   name={togglePanel ? 'shrink' : 'arrowsalt'}
                   color={BiruKu}
                   size={12}
-                />
+                  />
+                  </View>
               </View>
             </TouchableOpacity>
           </View>
@@ -96,7 +98,7 @@ const StatusFull = props => {
       </View>
       {togglePanel && (
         <View style={styles.dropdown}>
-          <View style={{width: 250, marginLeft: 5, marginVertical: 2}}>
+          <View style={styles.stages}>
             <TouchableOpacity onPress={() => setToggleSD(!toggleSD)}>
               <Text style={styles.headStatus}>
                 <IconV toggle={toggleSD} /> Shopdrawing
@@ -104,10 +106,10 @@ const StatusFull = props => {
             </TouchableOpacity>
             {toggleSD && (
               <View style={{flexDirection: 'row'}}>
-                <View style={{width: 250}}>
-                  <Text style={styles.status}>{'\u2B16'} Submission</Text>
-                  <Text style={styles.status}>{'\u2B16'} Revisi</Text>
-                  <Text style={styles.status}>{'\u2B16'} Approval</Text>
+                <View style={{width: '100%'}}>
+                  <Text style={styles.status}><IconO/> Submission</Text>
+                  <Text style={styles.status}><IconO/> Revisi</Text>
+                  <Text style={styles.status}><IconO/> Approval</Text>
                 </View>
                 <View style>
                   <Text style={styles.update}>{props.dateSD_Submit}</Text>
@@ -117,11 +119,13 @@ const StatusFull = props => {
               </View>
             )}
           </View>
-          <View style={{width: 250, marginLeft: 5}}>
+          <View style={{width: '95%', marginLeft: 5}}>
             <TouchableOpacity onPress={() => setTogglePO(!togglePO)}>
+              <View style={{width: '67%'}}>
               <Text style={styles.headStatus}>
                 <IconV togglePO={togglePO} /> Procurement
               </Text>
+              </View>
             </TouchableOpacity>
             {togglePO && (
               <View>
@@ -133,9 +137,9 @@ const StatusFull = props => {
                 {togglePOBox && (
                   <View style={{flexDirection: 'row'}}>
                     <View style={styles.subDropdownStatus}>
-                      <Text style={styles.status}>{'\u2B25'} Date Order</Text>
-                      <Text style={styles.status}>{'\u2B25'} Schedule</Text>
-                      <Text style={styles.status}>{'\u2B25'} Realization</Text>
+                      <Text style={styles.status}><IconO/> Date Order</Text>
+                      <Text style={styles.status}><IconO/> Schedule</Text>
+                      <Text style={styles.status}><IconO/> Realization</Text>
                     </View>
                     <View>
                       <Text style={styles.update}>{props.datePO_Const}</Text>
@@ -152,9 +156,9 @@ const StatusFull = props => {
                 {togglePOCu && (
                   <View style={{flexDirection: 'row'}}>
                     <View style={styles.subDropdownStatus}>
-                      <Text style={styles.status}>{'\u2B25'} Date Order</Text>
-                      <Text style={styles.status}>{'\u2B25'} Schedule</Text>
-                      <Text style={styles.status}>{'\u2B25'} Realization</Text>
+                      <Text style={styles.status}><IconO/> Date Order</Text>
+                      <Text style={styles.status}><IconO/> Schedule</Text>
+                      <Text style={styles.status}><IconO/> Realization</Text>
                     </View>
                     <View>
                       <Text style={styles.update}>{props.datePO_Busbar}</Text>
@@ -172,9 +176,9 @@ const StatusFull = props => {
                 {togglePOComp && (
                   <View style={{flexDirection: 'row'}}>
                     <View style={styles.subDropdownStatus}>
-                      <Text style={styles.status}>{'\u2B25'} Date Order</Text>
-                      <Text style={styles.status}>{'\u2B25'} Schedule</Text>
-                      <Text style={styles.status}>{'\u2B25'} Realization</Text>
+                      <Text style={styles.status}><IconO/> Date Order</Text>
+                      <Text style={styles.status}><IconO/> Schedule</Text>
+                      <Text style={styles.status}><IconO/> Realization</Text>
                     </View>
                     <View>
                       <Text style={styles.update}>{props.datePO_Comp}</Text>
@@ -187,11 +191,13 @@ const StatusFull = props => {
             )}
           </View>
 
-          <View style={{width: 250, marginLeft: 5, marginBottom: 3}}>
+          <View style={{width: '95%', marginLeft: 5}}>
             <TouchableOpacity onPress={() => setToggleFAB(!toggleFAB)}>
+              <View style={{width: '67%'}}>
               <Text style={styles.headStatus}>
                 <IconV toggle={toggleFAB} /> Fabrication
               </Text>
+              </View>
             </TouchableOpacity>
             {toggleFAB && (
               <View>
@@ -204,8 +210,8 @@ const StatusFull = props => {
                 {toggleFABLay && (
                   <View style={{flexDirection: 'row'}}>
                     <View style={styles.subDropdownStatus}>
-                      <Text style={styles.status}>{'\u2B25'} Start</Text>
-                      <Text style={styles.status}>{'\u2B25'} Finish</Text>
+                      <Text style={styles.status}><IconO/> Start</Text>
+                      <Text style={styles.status}><IconO/> Finish</Text>
                     </View>
                     <View>
                       <Text style={styles.update}>{props.start_layout}</Text>
@@ -222,8 +228,8 @@ const StatusFull = props => {
                 {toggleFABMec && (
                   <View style={{flexDirection: 'row'}}>
                     <View style={styles.subDropdownStatus}>
-                      <Text style={styles.status}>{'\u2B25'} Start</Text>
-                      <Text style={styles.status}>{'\u2B25'} Finish</Text>
+                      <Text style={styles.status}><IconO/> Start</Text>
+                      <Text style={styles.status}><IconO/> Finish</Text>
                     </View>
                     <View>
                       <Text style={styles.update}>{props.start_mech}</Text>
@@ -240,8 +246,8 @@ const StatusFull = props => {
                 {toggleFABWir && (
                   <View style={{flexDirection: 'row'}}>
                     <View style={styles.subDropdownStatus}>
-                      <Text style={styles.status}>{'\u2B25'} Start</Text>
-                      <Text style={styles.status}>{'\u2B25'} Finish</Text>
+                      <Text style={styles.status}><IconO/> Start</Text>
+                      <Text style={styles.status}><IconO/> Finish</Text>
                     </View>
                     <View>
                       <Text style={styles.update}>{props.start_wiring}</Text>
@@ -252,7 +258,7 @@ const StatusFull = props => {
               </View>
             )}
           </View>
-          <View style={{flexDirection: 'row', marginLeft:-10}}>
+          <View style={{flexDirection: 'row', marginLeft:-10, width: '120%'}}>
             <View style={styles.subDropdownStatus}>
               <Text style={styles.headStatus}>Tested</Text>
             </View>
@@ -260,7 +266,7 @@ const StatusFull = props => {
               <Text style={styles.update}>{props.tested}</Text>
             </View>
           </View>
-          <View style={{flexDirection: 'row', marginLeft:-10}}>
+          <View style={{flexDirection: 'row', marginLeft:-10, width: '120%'}}>
             <View style={styles.subDropdownStatus}>
               <Text style={styles.headStatus}>Sent</Text>
             </View>
@@ -285,7 +291,8 @@ const styles = StyleSheet.create({
     color: BiruKu,
     borderWidth: 1,
     borderColor: BiruKu,
-    width: 25,
+    // width: 25,
+    width: '8%',
     height: 30,
     textAlign: 'center',
   },
@@ -297,8 +304,10 @@ const styles = StyleSheet.create({
     color: BiruKu,
     borderWidth: 1,
     borderColor: BiruKu,
-    width: 220,
+    // width: 220,
+    width: '54%',
     height: 30,
+    flexDirection: 'row',
     textAlignVertical: 'center',
   },
   tPanelName: {
@@ -306,6 +315,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     paddingVertical: 3,
     color: BiruKu,
+    width: '91%'
   },
   tStatus: {
     fontFamily: 'Poppins-Medium',
@@ -315,15 +325,16 @@ const styles = StyleSheet.create({
     color: BiruKu,
     borderWidth: 1,
     borderColor: BiruKu,
-    width: 130,
+    width: '35%',
     height: 30,
     textAlignVertical: 'center',
     textAlign: 'center',
   },
   dropdown: {
+    width: '96%',
     borderColor: BiruKu,
     borderWidth: 1,
-    marginHorizontal: 10,
+    marginHorizontal: 9,
     paddingBottom: 10,
   },
   headStatus: {
@@ -344,7 +355,8 @@ const styles = StyleSheet.create({
   },
   subDropdownStatus: {
     marginLeft: 20,
-    width: 230,
+    width: '60%',
+    // borderWidth: 1
   },
   status: {
     fontFamily: 'Poppins-Medium',
@@ -357,7 +369,12 @@ const styles = StyleSheet.create({
     fontSize: 10.5,
     textAlign: 'center',
     color: BiruKu,
+    // width: '500%',
+    // borderWidth:1,
     width: 110,
     paddingVertical: 1,
   },
+  stages: {
+    width: '63%', marginLeft: 5, marginVertical: 2
+  }
 });

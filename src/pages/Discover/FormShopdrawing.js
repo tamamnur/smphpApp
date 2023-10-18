@@ -1,6 +1,5 @@
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, ToastAndroid, ScrollView, ActivityIndicator, } from 'react-native';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, ToastAndroid, ScrollView, } from 'react-native';
 import React, {useEffect, useMemo, useState, useRef} from 'react';
-import {IconBack, LogoSmpHP} from '../../assets';
 import {BiruKu} from '../../utils/constant';
 import {useNavigation} from '@react-navigation/native';
 import Title2 from '../../components/Title2';
@@ -8,6 +7,9 @@ import firestore from '@react-native-firebase/firestore';
 import PickedDateM from '../../components/pickedDateM';
 import StagesSD from '../../components/StagesSD';
 import CheckBox from '@react-native-community/checkbox';
+import Header from '../../components/Header';
+import Button6 from '../../components/Button6'
+import LoadingComponentS from '../../components/LoadingComponentS'
 
 const updateError = (error, stateUpdate) => {
   stateUpdate(error);
@@ -167,12 +169,11 @@ const FormShopdrawing = props => {
   // }
   ToastAndroid.show('Shopdrawing Procces Updated', ToastAndroid.SHORT)
   if (stages === 'Submission') {
-    navigation.navigate('SD_Submission');
+    navigation.replace('SD_Submission');
   } if (stages === 'Revision') {
-    navigation.navigate('SD_Revisi');
+    navigation.replace('SD_Revisi');
   } if (stages === 'Approval') {
-    navigation.navigate('SD_Approval');
-    // navigation.reset({ index:0, routes: [{ name: 'SD_Approval'}] });
+    navigation.replace('SD_Approval');
   }   
   };
 
@@ -266,48 +267,31 @@ const FormShopdrawing = props => {
   };
 
   return (
-    <View style={styles.page}>
-      <View style={styles.header}>
-        <IconBack
-          onPress={() => navigation.goBack()}
-          style={{marginTop: 10, marginLeft: 30}}
-        />
-        <LogoSmpHP style={{marginLeft: 180}} />
-      </View>
+    <ScrollView style={{marginVertical: 20}}>
+      <Header/>
       <Title2 TxtTitle="SHOP DRAWING" />
       {error ? (
         <Text style={{ color: 'red', fontSize: 13, textAlign: 'center', marginBottom: 10, marginTop: -20, }}>
           {error}
         </Text>
       ) : null}
-      <View>
-        <View style={{flexDirection: 'row', marginHorizontal: 20, }}>
-          <View>
+
+
+        <View style={{flexDirection: 'row', marginHorizontal: 10, width: '100%'}}>
+          <View style={{width: '25%'}}>
             <Text style={styles.left}>Project Name </Text>
             <Text style={styles.left}>Customer </Text>
             <Text style={styles.left}>Number SO </Text>
             <Text style={styles.left}>Stages </Text>
             <Text style={styles.left}>Date </Text>
           </View>
-          <View>
+          <View style={{width: '70%'}}>
             <TextInput
               style={styles.right}
               onChangeText={value => handleOnchangeText(value, 'projectName')}
               value={projectName}
             />
-            <Text style={styles.right}>{customer}</Text>
-            <Text style={styles.right}>{projectId}</Text>
-            <View style={{width: 250}}>
-              <StagesSD
-                onValueChange={value => handleOnchangeText(value, 'stages')}
-              />
-            </View>
-            <Text style={styles.txtInput} onChangeText={onDateChange}>
-              <PickedDateM onChangeText={onDateChange} />
-            </Text>
-          </View>
-        </View>
-        {isProjectNameSuggestionShow ? (
+            {isProjectNameSuggestionShow ? (
           <View style={styles.dropdownSugesstion}>
             {ProjectList.filter(item => {
               const searchTerm = projectName.toLowerCase();
@@ -328,16 +312,27 @@ const FormShopdrawing = props => {
             ))}
           </View>
         ) : null}
-      </View>
+            <Text style={styles.right}>{customer}</Text>
+            <Text style={styles.right}>{projectId}</Text>
+            <View style={{width: '98%'}}>
+              <StagesSD
+                onValueChange={value => handleOnchangeText(value, 'stages')}
+              />
+            </View>
+            <Text style={styles.txtInput} onChangeText={onDateChange}>
+              <PickedDateM onChangeText={onDateChange} />
+            </Text>
+          </View>
+        </View>
+        
+      {/* </View> */}
       <ScrollView style={{marginTop: 5}}>
         {isLoading ? (
-          <View style={{marginTop: 30}}>
-            <ActivityIndicator color={BiruKu} />
-          </View>
+          <LoadingComponentS />
         ) : (
           <View>
             <View style={styles.wrappPanelTitle}>
-              <Text style={{ fontFamily: 'Poppins-Medium', color: BiruKu, fontSize: 13, }}>
+              <Text style={{ fontFamily: 'Poppins-Medium', color: BiruKu, fontSize: 16, }}>
                 Panel Name
               </Text>
             </View>
@@ -368,90 +363,47 @@ const FormShopdrawing = props => {
           </View>
         )}
       </ScrollView>
-      <TouchableOpacity style={styles.btn} onPress={submitForm}>
-        <Text
-          style={{
-            textAlign: 'center',
-            color: '#FFF',
-            fontFamily: 'Poppins-Bold',
-            fontSize: 16,
-          }}>
-          Submit
-        </Text>
-      </TouchableOpacity>
-    </View>
+      <Button6 bgColor={BiruKu} fontColor={'white'} text={'Submit'} onPress={submitForm}/>
+    </ScrollView>
   );
 };
 
 export default FormShopdrawing;
 
 const styles = StyleSheet.create({
-  page: {
-    marginTop: 20,
-    // alignContent: 'center'
-  },
-  header: {
-    flexDirection: 'row',
-  },
-  btn: {
-    color: '#FFF',
-    backgroundColor: BiruKu,
-    marginTop: 35,
-    marginHorizontal: 55,
-    paddingHorizontal: 10,
-    paddingVertical: 14,
-    elevation: 10,
-    borderRadius: 10,
-    fontSize: 16,
-    fontFamily: 'Poppins-Bold',
-    textAlign: 'center',
-  },
-  container: {
-    justifyContent: 'flex-end',
-    flexDirection: 'row',
-    marginHorizontal: 20,
-  },
-  label: {
-    fontSize: 14,
-    fontFamily: 'Poppins-Regular',
-    marginBottom: 5,
-    color: BiruKu,
-    textAlignVertical: 'center',
-    textAlign: 'right',
-  },
   txtInput: {
     borderWidth: 1,
     borderColor: BiruKu,
     borderRadius: 5,
-    height: 33,
-    // padding: -10,
     marginVertical: 4,
-    fontSize: 13,
     marginLeft: 5,
-    width: 250,
+    height: 33,
   },
   dropdownSugesstion: {
-    position: 'absolute',
-    left: 118,
-    right: 26,
     borderWidth: 1,
     borderColor: BiruKu,
     borderTopColor: '#fff',
     borderBottomLeftRadius: 10,
     borderBottomRightRadius: 10,
     backgroundColor: '#E8E8E8',
-    top: 30,
+    marginLeft: 6,
+    position: 'absolute',
+    flex: 1,
+    top: 35,
+    width:'98%',
+    // left: 5,
+    // right: 0,
     zIndex: 1,
   },
   sugesstion: {
-    fontFamily: 'Poppins-Medium',
-    fontSize: 12,
+    fontFamily: 'Poppins-Regular',
+    fontSize: 14,
     color: BiruKu,
     marginHorizontal: 5,
   },
   pname: {
     fontFamily: 'Poppins-Medium',
-    fontSize: 12,
+    fontSize: 14,
     color: BiruKu,
     marginVertical: 2,
     marginHorizontal: 2,
@@ -459,11 +411,11 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
     borderWidth: 1,
     borderColor: BiruKu,
-    width: 310,
+    width: '85%'
   },
   pnomor: {
     fontFamily: 'Poppins-Medium',
-    fontSize: 12,
+    fontSize: 14,
     marginVertical: 2,
     marginLeft: 20,
     color: BiruKu,
@@ -483,27 +435,28 @@ const styles = StyleSheet.create({
   },
   left: {
     fontFamily: 'Poppins-Medium',
-    fontSize: 13,
+    fontSize: 15,
     marginBottom: 3,
+    height: 35,
+    width: '100%',
     paddingVertical: 6.5,
     color: BiruKu,
   },
   right: {
     fontFamily: 'Poppins-Medium',
-    fontSize: 13,
+    fontSize: 15,
     borderWidth: 1,
     borderColor: BiruKu,
     borderRadius: 5,
     marginBottom: 5,
     marginLeft: 5,
-    height: 33,
-    width: 250,
+    height: 35,
     padding: 7,
     color: BiruKu,
   },
   unvailable: {
     fontFamily: 'Poppins-Italic',
-    fontSize: 12,
+    fontSize: 15,
     textAlign: 'center',
     color: BiruKu,
     marginHorizontal: 30,

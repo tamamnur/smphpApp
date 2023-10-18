@@ -1,8 +1,8 @@
 import { View, ScrollView, Text, StatusBar, TouchableOpacity, StyleSheet, ToastAndroid } from 'react-native'
 import React, { useState, useEffect, useContext } from 'react'
 import { LogoCubicle } from '../../assets'
-import InputData from '../../components/InputData'
-import Button from '../../components/Button6'
+import InputDataSign from '../../components/InputDataSign'
+import Button6 from '../../components/Button6'
 import { BiruKu, WarnaPutih } from '../../utils/constant'
 import { useNavigation } from '@react-navigation/native'
 import auth from '@react-native-firebase/auth'
@@ -63,7 +63,7 @@ const handleLogin = () => {
     if (error.code === 'auth/user-not-found') {
       return updateError ("Sorry, Email address didn't work, please try again", setError)      
       } else {
-      return updateError ("Sorry, Password authentication didn't work, please try again", setError);
+      return updateError ("Sorry, Password authentication didn't work,\n please try again", setError);
     } 
     })
 }
@@ -75,36 +75,41 @@ const toastLoginSuccess = () => {
   }
   
   return (
-    <ScrollView style={{flex: 1, backgroundColor: '#FFFFFF', width: 400}}>
-      <StatusBar backgroundColor={WarnaPutih} barStyle="dark" />
-      <View style={{justifyContent: 'center', alignItems: 'center', marginTop: 100, marginBottom: 20}}>
+    <ScrollView style={{flex: 1, width: '100%', marginHorizontal: 10, marginBottom: 30}}>
+      {/* <StatusBar backgroundColor={WarnaPutih} barStyle="dark" /> */}
+      <View style={{justifyContent: 'center', alignItems: 'center', marginTop: 50, marginBottom: 10}}>
         <LogoCubicle/>
       </View>
           {error ? (
-              <Text style={{color: 'red', fontSize: 14, textAlign: 'center'}}>
+              <Text style={{color: 'red', fontSize: 14, textAlign: 'center', marginBottom: -15}}>
                 {error} </Text> 
           ) : null}
-        <InputData 
-          placeholder='Username' 
+        <InputDataSign
+          placeholder='Input Email' 
           onChangeText={(value) => handleOnchangeText(value, "email")}
           />
-        <InputData 
-          placeholder='Password'
+        <InputDataSign 
+          placeholder='Input Password'
           onChangeText={(value) => handleOnchangeText(value, "password")}
           secureTextEntry/>
 
         <TouchableOpacity onPress={() => navigation.navigate('ResetPassword')}>
           <Text style={styles.forgotPs}> Forgot Password ?</Text>
         </TouchableOpacity>
-      <Button text="Sign In" 
+        <View style={{marginBottom: 20}}>
+
+      <Button6 text="Sign In" 
         fontColor={'white'} bgColor={BiruKu} onPress={submitForm} />
-      <View style={styles.wrapperSign}>
+      <Button6 text="Sign Up" 
+        fontColor={BiruKu} bgColor={'white'} onPress={()=>navigation.navigate('Signup')} />
+        </View>
+      {/* <View style={styles.wrapperSign}>
       </View>
         <TouchableOpacity style={styles.signUpTO}
         onPress={()=>navigation.navigate('Signup')}
         >
           <Text style={styles.signUp}>Sign Up
-            </Text></TouchableOpacity>
+            </Text></TouchableOpacity> */}
     </ScrollView>
 
     );

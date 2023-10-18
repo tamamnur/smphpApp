@@ -30,20 +30,22 @@ export default Division
 
 const styles = StyleSheet.create({
     area:{
-        backgroundColor: '#EDEDED', 
+        // backgroundColor: '#EDEDED', 
         borderRadius:5,
         borderWidth: 1,
         borderColor: BiruKu,
-        marginHorizontal: 48,
+        marginHorizontal: 25,
         marginTop: 5,
         marginBottom: 5, 
-        elevation: 1,
         height: 40,
-        fontSize: 13,
+        width: '80%',
+        fontSize: 14,
         justifyContent: 'center'
     },
     picked:{
-        fontSize: 13,
-        fontFamily: 'Poppins-Regular'
+        fontSize: 14,
+        fontFamily: 'Poppins-Regular',
+        color: BiruKu,
+        marginHorizontal: -10
     }
 })

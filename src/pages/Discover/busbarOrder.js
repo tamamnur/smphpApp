@@ -11,6 +11,7 @@ import PanelHeadTable from '../../components/panelHeadTable';
 import LoadingComponent from '../../components/LoadingComponent';
 import EndOf from '../../components/Footer';
 import SearchBar from '../../components/SearchBar';
+import Header from '../../components/Header';
 
 const height = Dimensions.get('window').height;
 const BusbarOrder = () => {
@@ -108,10 +109,7 @@ const BusbarOrder = () => {
 
   return (
     <View>
-      <View style={{flexDirection: 'row', marginHorizontal: 20, marginTop: 30}}>
-        <IconBack onPress={() => navigation.navigate('PageBusbar')} />
-        <LogoSmpHP style={{marginLeft: 200}} />
-      </View>
+      <Header/>
       <Title2 TxtTitle="PURCHASE ORDER" SubTitle="BUSBAR Cu" />
       {isLoading ? (<></>) : (<>
           <SearchBar value={searchKeyword} onChangeText={text => setSearchKeyword(text)} />

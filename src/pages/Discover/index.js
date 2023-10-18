@@ -1,31 +1,24 @@
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity, Dimensions, } from 'react-native';
+import {StyleSheet, Text, View, ScrollView, TouchableOpacity, Dimensions} from 'react-native';
 import React, {Component} from 'react';
-import { LogoSmpHP, IconInput, IconInput2, } from '../../assets';
-import SDrawing from '../../components/SDrawing';
-import Procurement from '../../components/Procurement';
-import Fabrication from '../../components/Fabrication';
+import {IconInput2, IconSD_Pengajuan, IconSD_Approv, IconSD_Revisi, IconKonsutruksi, 
+  IconCu, IconKomponen, IconLayouting, IconMekanik, IconWiring, } from '../../assets';
 import {BiruKu, Darkred} from '../../utils/constant';
 import {useNavigation} from '@react-navigation/native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import AntDesign from 'react-native-vector-icons/AntDesign';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 const Input = props => {
   const navigation = useNavigation();
   return (
     <TouchableOpacity onPress={props.onPress}>
-      <View style={{flexDirection: 'row',marginTop: 8,alignSelf: 'center',marginBottom: -15,}}>
+      <View style={{flexDirection: 'row', marginTop: 4, alignSelf: 'center', marginBottom: -15}}>
         <View style={{marginTop: 2}}><IconInput2 /></View>
         <View>
-          <Text style={{ fontFamily: 'Poppins-Regular', fontSize: 15, color: 'blue', marginLeft: 5, marginVertical: 5, }}>
-            {props.title}
-          </Text>
-        </View>
+          <Text style={{fontFamily: 'Poppins-Regular', fontSize: 15, color: 'blue', marginLeft: 5, marginVertical: 5}}>
+            {props.title} </Text></View>
       </View>
     </TouchableOpacity>
   );
-};  
-const height = Dimensions.get('window').height;
+};
 class Discover extends Component {
   constructor(props) {
     super(props);
@@ -34,127 +27,115 @@ class Discover extends Component {
 
   render() {
     return (
-      <View style={{flex: 1, backgroundColor:'white', justifyContent: 'center', alignItems: 'center'}}>
-        <View style={{marginTop: 50, marginBottom: 15}}> 
-          <Text style={styles.BigTitle}>Production Monitoring </Text>
-        </View>
-        <ScrollView style={{flex: 1, alignSelf: 'center'}}>
-          <View style={styles.Wrapper}>
-            <View style={styles.groupTitle}>
-              <Text style={styles.Progress}>Shopdrawing Progress</Text>
+      <View style={styles.page}>
+        <View style={{marginTop: 30, marginBottom: 10}}><Text 
+          style={styles.BigTitle}>Production Monitoring </Text></View>
+        <ScrollView style={{flex: 1, alignSelf: 'center', width: '100%'}}>
+          <View style={styles.container}>
+            <View style={{marginBottom: 30}}>
+              <Text style={styles.Progress}> Shopdrawing Progress</Text>
             </View>
-            <View style={styles.SDWrapp}>
-              <TouchableOpacity>
-                <SDrawing
-                  title="Submission"
-                  onPress={() =>
-                    this.props.navigation.navigate('SD_Submission')
-                  }
-                />
-              </TouchableOpacity>
-              <TouchableOpacity>
-                <SDrawing
-                  title="Revision"
-                  onPress={() => this.props.navigation.navigate('SD_Revisi')}
-                />
-              </TouchableOpacity>
-              <TouchableOpacity>
-                <SDrawing
-                  title="Approval"
-                  onPress={() => this.props.navigation.navigate('SD_Approval')}
-                />
-              </TouchableOpacity>
-            </View>
-            <Input
-              title="Input Shopdrawing Progress"
-              onPress={() => this.props.navigation.navigate('FormShopdrawing')}
-            />
-          </View>
-
-          <View style={styles.Wrapper}>
-            <View style={styles.groupTitle}>
-              <Text style={styles.Progress}>Material Procurement</Text>
-            </View>
-
-            <View style={styles.POWrapp}>
-              <Procurement
-                title="Konstruksi"
-                onPress={() => this.props.navigation.navigate('PageConstruction')}
-                active={this.state.procurement === 'Konstruksi' ? true : false}
-              />
-              <Procurement
-                title="Busbar Cu"
-                onPress={() => this.props.navigation.navigate('PageBusbar')}
-                active={this.state.procurement === 'Busbar Cu' ? true : false}
-              />
-              <Procurement
-                title="Komponen"
-                onPress={() => this.props.navigation.navigate('PageComponent')}
-                active={this.state.procurement === 'Komponen' ? true : false}
-              />
-            </View>
-          </View>
-
-          <View style={styles.Wrapper}>
-            <View style={styles.groupTitle}>
-              <Text style={styles.Progress}> Fabrication Progress</Text>
-            </View>
-            <View style={styles.PabWrapp}>
-              <TouchableOpacity>
-                <Fabrication
-                  title="Layouting"
-                  onPress={() => this.props.navigation.navigate('PageLayouting')}
-                  active={this.state.procurement === 'Layouting' ? true : false}
-                />
-              </TouchableOpacity>
-              <Fabrication
-                title="Mechanic"
-                onPress={() => this.props.navigation.navigate('PageMechanic')}
-                active={this.state.procurement === 'Set. Busbar' ? true : false}
-              />
-              <Fabrication
-                title="W i r i n g"
-                onPress={() => this.props.navigation.navigate('PageWiring')}
-                active={this.state.procurement === 'Wiring' ? true : false}
-              />
-            </View>
-          </View>
-          <View style={styles.Wrapper}>
-            <View><Text style={styles.Progress}> Finishing</Text></View>
-            <View style={{ flexDirection: 'row', alignSelf: 'center', justifyContent: 'center', marginBottom: -10, marginTop: 5}}>
-              <TouchableOpacity 
-                onPress={() => this.props.navigation.navigate('FormFinishing')} 
-                style={{marginHorizontal: 15, alignItems:'center'}}>
-                <View >
-                  <MaterialIcons name='input' color={'black'} size={35}/>
-                </View>
-                <Text style={{ color: '#10324A', fontFamily: 'Poppins-Regular', fontSize: 14, }}>
-                  Input Progress
-                </Text>
-              </TouchableOpacity>
-              <View>
-              <TouchableOpacity 
-                onPress={() => this.props.navigation.navigate('TestReport')}
-                style={{alignItems:'center', marginHorizontal: 25}}>
-                <View>
-                  <AntDesign name="switcher" color={'#10324A'} size={35} />
-                </View>
-                <Text style={{ color: '#10324A', fontFamily: 'Poppins-Regular', fontSize: 14, }}>
-                  Tested
-                </Text>
-              </TouchableOpacity>
+            <View style={styles.wrapper}>
+              <View style={styles.icon}>
+                <TouchableOpacity style={{marginTop: 22}} 
+                  onPress={() => { this.props.navigation.navigate('SD_Submission')}}>
+                  <IconSD_Pengajuan style={{alignSelf: 'center', marginTop: -70}} />
+                  <Text style={styles.titleIcon}>Submission</Text>
+                </TouchableOpacity>
               </View>
-              <View>
-              <TouchableOpacity
-                onPress={() => this.props.navigation.navigate('DeliveryReport')}
-                style={{alignItems:'center', marginHorizontal: 25}}>
-                <View>
-                  <MaterialCommunityIcons name="truck-delivery-outline" color={Darkred} size={35} />
-                </View>
-                <Text style={{ color: '#10324A', fontFamily: 'Poppins-Regular', fontSize: 14, paddingHorizontal: 10, }}>
-                  Delivery
-                </Text>
-              </TouchableOpacity>
+              <View style={styles.icon}>
+                <TouchableOpacity onPress={() => {this.props.navigation.navigate('SD_Revisi')}}>
+                  <IconSD_Revisi style={{alignSelf: 'center', marginTop: -50}}/>
+                  <Text style={styles.titleIcon}>Revision</Text>
+                </TouchableOpacity>
+              </View>
+              <View style={styles.icon}>
+                <TouchableOpacity onPress={() => {this.props.navigation.navigate('SD_Approval')}}>
+                  <IconSD_Approv style={{alignSelf: 'center', marginTop: -50, marginHorizontal:-12}}/>
+                  <Text style={styles.titleIcon}>Approved</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+            <Input title="Input Shopdrawing Progress"
+              onPress={() => this.props.navigation.navigate('FormShopdrawing')} />
+          </View>
+          <View style={styles.container}>
+            <View><Text style={styles.Progress}> Material Procurement</Text></View>
+            <View style={styles.wrapper}>
+              <View style={styles.icon}>
+                <TouchableOpacity style={{marginHorizontal: -8}} 
+                  onPress={() => {this.props.navigation.navigate('PageConstruction')}}>
+                  <IconKonsutruksi style={{alignSelf: 'center', marginTop: -5}}/>
+                  <Text style={styles.titleIcon}>Construction</Text>
+                </TouchableOpacity>
+              </View>
+              <View style={styles.icon}>
+                <TouchableOpacity onPress={() => { this.props.navigation.navigate('PageBusbar')}}>
+                  <IconCu style={{alignSelf: 'center', marginTop: -5}} />
+                  <Text style={styles.titleIcon}>Busbar Cu</Text>
+                </TouchableOpacity>
+              </View>
+              <View style={styles.icon}>
+                <TouchableOpacity style={{marginHorizontal: -7}}
+                  onPress={() => {this.props.navigation.navigate('PageComponent')}}>
+                  <IconKomponen style={{alignSelf: 'center', marginTop: -5}} />
+                  <Text style={styles.titleIcon}>Component</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+          <View style={styles.container}>
+            <View><Text style={styles.Progress}> Fabrication Progress</Text></View>
+            <View style={styles.wrapper}>
+              <View style={styles.icon}>
+                <TouchableOpacity onPress={() => {this.props.navigation.navigate('PageLayouting')}}>
+                  <IconLayouting style={{alignSelf: 'center', marginTop: -5, marginHorizontal: 3}}/>
+                  <Text style={styles.titleIcon}>Layouting</Text>
+                </TouchableOpacity>
+              </View>
+              <View style={styles.icon}>
+                <TouchableOpacity onPress={() => {this.props.navigation.navigate('PageMechanic')}}>
+                  <IconMekanik style={{alignSelf: 'center', marginTop: -5, marginHorizontal: -3}}/>
+                  <Text style={styles.titleIcon}>Mechanic</Text>
+                </TouchableOpacity>
+              </View>
+              <View style={styles.icon}>
+                <TouchableOpacity style={{marginHorizontal: -7}} 
+                  onPress={() => {this.props.navigation.navigate('PageWiring')}}>
+                  <IconWiring style={{alignSelf: 'center',marginTop: -5,marginHorizontal: 3}}/>
+                  <Text style={styles.titleIcon}>Wiring</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+          <View style={styles.container}>
+            <View><Text style={styles.Progress}> Finishing</Text></View>
+            <View style={styles.wrapper}>
+              <View style={styles.icon}>
+                <TouchableOpacity style={{marginTop: -5}}
+                  onPress={() => {this.props.navigation.navigate('FormFinishing')}}>
+                  <View style={{alignSelf: 'center', marginHorizontal: -20}}>
+                    <MaterialCommunityIcons name="application-import" color={'blue'} size={35}/>
+                  </View>
+                  <Text style={styles.titleIcon}>Input {'\n'} Progress</Text>
+                </TouchableOpacity>
+              </View>
+              <View style={styles.icon}>
+                <TouchableOpacity onPress={() => {this.props.navigation.navigate('TestReport')}}>
+                  <View style={{alignSelf: 'center', paddingHorizontal: 2}}>
+                    <MaterialCommunityIcons name="archive-check-outline" color={'#10324A'} size={60}/>  
+                  </View>
+                  <Text style={styles.titleIcon}>Tested</Text>
+                </TouchableOpacity>
+              </View>
+              <View style={styles.icon}>
+                <TouchableOpacity style={{marginHorizontal: -7}}
+                  onPress={() => {this.props.navigation.navigate('DeliveryReport')}}>
+                  <View style={{alignSelf: 'center', paddingHorizontal: 9}}>
+                    <MaterialCommunityIcons name="truck-delivery-outline" color={Darkred} size={60}/>
+                  </View>
+                  <Text style={styles.titleIcon}>Delivery</Text>
+                </TouchableOpacity>
               </View>
             </View>
           </View>
@@ -167,41 +148,20 @@ class Discover extends Component {
 export default Discover;
 
 const styles = StyleSheet.create({
-  groupTitle: {
-    paddingTop: 5,
-    // paddingHorizontal: 20,
-    // marginLeft: -10,
-  },
   Progress: {
     paddingHorizontal: 10,
     paddingTop: 5,
     color: BiruKu,
-    fontSize: 16,
-    // textAlign: 'left',
+    fontSize: 17,
     fontFamily: 'Poppins-SemiBold',
-    // fontFamily: 'Acme-Regular',
-    // fontWeight: 'bold',
   },
-  SDWrapp: {
-    flexDirection: 'row',
-  },
-
-  POWrapp: {
-    flexDirection: 'row',
-    // marginHorizontal: 2,
-    marginTop: -15,
-  },
-  PabWrapp: {
-    flexDirection: 'row',
-    // marginHorizontal: 2,
-    marginTop: -15,
-  },
-  Wrapper: {
+  container: {
+    alignContent: 'center',
     backgroundColor: '#D4D6D3',
     marginVertical: 5,
-    // marginHorizontal: 10,
     paddingBottom: 15,
     borderRadius: 20,
+    justifyContent: 'space-between',
   },
   BigTitle: {
     textAlign: 'center',
@@ -209,4 +169,31 @@ const styles = StyleSheet.create({
     fontFamily: 'Acme-Regular',
     color: BiruKu,
   },
+  icon: {
+    borderWidth: 3,
+    padding: 15,
+    borderRadius: 10,
+    borderColor: BiruKu,
+  },
+  titleIcon: {
+    fontFamily: 'Poppins-Medium',
+    fontSize: 14,
+    color: BiruKu,
+    alignContent: 'center',
+    alignSelf: 'center',
+    marginTop: 3,
+    marginBottom: -10,
+  },
+  wrapper: {
+    flexDirection: 'row',
+    width: '90%',
+    justifyContent: 'space-between',
+    marginHorizontal: 20,
+  },
+  page: {
+    flex: 1,
+    backgroundColor: 'white',
+    justifyContent: 'space-between',
+    width: '100%',
+  }
 });

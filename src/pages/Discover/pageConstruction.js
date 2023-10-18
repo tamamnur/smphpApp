@@ -5,6 +5,7 @@ import {useNavigation} from '@react-navigation/native';
 import {BiruKu} from '../../utils/constant';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import InputProgress from '../../components/inputProgress';
+import Title2 from '../../components/Title2';
 
 const PageConstruction = () => {
   const navigation = useNavigation();
@@ -14,9 +15,10 @@ const PageConstruction = () => {
         <IconBack onPress={() => navigation.goBack()} style={{marginTop: 10, marginLeft: 30}} />
         <LogoSmpHP style={{marginLeft: 180}} />
       </View>
-      <View style={{flexDirection: 'row', alignSelf: 'center', marginVertical: 50}}>
+      {/* <View style={{flexDirection: 'row', alignSelf: 'center', marginVertical: 50}}>
         <Text style={styles.title}>CONSTRUCTION / BOX {'\n'}- MONITORING -</Text>
-      </View>
+      </View> */}
+      <Title2 TxtTitle={'CONSTRUCTION / BOX'} SubTitle={'- MONITORING -'}/>
       <View style={{alignSelf: 'center', flexDirection: 'row'}}>
         <TouchableOpacity onPress={()=> navigation.navigate('ConstructionOrder')}>
           <View style={{alignItems: 'center', backgroundColor: '#E5E5E5', paddingVertical: 25, borderWidth: 1, borderColor: BiruKu}}>

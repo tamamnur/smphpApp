@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity, ToastAndroid, Alert, BackHandler, ActivityIndicator, Dimensions, } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, TouchableOpacity, ToastAndroid, Alert, BackHandler} from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {LogoCubicle} from '../../assets';
 import {BiruKu} from '../../utils/constant';
@@ -6,8 +6,7 @@ import {CommonActions, useNavigation} from '@react-navigation/native';
 import auth from '@react-native-firebase/auth';
 import firebase from '@react-native-firebase/app';
 import firestore from '@react-native-firebase/firestore';
-
-const {width} = Dimensions.get('window')
+import InfoProjectL from '../../components/InfoProjectL';
 
 const User = props => {
   const navigation = useNavigation();
@@ -16,7 +15,7 @@ const User = props => {
   const currentUser = firebase.auth().currentUser;
 
   useEffect(() => {
-    const unsubsribe = firestore()
+    const unsubscribe = firestore()
       .collection('User')
       .doc(currentUser.uid)
       .onSnapshot(documentSnapshot => {
@@ -26,17 +25,17 @@ const User = props => {
         }
       });
     return () => {
-      unsubsribe();
+      unsubscribe();
     };
   }, []);
   useEffect(() => {
-    const unsubsribe = auth().onAuthStateChanged(user => {
+    const unsubscribe = auth().onAuthStateChanged(user => {
       if (user) {
         setDisplayName(currentUser.displayName);
       }
     });
     return () => {
-      unsubsribe();
+      unsubscribe();
     };
   }, []);
   console.log(currentUser.displayName, currentUser.email, division);
@@ -57,9 +56,8 @@ const User = props => {
       {
         text: 'No',
         onPress: () => {
-          ToastAndroid.showWithGravity(
+          ToastAndroid.show(
             'You stay as ' + currentUser.displayName,
-            ToastAndroid.LONG,
             ToastAndroid.LONG,
           );
         },
@@ -91,9 +89,8 @@ const User = props => {
         {
           text: 'No',
           onPress: () => {
-            ToastAndroid.showWithGravity(
+            ToastAndroid.show(
               'You stay as ' + currentUser.displayName,
-              ToastAndroid.TOP,
               ToastAndroid.LONG,
             );
           },
@@ -107,22 +104,15 @@ const User = props => {
       <View style={styles.LogoSmpHP}>
         <LogoCubicle />
       </View>
-      <View style={styles.container}>
-        <View>
-          <Text style={styles.left}>Division </Text>
-          <Text style={styles.left}>Fullname </Text>
-          <Text style={styles.left}>Email </Text>
-        </View>
-        <View>
-          <Text style={styles.right}>{division}</Text>
-          <Text style={styles.right}>{displayName}</Text>
-          <Text style={styles.right}>{currentUser.email}</Text>
-        </View>
-      </View>
+      <View style={{marginHorizontal: 10}}>
+      <InfoProjectL label={'Division'} value={division}/>
+      <InfoProjectL label={'Fullname'} value={displayName}/>
+      <InfoProjectL label={'Email'} value={currentUser.email}/>
       <TouchableOpacity onPress={() => handleReload()}>
         <Text style={styles.btnRefresh}>Refresh</Text>
       </TouchableOpacity>
-      <View style={{marginHorizontal: 15, width: 200}}>
+      </View>
+      <View style={{marginHorizontal: 15, width: 200, marginBottom: 20}}>
         <TouchableOpacity onPress={() => navigation.navigate('Profile Edit')}>
           <Text style={styles.btnR}>Edit Profil</Text>
         </TouchableOpacity>
@@ -141,40 +131,12 @@ const User = props => {
 };
 
 export default User;
-
 const styles = StyleSheet.create({
   LogoSmpHP: {
     marginTop: 35,
     flex: 1,
-    // alignItems: 'flex-end',
     alignItems: 'center',
-    // justifyContent: 'center',
     marginBottom: 20,
-  },
-  container: {
-    flexDirection: 'row',
-    alignSelf: 'center'
-  },
-  left: {
-    fontFamily: 'Poppins-Medium',
-    fontSize: 16,
-    marginBottom: 13,
-    paddingVertical: 10,
-    color: BiruKu,
-    height: 45,
-  },
-  right: {
-    fontFamily: 'Poppins-SemiBold',
-    fontSize: 16,
-    borderWidth: 1.5,
-    borderColor: BiruKu,
-    borderRadius: 5,
-    marginLeft: 5,
-    marginBottom: 15,
-    height: 45,
-    width: width*0.7,
-    padding: 10,
-    color: BiruKu,
   },
   btnR: {
     marginTop: 14,

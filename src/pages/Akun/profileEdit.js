@@ -1,22 +1,22 @@
-import { StyleSheet, Text, View, ScrollView, ToastAndroid, Alert } from 'react-native';
-import React, { Component } from 'react';
-import { LogoSmpHP, IconBack } from '../../assets';
-import { BiruKu } from '../../utils/constant';
-import InputData from '../../components/InputData';
+import {StyleSheet, Text, View, ScrollView, ToastAndroid} from 'react-native';
+import React, {Component} from 'react';
+import {BiruKu} from '../../utils/constant';
+import InputDataUser from '../../components/InputDataUser';
 import Button6 from '../../components/Button6';
 import Division from '../../components/Division';
 import auth from '@react-native-firebase/auth';
 import firestore from '@react-native-firebase/firestore';
 import firebase from '@react-native-firebase/app';
-// import RNRestart from '@react-native-restart';
+import Header from '../../components/Header';
+import Title1 from '../../components/Title1';
 
 export default class ProfileEdit extends Component {
-  reauthenticate = (currentPassword) => {
+  reauthenticate = currentPassword => {
     const currentUser = firebase.auth().currentUser;
     if (currentUser) {
       const credential = firebase.auth.EmailAuthProvider.credential(
         currentUser.email,
-        currentPassword
+        currentPassword,
       );
       return currentUser.reauthenticateWithCredential(credential);
     } else {
@@ -59,11 +59,11 @@ export default class ProfileEdit extends Component {
   }
 
   handleDivisionChange = value => {
-    this.setState({ division: value });
+    this.setState({division: value});
   };
 
   changeEmail = () => {
-    const { email, currentPassword } = this.state;
+    const {email, currentPassword} = this.state;
     const currentUser = auth().currentUser;
     if (currentUser) {
       this.reauthenticate(currentPassword)
@@ -71,27 +71,39 @@ export default class ProfileEdit extends Component {
           return currentUser.updateEmail(email);
         })
         .then(() => {
-          console.log('Email address has been changed successfully');
+          ToastAndroid.show(
+            'Email address has been changed successfully',
+            ToastAndroid.LONG,
+          );
+          // console.log('Email address has been changed successfully');
         })
-        .catch((error) => {
+        .catch(error => {
           console.log('Failed to change email address', error);
-          ToastAndroid.show('Failed to change email address', ToastAndroid.LONG)
-          // this.setState({ error: 'Failed to change email address'})
-          // setTimeout(()=>{
-          //   this.setState({error: ''})
-          // }, 3000)
+          ToastAndroid.show(
+            'Failed to change email address',
+            ToastAndroid.LONG,
+          );
         });
     }
   };
 
   handleProfileEdit = () => {
-    const { displayName, email, division, currentPassword } = this.state;
+    const {displayName, email, division, currentPassword} = this.state;
+    if (!displayName.trim() || !email.trim()) {
+      this.setState({
+        error: 'Please complete the form before you press the save button',
+      });
+      setTimeout(() => {
+        this.setState({error: ''});
+      }, 3000);
+      return;
+    }
     const currentUser = auth().currentUser;
     if (!currentPassword && this.state.isEmailChanged) {
-      this.setState({error: 'Please enter your current password'})
-      setTimeout(()=>{
-        this.setState({error: ''})
-      }, 3000)
+      this.setState({error: 'Please enter your current password'});
+      setTimeout(() => {
+        this.setState({error: ''});
+      }, 2000);
       return;
     }
     if (email !== currentUser.email) {
@@ -111,7 +123,7 @@ export default class ProfileEdit extends Component {
           .then(() => {
             ToastAndroid.show(
               'Press the Refresh Button to see the changes',
-              ToastAndroid.LONG
+              ToastAndroid.LONG,
             );
             this.props.navigation.navigate('Akun');
           })
@@ -124,69 +136,76 @@ export default class ProfileEdit extends Component {
       });
   };
 
-  handleEmailChange = (text) => {
+  handleEmailChange = text => {
     const {email} = this.state;
     if (text !== email) {
       this.setState({
         email: text,
         isEmailChanged: true,
         currentPassword: '',
-      })
+      });
     } else {
       this.setState({
         email: text,
         isEmailChanged: false,
-      })
+      });
     }
-  }
+  };
 
   render() {
-    const { displayName, email, division, currentPassword, error, isEmailChanged } = this.state;
+    const {
+      displayName,
+      email,
+      division,
+      currentPassword,
+      error,
+      isEmailChanged,
+    } = this.state;
     return (
-      <ScrollView>
-        <View style={{ flexDirection: 'row', marginHorizontal: 20, marginVertical: 30, }}>
-          <IconBack onPress={() => this.props.navigation.navigate('Akun')} />
-          <LogoSmpHP style={{ marginLeft: 200 }} />
-        </View>
-        {/* {error ? (
-          <Text style={{color: 'red', fontSize: 14, textAlign: 'center'}}>{error}</Text>
-        ) : null} */}
-        <Text style={styles.title}>E D I T   P R O F I L E</Text>
-        <View style={styles.container}>
-          <Text style={styles.label}>{'('}Choose to change Division{')'}</Text>
-        </View>
-        <Division
-          value={this.state.division}
-          onValueChange={this.handleDivisionChange}
-        />
-        <View style={styles.container}>
-          <Text style={styles.label}>Division</Text>
-          <Text style={styles.txtInput}>{division}</Text>
-        </View>
-        <InputData
-          label="Fullname"
-          value={displayName}
-          onChangeText={text => this.setState({ displayName: text })}
-        />
-        <InputData
-          label="Email"
-          value={email}
-          onChangeText={text => this.handleEmailChange(text)}
-        />
-            {/* label="Current Password (Re-enter the registered password)" */}
-        {isEmailChanged && (
-          <>
-          <InputData
-            label="Current Password"
-            secureTextEntry
-            value={currentPassword}
-            onChangeText={text => this.setState({ currentPassword: text })}
+      <ScrollView style={{marginVertical: 30, width: '100%'}}>
+        <Header />
+        <Title1 TxtTitle={'E D I T   P R O F I L E'} />
+        <View
+          style={{
+            // marginHorizontal: 20,
+            // justifyContent: 'center',
+            // width: '100%',
+            alignItems: 'center',
+          }}>
+          <View style={{width: '100%'}}>
+            <Text style={styles.label}>
+              {'('}Choose to change Division{')'}
+            </Text>
+          </View>
+          <Division
+            value={this.state.division}
+            onValueChange={this.handleDivisionChange}
           />
-          {error ? (
-            <Text style={{color: 'red', fontSize: 14, textAlign: 'center'}}>{error}</Text>
-          ) : null}
-          </>
-        )}
+          <InputDataUser label="Division" value={division} />
+          <InputDataUser
+            label="Fullname"
+            value={displayName}
+            onChangeText={text => this.setState({displayName: text})}
+          />
+          <InputDataUser
+            label="Email"
+            value={email}
+            onChangeText={text => this.handleEmailChange(text)}
+          />
+          {isEmailChanged && (
+            <>
+              <InputDataUser
+                label="Current Password"
+                secureTextEntry
+                value={currentPassword}
+                onChangeText={text => this.setState({currentPassword: text})}
+              />
+            </>
+          )}
+        </View>
+        {error ? (
+          <Text style={{color: 'red', fontSize: 14, textAlign: 'center', marginBottom: -15}}>
+            {error} </Text> ) : null}
         <Button6
           text="Save Changes"
           fontColor={'white'}
@@ -199,33 +218,11 @@ export default class ProfileEdit extends Component {
 }
 
 const styles = StyleSheet.create({
-  title: {
-    fontFamily: 'Poppins-SemiBold',
-    fontSize: 20,
-    color: BiruKu,
-    marginLeft: 35,
-    marginVertical: 20,
-  },
-  container: {
-    marginHorizontal: 50,
-    width: 296,
-    flex: 1,
-    alignContent: 'center',
-  },
   label: {
     fontSize: 14,
     fontFamily: 'Poppins-Regular',
     marginTop: 10,
+    marginLeft: 15,
     color: BiruKu,
-  },
-  txtInput: {
-    borderWidth: 1,
-    borderColor: BiruKu,
-    color: '#000',
-    padding: 8,
-    fontFamily: 'Poppins-Regular',
-    marginBottom: 5,
-    borderRadius: 5,
-    height: 40,
   },
 });

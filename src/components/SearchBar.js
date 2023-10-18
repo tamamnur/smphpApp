@@ -19,10 +19,10 @@ const SearchBar = ({value, onChangeText}) => {
           paddingVertical: 1,
           marginHorizontal: 15,
           marginBottom: 5,
-          height: 35,
+          height: 40,
           color: BiruKu,
           fontFamily: 'Poppins-Medium',
-          fontSize: 13,
+          fontSize: 14,
         }}
       />
     </View>

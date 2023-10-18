@@ -1,31 +1,26 @@
-import {Dimensions, StyleSheet, Text, TextInput, View} from 'react-native';
+import {Dimensions, StyleSheet, Text, View} from 'react-native';
 import React from 'react';
-import {BiruKu, Ral11} from '../utils/constant';
+import {BiruKu} from '../utils/constant';
+// const {width} = Dimensions.get('window');
 
-const InfoProjectEdit = props => {
+const InfoProjectT = props => {
   return (
     <View style={styles.container}>
       <View style={{width: '30%'}}>
         <Text style={styles.label}>{props.label}</Text>
       </View>
       <View style={{width: '70%'}}>
-        <TextInput
-          style={styles.value}
-          value={props.value}
-          onChangeText={props.onChangeText}
-          ref={props.ref}
-        />
+        <Text style={styles.value}>{props.value}</Text>
       </View>
     </View>
   );
 };
 
-export default InfoProjectEdit;
+export default InfoProjectT;
 
 const styles = StyleSheet.create({
   container: {
     marginHorizontal: 10,
-    marginVertical: 5,
     flexDirection: 'row',
     alignItems: 'center',
   },
@@ -47,7 +42,7 @@ const styles = StyleSheet.create({
     height: 32,
     paddingVertical: 4,
     paddingHorizontal: 6,
-    color: 'orange',
+    color: BiruKu,
     textAlignVertical: 'center',
   },
 });

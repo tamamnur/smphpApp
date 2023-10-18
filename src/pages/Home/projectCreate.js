@@ -1,12 +1,13 @@
-import { View, Text, StyleSheet, TextInput, ToastAndroid, Alert, Dimensions, } from 'react-native';
+import {Text, ToastAndroid, Alert, Dimensions, ScrollView, } from 'react-native';
 import React, {useState} from 'react';
-import {IconBack, LogoSmpHP} from '../../assets';
 import {BiruKu} from '../../utils/constant';
 import {useNavigation} from '@react-navigation/native';
 import firestore from '@react-native-firebase/firestore';
-import PickedDateFull from '../../components/pickedDateFull';
 import Title2 from '../../components/Title2';
 import Button6 from '../../components/Button6';
+import InfoProjectInput from '../../components/InfoProjectInput';
+import InfoDateProject from '../../components/InfoDateProject';
+import Header from '../../components/Header';
 
 const {width} = Dimensions.get('window')
 
@@ -62,11 +63,6 @@ const ProjectCreate = props => {
           ToastAndroid.show('Project Created, Continue to adding Panel Name Forms', ToastAndroid.SHORT)
             navigation.replace('PanelNameInput', {projectId: response.id})
         })
-        // navigation.reset({
-        //   index: 0,
-        //   routes: [{name:'PanelNameInput', params: {projectId: response.id}}],
-        // })
-        // ToastAndroid.show('Project Created, Continue to adding Panel Name Forms', ToastAndroid.SHORT)
     } catch (error) {
       console.error(error);
     }
@@ -76,12 +72,12 @@ const ProjectCreate = props => {
     if (isValidForm()) {
       try {
         Alert.alert(
-          'Konfirmasi Data Proyek',
-          'Apakah data Proyek yang dimasukan sudah benar?',
+          'Project Data Confirmation',
+          'Is the entered Project data correct?',
           [
             {text: 'Cancel', style: 'cancel'},
             {
-              text: 'Continue', style: 'destructive', onPress: async () => {
+              text: 'Next', style: 'destructive', onPress: async () => {
                 try {
                   handleCreateProject();
                   ToastAndroid.show(
@@ -91,7 +87,7 @@ const ProjectCreate = props => {
                 } catch (error) {
                   Alert.alert(
                     'Error',
-                    'Terjadi kesalahan saat menambahkan Project.',
+                    'An error occurred while adding the project.',
                   );
                 }
               },
@@ -104,84 +100,45 @@ const ProjectCreate = props => {
     }
   };
 
-
   return (
-    <View style={{marginTop: 30}}>
-      <View style={{flexDirection: 'row'}}>
-        <IconBack
-          onPress={() => navigation.goBack()}
-          style={{marginTop: 10, marginLeft: 30}}
-        />
-        <LogoSmpHP style={{marginLeft: 180}} />
-      </View>
+    <ScrollView style={{marginVertical: 20}}>
+      <Header />
       <Title2 TxtTitle="N E W     P R O J E C T" />
       {error ? (
         <Text
-          style={{color: 'red',fontSize: 13,textAlign: 'center',paddingBottom: 20,}}>
+          style={{color: 'red',fontSize: 13, marginBottom: -15,}}>
           {error}
         </Text>
       ) : null}
-      <View>
-        <View style={{flexDirection: 'row', marginHorizontal: 10, alignSelf:'center'}}>
-          <View>
-            <Text style={styles.left}> SO Number</Text>
-            <Text style={styles.left}> Project Name</Text>
-            <Text style={styles.left}> Customer</Text>
-            <Text style={styles.left}> PO Number</Text>
-            <Text style={styles.left}> PO Date</Text>
-          </View>
-          <View>
-            <TextInput
-              style={styles.right}
-              onChangeText={value => handleOnchangeText(value, 'projectId')}
-            />
-            <TextInput
-              style={styles.right}
-              onChangeText={value => handleOnchangeText(value, 'projectName')}
-            />
-            <TextInput
-              style={styles.right}
-              onChangeText={value => handleOnchangeText(value, 'customer')}
-            />
-            <TextInput
-              style={styles.right}
-              onChangeText={value => handleOnchangeText(value, 'numberPO')}
-            />
-            <Text style={styles.right} onChangeText={onDatePOChange}>
-              <PickedDateFull onChangeText={onDatePOChange} />
-            </Text>
-          </View>
-        </View>
-      </View>
+      <ScrollView style={{marginHorizontal: 8}}>
+        <InfoProjectInput 
+          label={'SO Number'} 
+          onChangeText={value => handleOnchangeText(value, 'projectId')}
+          value={projectId}
+          />
+        <InfoProjectInput 
+          label={'Project Name'} 
+          onChangeText={value => handleOnchangeText(value, 'projectName')}
+          value={projectName}
+          />
+        <InfoProjectInput 
+          label={'Customer'} 
+          onChangeText={value => handleOnchangeText(value, 'customer')}
+          value={customer}
+          />
+        <InfoProjectInput 
+          label={'PO Number'} 
+          onChangeText={value => handleOnchangeText(value, 'numberPO')}
+          value={numberPO}
+          />
+        <InfoDateProject 
+            label={'Date PO'}
+            onDateChange={onDatePOChange}
+          />
+      </ScrollView>
       <Button6 text="CONTINUE" bgColor={BiruKu} fontColor={'white'} onPress={submitForm} />
-    </View>
+    </ScrollView>
   );
 };
 
 export default ProjectCreate;
-
-const styles = StyleSheet.create({
-  left: {
-    fontFamily: 'Poppins-Medium',
-    fontSize: 14,
-    textAlignVertical: 'center',
-    marginBottom: 15,
-    color: BiruKu,
-    height: 40,
-  },
-  right: {
-    fontFamily: 'Poppins-Medium',
-    fontSize: 14,
-    textAlignVertical: 'center',
-    padding: 7,
-    marginBottom: 15,
-    marginLeft: 5,
-    height: 40,
-    width: width*0.65,
-    color: BiruKu,
-    borderWidth: 1,
-    borderColor: BiruKu,
-    borderRadius: 5,
-  },
-  
-});

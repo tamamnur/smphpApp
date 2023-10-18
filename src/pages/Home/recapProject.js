@@ -9,7 +9,7 @@ const Project = props => {
   const navigation = useNavigation();
   return (
     <View style={styles.recap}>
-      <View style={{width: '80%'}}>
+      <View style={{width: '70%'}}>
         <TouchableOpacity
           onPress={() => navigation.navigate('ProjectDetails', {id: props.id})}>
           <Text style={styles.projectName}>{props.ProjectName} </Text>
@@ -19,7 +19,10 @@ const Project = props => {
           <Text style={styles.status}>{props.status}</Text>
         </TouchableOpacity>
       </View>
+      <TouchableOpacity
+      onPress={() => navigation.navigate('ProjectStatus', {id: props.id})}>
       <Text style={styles.update}>{props.update}</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -92,7 +95,7 @@ export default RecapProject;
 const styles = StyleSheet.create({
   container: {
     width: '98%',
-    height: '50%',
+    height: '60%',
     borderRadius: 20,
     marginHorizontal: 4,
     marginBottom: 10,
@@ -109,8 +112,8 @@ const styles = StyleSheet.create({
     elevation: 8,
   },
   title: { fontFamily: 'Acme-Regular', fontSize: 20, color: '#FFF', marginHorizontal: 20, },
-  recap: { marginHorizontal: 10, marginVertical: 5, flexDirection: 'row', },
-  projectName: { color: BiruKu, fontFamily: 'Poppins-Medium', fontSize: 13,},
-  status: { color: BiruKu, fontFamily: 'Poppins-Regular', fontSize: 11, marginHorizontal: 5,},
-  update: { color: BiruKu, fontFamily: 'Poppins-Medium', fontSize: 10, marginTop: 22, width: '22%',},
+  recap: { marginHorizontal: 10, marginVertical: 5, flexDirection: 'row', justifyContent: 'space-around'},
+  projectName: { color: BiruKu, fontFamily: 'Poppins-Medium', fontSize: 15,},
+  status: { color: BiruKu, fontFamily: 'Poppins-Regular', fontSize: 14, marginHorizontal: 5,},
+  update: { color: BiruKu, fontFamily: 'Poppins-Regular', fontSize: 14, marginTop: 22, width: '100%'},
 });

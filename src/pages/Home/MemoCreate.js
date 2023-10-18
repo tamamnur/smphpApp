@@ -3,7 +3,7 @@ import React, { Component } from 'react'
 import { IconBack, LogoSmpHP } from '../../assets'
 import { BiruKu } from '../../utils/constant'
 import Title2 from '../../components/Title2'
-import InputData from '../../components/InputData'
+import InputDataUser from '../../components/InputDataUser'
 import Division from '../../components/Division'
 
 export default class MemoCreate extends Component {
@@ -30,8 +30,8 @@ export default class MemoCreate extends Component {
           <Text style={styles.label} >For</Text>
         </View>
         <Division />
-        <InputData label="Project"/>
-        <InputData label="Due Date" />
+        <InputDataUser label="Project"/>
+        <InputDataUser label="Due Date" />
         {/* <DateInput /> */}
         <View><Text style={styles.label}>Message</Text>
         <TextInput style={styles.txtArea} multiline 

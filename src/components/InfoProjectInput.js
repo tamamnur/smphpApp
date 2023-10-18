@@ -2,7 +2,7 @@ import {Dimensions, StyleSheet, Text, TextInput, View} from 'react-native';
 import React from 'react';
 import {BiruKu, Ral11} from '../utils/constant';
 
-const InfoProjectEdit = props => {
+const InfoProjectInput = props => {
   return (
     <View style={styles.container}>
       <View style={{width: '30%'}}>
@@ -20,11 +20,11 @@ const InfoProjectEdit = props => {
   );
 };
 
-export default InfoProjectEdit;
+export default InfoProjectInput;
 
 const styles = StyleSheet.create({
   container: {
-    marginHorizontal: 10,
+    marginHorizontal: 5,
     marginVertical: 5,
     flexDirection: 'row',
     alignItems: 'center',
@@ -35,19 +35,19 @@ const styles = StyleSheet.create({
     marginVertical: 4,
     padding: 2,
     color: BiruKu,
-    height: 32,
+    height: 40,
     textAlignVertical: 'center',
   },
   value: {
-    fontFamily: 'Poppins-SemiBoldItalic',
-    fontSize: 14,
+    fontFamily: 'Poppins-Medium',
+    fontSize: 15,
     borderWidth: 1,
     borderColor: BiruKu,
     borderRadius: 3,
-    height: 32,
+    height: 40,
     paddingVertical: 4,
     paddingHorizontal: 6,
-    color: 'orange',
+    color: BiruKu,
     textAlignVertical: 'center',
   },
 });
