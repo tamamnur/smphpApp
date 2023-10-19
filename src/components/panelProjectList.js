@@ -1,5 +1,5 @@
 import React from 'react';
-import {Text, StyleSheet, View, Dimensions} from 'react-native';
+import {Text, StyleSheet, View} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
 import {BiruKu} from '../utils/constant';
 
@@ -11,7 +11,6 @@ const PanelProjectList = props => {
       <Text style={styles.projectName}>{props.projectName}</Text>
       <Text style={styles.panelName}>{props.panelName}</Text>
       <Text style={styles.status}>{props.status}</Text>
-      {/* <Text style={styles.status}>{getIdMonitoring ? status: 'No Data'}</Text> */}
     </View>
   );
 };
@@ -29,8 +28,6 @@ const styles = StyleSheet.create({
     borderColor: BiruKu,
     height: 28,
     width: '30%'
-    // width: width*0.365
-    // width: 140,
   },
   panelName: {
     fontFamily: 'Poppins-Medium',
@@ -43,8 +40,6 @@ const styles = StyleSheet.create({
     borderColor: BiruKu,
     height: 28,
     width: '40%'
-    // width: width*0.365
-    // width: 140,
   },
   status: {
     fontFamily: 'Poppins-Regular',
@@ -56,7 +51,5 @@ const styles = StyleSheet.create({
     borderColor: BiruKu,
     height: 28,
     width: '30%'
-    // width: width*0.2
-    // width: 80,
   },
 });

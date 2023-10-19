@@ -16,7 +16,7 @@ const InputDataProject = props => {
         onChangeText={props.onChangeText}
         value={props.value}
         ref={props.ref}
-        key={props.key}
+        // key={props.key}
       />
     </View>
   );

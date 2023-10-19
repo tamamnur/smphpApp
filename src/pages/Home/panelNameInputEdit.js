@@ -1,6 +1,5 @@
 import {View, Text, TouchableOpacity, ScrollView, ToastAndroid} from 'react-native';
 import React, {useEffect, useState} from 'react';
-import {IconBack, LogoSmpHP} from '../../assets';
 import {BiruKu, Darkred} from '../../utils/constant';
 import InputDataProject from '../../components/InputDataProject';
 import {useNavigation, useRoute} from '@react-navigation/native';
@@ -9,6 +8,7 @@ import Title2 from '../../components/Title2';
 import Button6 from '../../components/Button6';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import LoadingComponent from '../../components/LoadingComponent';
+import Header from '../../components/Header';
 
 const PanelNameInputEdit = () => {
   const navigation = useNavigation();
@@ -25,8 +25,7 @@ const PanelNameInputEdit = () => {
         setIsLoading(true);
         const id = route.params.id;
         const panelNameSnapshot = await firestore()
-          .collection(`Project/${id}/PanelName`)
-          .get();
+          .collection(`Project/${id}/PanelName`).get();
 
         const panelNames = panelNameSnapshot.docs.map(doc => doc.data());
         if (isMounted) {
@@ -44,9 +43,7 @@ const PanelNameInputEdit = () => {
     };
 
     fetchData();
-    return () => {
-      setIsMounted(false);
-    };
+    return () => {setIsMounted(false)};
   }, [route.params.id]);
 
   const onPnameInputChange = (value, index) => {
@@ -103,79 +100,54 @@ const PanelNameInputEdit = () => {
       await batch.commit();
       console.log('Panel names edited successfully');
       ToastAndroid.show('Panel names edited successfully', ToastAndroid.SHORT);
-      navigation.navigate('ProjectDetails', {id});
+      navigation.replace('ProjectDetails', {id});
     } catch (error) {
       console.error('Error saving changes to panel names', error);
-      ToastAndroid.show(
-        'Error saving changes to panel names',
-        ToastAndroid.SHORT,
-      );
+      ToastAndroid.show('Error saving changes to panel names',ToastAndroid.SHORT)
     } finally {
-      if (isMounted) {
-        setIsLoading(false);
-      }
+      if (isMounted) {setIsLoading(false)}
     }
   };
 
   return (
     <View style={{marginTop: 30}}>
-      <View style={{flexDirection: 'row', marginHorizontal: 30}}>
-        <IconBack onPress={() => navigation.goBack()} />
-        <LogoSmpHP style={{marginLeft: 180}} />
-      </View>
+      <Header />
       <Title2 TxtTitle={'PANEL NAMES EDIT'} />
       {isLoading ? (
         <LoadingComponent />
       ) : (
-        <>
-          <ScrollView style={{height: '82%', marginTop: -15}}>
-            {[...Array(formQty)].map((_, index) => (
-              <>
-                <View style={{flexDirection: 'row', alignSelf: 'center', alignItems: 'center'}}>
-                  {/* key={index.toString()}> */}
-                  <InputDataProject
-                    key={index + 1}
-                    label={`Panel - ${index + 1}`}
-                    value={pnameInput[index]}
-                    onChangeText={value => onPnameInputChange(value, index)}
-                  />
+        <ScrollView style={{height: '82%', marginTop: -15}}>
+          {Array.from({length: formQty}).map((_, index) => (
+            <React.Fragment key={`panel-${index+1}`}>
+              <View style={{flexDirection: 'row', alignSelf: 'center', alignItems: 'center'}}>
+                <InputDataProject
+                  key={index+1}
+                  label={`Panel - ${index + 1}`}
+                  value={pnameInput[index]}
+                  onChangeText={value => onPnameInputChange(value, index)}
+                />
+                <TouchableOpacity
+                  onPress={() => removeForm(index)}>
+                  <AntDesign name="closecircle" color={Darkred} size={20} />
+                </TouchableOpacity>
+              </View>
+              <View style={{flex: 1, alignSelf: 'flex-end', marginRight: 40}}>
+                {errorText[index] !== '' && (
+                  <Text 
+                    style={{fontFamily: 'Poppins-Italic', fontSize: 12, color: Darkred, marginTop: -32}}>
+                    {errorText[index]}
+                  </Text>
+                )}
+              </View>
+            </React.Fragment>
+          ))}
 
-                  <TouchableOpacity
-                    onPress={() => removeForm(index)}>
-                    <AntDesign name="closecircle" color={Darkred} size={20} />
-                  </TouchableOpacity>
-                </View>
+          <TouchableOpacity style={{marginLeft: 99, marginVertical: 5, flex: 2}} onPress={addForm}>
+            <AntDesign name="pluscircle" color={BiruKu} size={30} />
+          </TouchableOpacity>
 
-                <View style={{flex: 1, alignSelf: 'flex-end', marginRight: 40}}>
-                  {errorText[index] !== '' && (
-                    <Text
-                      style={{
-                        fontFamily: 'Poppins-Italic',
-                        fontSize: 12,
-                        color: Darkred,
-                        marginTop: -32,
-                      }}>
-                      {errorText[index]}
-                    </Text>
-                  )}
-                </View>
-              </>
-            ))}
-
-            <TouchableOpacity
-              style={{marginLeft: 99, marginVertical: 5, flex: 2}}
-              onPress={addForm}>
-              <AntDesign name="pluscircle" color={BiruKu} size={30} />
-            </TouchableOpacity>
-
-            <Button6
-              text={'Save Changes'}
-              bgColor={BiruKu}
-              fontColor={'white'}
-              onPress={handlePnameInput}
-            />
-          </ScrollView>
-        </>
+          <Button6 text={'Save Changes'} bgColor={BiruKu} fontColor={'white'} onPress={handlePnameInput}/>
+        </ScrollView>
       )}
     </View>
   );
