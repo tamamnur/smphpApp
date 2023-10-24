@@ -19,7 +19,7 @@ const PageConstruction = () => {
         <Text style={styles.title}>CONSTRUCTION / BOX {'\n'}- MONITORING -</Text>
       </View> */}
       <Title2 TxtTitle={'CONSTRUCTION / BOX'} SubTitle={'- MONITORING -'}/>
-      <View style={{alignSelf: 'center', flexDirection: 'row'}}>
+      <View style={{alignSelf: 'center', flexDirection: 'row',}}>
         <TouchableOpacity onPress={()=> navigation.navigate('ConstructionOrder')}>
           <View style={{alignItems: 'center', backgroundColor: '#E5E5E5', paddingVertical: 25, borderWidth: 1, borderColor: BiruKu}}>
             <AntDesign name="profile" color={BiruKu} size={50} />
@@ -33,7 +33,7 @@ const PageConstruction = () => {
           </View>
         </TouchableOpacity>
         <TouchableOpacity onPress={()=> navigation.navigate('ConstructionRealized')}>
-          <View style={{alignItems: 'center', backgroundColor: '#E5E5E5', paddingVertical: 25, borderWidth: 1, borderColor: BiruKu}}>
+          <View style={{ alignItems: 'center', backgroundColor: '#E5E5E5', paddingVertical: 25, borderWidth: 1, borderColor: BiruKu}}>
             <AntDesign name="carryout" color={BiruKu} size={50} />
             <Text style={styles.desc}>Realized</Text>
           </View>

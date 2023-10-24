@@ -18,7 +18,6 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 const PanelNameInput = () => {
   const navigation = useNavigation();
   const route = useRoute();
-
   const [errorText, setErrorText] = useState('');
   const [formQty, setFormQty] = useState(1);
   const [formToDelete, setFormToDelete] = useState(null);
@@ -41,9 +40,6 @@ const PanelNameInput = () => {
 
 
   const removeForm = index => {
-    // const updatedForms = [...forms];
-    // updatedForms.splice(index, 1);
-
     const updatedPnameInput = [...pnameInput];
     updatedPnameInput.splice(index, 1);
 
@@ -98,9 +94,8 @@ const PanelNameInput = () => {
       <ScrollView style={{height: '82%', marginTop: -15}}>
         {forms.map((_, index) => {
           return (
-            <>
+          <React.Fragment key={`panel-${index+1}`}>
             <View style={{flexDirection: 'row', alignSelf: 'center', alignItems: 'center'}}>
-              {/* // key={index.toString()}> */}
               <InputDataProject
                 key={index+1}
                 label={`Panel - ${index + 1}`}
@@ -117,13 +112,11 @@ const PanelNameInput = () => {
               <View style={{flex: 1, alignSelf: 'flex-end', marginRight: 55}}>
                 {errorText[index] !== '' && <Text style={styles.errMessage}>{errorText[index]}</Text>}
               </View>
-                </>
+          </React.Fragment>
           );
         })}
         <TouchableOpacity 
           style={{marginLeft: 99, marginVertical: 5, flex: 2}}
-        // style={styles.iconAdd} 
-          // onPress={() => setFormQty(prev => prev + 1)}>
           onPress={addForm}>
           <AntDesign name="pluscircle" color={BiruKu} size={30} />
         </TouchableOpacity>

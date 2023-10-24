@@ -8,7 +8,7 @@ import Button6 from '../../components/Button6';
 import InfoProjectInput from '../../components/InfoProjectInput';
 import InfoDateProject from '../../components/InfoDateProject';
 import Header from '../../components/Header';
-
+import ErrorMessage from '../../components/errorMessage'
 const {width} = Dimensions.get('window')
 
 const updateError = (error, stateUpdate) => {
@@ -40,12 +40,12 @@ const ProjectCreate = props => {
       return updateError('Invalid name of project', setError);
     if (!customer.trim() || customer.length < 3)
       return updateError('Invalid customer name', setError);
-    if (!datePO) return updateError('Invalid date PO', setError);
+    // if (!datePO) return updateError('Invalid date PO', setError);
     return true;
   };
 
   const handleCreateProject = async () => {
-    console.log(projectId, projectName, customer, numberPO, datePO);
+    // console.log(projectId, projectName, customer, numberPO, datePO);
     const createdAt = new Date();
     try {
       const response = await firestore()
@@ -55,7 +55,7 @@ const ProjectCreate = props => {
           projectName: projectInfo.projectName,
           customer: projectInfo.customer,
           numberPO: projectInfo.numberPO,
-          datePO: firestore.Timestamp.fromDate(datePO),
+          datePO: datePO?.firestore.Timestamp.fromDate(datePO) || null,
           updatedAt: firestore.Timestamp.fromDate(createdAt),
           status: 'Created At',
         })
@@ -104,12 +104,12 @@ const ProjectCreate = props => {
     <ScrollView style={{marginVertical: 20}}>
       <Header />
       <Title2 TxtTitle="N E W     P R O J E C T" />
-      {error ? (
-        <Text
-          style={{color: 'red',fontSize: 13, marginBottom: -15,}}>
-          {error}
-        </Text>
-      ) : null}
+      {/* {error ? ( 
+         <Text
+           style={{color: 'red',fontSize: 13, marginBottom: -15,}}>
+           {error}
+         </Text>
+       ) : null} */}
       <ScrollView style={{marginHorizontal: 8}}>
         <InfoProjectInput 
           label={'SO Number'} 
@@ -136,6 +136,8 @@ const ProjectCreate = props => {
             onDateChange={onDatePOChange}
           />
       </ScrollView>
+      {error ? (<ErrorMessage txt={error} marginBottom={120}/>) : null }
+
       <Button6 text="CONTINUE" bgColor={BiruKu} fontColor={'white'} onPress={submitForm} />
     </ScrollView>
   );

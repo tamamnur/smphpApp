@@ -1,12 +1,13 @@
-import {View, Text, TouchableOpacity} from 'react-native';
+import {View, TouchableOpacity} from 'react-native';
 import React from 'react';
 import {IconBack, LogoSmpHP} from '../assets';
-import {useNavigation} from '@react-navigation/native';
-const HeaderD = () => {
+import {CommonActions, useNavigation} from '@react-navigation/native';
+
+const HeaderToDiscover = () => {
   const navigation = useNavigation();
   return (
     <View style={{flexDirection: 'row', width: '100%', justifyContent: 'space-between'}}>
-      <TouchableOpacity onPress={() => navigation.replace('Discover')}>
+      <TouchableOpacity onPress={() => navigation.navigate('Discover')}>
       <View style={{marginTop: 22, marginHorizontal: 20}}>
         <IconBack  />
       </View>
@@ -17,5 +18,4 @@ const HeaderD = () => {
     </View>
   );
 };
-
-export default HeaderD;
+export default HeaderToDiscover;

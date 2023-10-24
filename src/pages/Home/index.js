@@ -14,22 +14,22 @@ const Home = () => {
     {/* <ScrollView style={styles.page}> */}
       <View style={styles.Header}>
         <Text style={styles.selamat}>Wellcome,</Text>
-        <View style={{marginBottom: -10, marginTop: -10}}>
           <HeaderInformation />
-        </View>
+        {/* <View style={{marginBottom: -10, marginTop: -10}}>
+        </View> */}
         <RecapProject />
         <TouchableOpacity style={styles.iconAdd}>
           <LogoAdd onPress={() => navigation.navigate('ProjectCreate')} />
         </TouchableOpacity>
-        <Memo />
-        <TouchableOpacity
+        {/* <Memo /> */}
+        {/* <TouchableOpacity
           style={{alignItems: 'flex-end', marginHorizontal: 14}}>
           <Text
             onPress={() => navigation.navigate('MemoPage')}
             style={styles.seeMore}>
             See More . . .
           </Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
       </View>
     {/* </ScrollView> */}
     </View>
@@ -44,6 +44,8 @@ const windowWidth = Dimensions.get('window').width;
 const styles = StyleSheet.create({
   page: {
     flex: 1,
+    marginBottom: 10,
+    height: '100%',
     // height: windowHeight * 0.7
   },
   Header: {

@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, ScrollView, TouchableOpacity, ToastAndroid, Alert, BackHandler} from 'react-native';
+import {StyleSheet, Text, View, ScrollView, TouchableOpacity, ToastAndroid, Alert, BackHandler, RefreshControl } from 'react-native';
 import React, {useEffect, useState} from 'react';
 import {LogoCubicle} from '../../assets';
 import {BiruKu} from '../../utils/constant';
@@ -42,28 +42,28 @@ const User = props => {
 
   const handleLogOut = () => {
     Alert.alert('Logout', 'Are you sure that you want to log out ?', [
-      {
-        text: 'Yes',
-        onPress: () => {
-          auth()
-            .signOut()
-            .then(() => {
-              navigation.replace('PublicNav');
-              ToastAndroid.show('User signed out!', ToastAndroid.SHORT);
-            });
-        },
-      },
-      {
-        text: 'No',
-        onPress: () => {
-          ToastAndroid.show(
-            'You stay as ' + currentUser.displayName,
-            ToastAndroid.LONG,
-          );
-        },
-      },
+      {text: 'Yes', onPress: () => {
+        auth()
+        .signOut()
+        .then(() => {
+          navigation.replace('PublicNav');
+          ToastAndroid.show('User signed out!', ToastAndroid.SHORT);
+        });
+      }},
+      {text: 'No', onPress: () => {
+        ToastAndroid.show('You stay as '+currentUser.displayName, ToastAndroid.LONG)
+      }},
     ]);
   };
+
+  // const [refresh, setRefresh] = useState(false);
+  // const handleReload = () => {
+  //   setRefresh(true);
+  //   setTimeout(()=>{
+  //     setRefresh(false)
+  //     console.log('Refreshh!!')
+  //   }, 1000)
+  // }
   const handleReload = () => {
     navigation.dispatch(
       CommonActions.reset({
@@ -75,27 +75,13 @@ const User = props => {
       navigation.navigate('Akun');
     }, 1000);
   };
+
   const handleExit = () => {
-    Alert.alert(
-      'Exit App',
-      'Are you sure that you want to exit the application ?',
-      [
-        {
-          text: 'Yes',
-          onPress: () => {
-            BackHandler.exitApp();
-          },
-        },
-        {
-          text: 'No',
-          onPress: () => {
-            ToastAndroid.show(
-              'You stay as ' + currentUser.displayName,
-              ToastAndroid.LONG,
-            );
-          },
-        },
-      ],
+    Alert.alert('Exit App','Are you sure that you want to exit the application ?',
+      [{text: 'Yes', onPress: () => {BackHandler.exitApp()}},
+        {text: 'No', onPress: () => { ToastAndroid.show(
+          'You stay as ' + currentUser.displayName,ToastAndroid.LONG)},
+      }],
     );
   };
 

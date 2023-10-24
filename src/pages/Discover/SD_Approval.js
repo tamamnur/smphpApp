@@ -1,19 +1,18 @@
 import React, {useState, useEffect} from 'react';
-import { StyleSheet, Text, View, ScrollView, TextInput, Dimensions, } from 'react-native';
+import { View, ScrollView, Dimensions, } from 'react-native';
 import Title2 from '../../components/Title2';
-import {IconBack, LogoSmpHP} from '../../assets';
-import {BiruKu} from '../../utils/constant';
-import {useNavigation} from '@react-navigation/native';
 import firestore from '@react-native-firebase/firestore';
 import PanelProjectList from '../../components/panelProjectList';
-import FormatDate2 from '../../components/FormatDate2';
+import FormatDate from '../../components/FormatDate2';
 import EndOf from '../../components/Footer';
 import PanelHeadTable from '../../components/panelHeadTable';
-import LoadingComponent from '../../components/LoadingComponent'
+import LoadingComponent from '../../components/LoadingComponent';
+import DataNotFound from '../../components/dataNotFound';
+import SearchBar from '../../components/SearchBar';
+import HeaderToDiscover from '../../components/HeaderToDiscover';
 
 const height = Dimensions.get('window').height;
 const SD_Approval = () => {
-  const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(true);
   const [panelNameData, setPanelNameData] = useState([]);
   
@@ -29,58 +28,52 @@ const SD_Approval = () => {
         });
         const panelNameData = [];
         for (const doc of idDoc) {
-          const projectRef = firestore().collection('Project').doc(doc.id).collection('PanelName');
+          const projectRef = firestore().collection('Project')
+            .doc(doc.id).collection('PanelName');
           const panelIdRef = await projectRef.get();
           const panelIdData = panelIdRef.docs.map(panelIdDoc => ({
-            panelId: panelIdDoc.id,
-            ...panelIdDoc.data(),
+            panelId: panelIdDoc.id, ...panelIdDoc.data(),
             projectName: doc.projectName,
           }));
           const fetchDatePromises = panelIdData.map(async panel => {
             panelNameData.push({
-              projectName: doc.projectName,
-              panelName: panel.pnameInput,
-            });
+              projectName: doc.projectName, panelName: panel.pnameInput});
             const getId = panel.MonitoringID;
             if (getId) {
               const idRef = firestore().collection('Monitoring');
               const id = getId.substring(12);
-              const shopdrawingRef = idRef.doc(id).collection('Shopdrawing').doc('Approval');
-              const drawingDoc = await shopdrawingRef.get();
-              if (drawingDoc.exists) {
-                const drawingData = drawingDoc.data();
-                if (drawingData.DateApprove) {
-                  const dateValue = drawingData.DateApprove;
-                  const dateRevision = FormatDate2(dateValue.toDate());
+              const shopdrawingRef = idRef.doc(id)
+                .collection('Shopdrawing').doc('Approval');
+              const submissionDoc = await shopdrawingRef.get();
+              if (submissionDoc.exists) {
+                const submissionData = submissionDoc.data();
+                if (submissionData.DateApprove) {
+                  const dateValue = submissionData.DateApprove;
                   panelNameData.push({
                     projectName: panel.projectName,
                     panelName: panel.pnameInput,
-                    DateUpdate: dateRevision,
+                    DateUpdate: dateValue.toDate(),
                   });
                 }
               }
             }
           });
           await Promise.all(fetchDatePromises);
-        } if (isMounted) {
+        }
+        if (isMounted) {
           setPanelNameData(panelNameData);
           setIsLoading(false);
         }
       } catch (error) {
         console.error('Error Fetching Data ', error);
-        if (isMounted) {
-          setIsLoading(false);
-        }
+        if (isMounted) {setIsLoading(false)}
       }
     };
     getProject();
-    return () => {
-      isMounted = false;
-    };
+    return () => {isMounted = false};
   }, []);
 
   const [searchKeyword, setSearchKeyword] = useState('');
-
   const filteredPanelData = panelNameData.filter(item => {
     const projectNameLower = item.projectName.toLowerCase();
     const panelNameLower = item.panelName.toLowerCase();
@@ -92,83 +85,35 @@ const SD_Approval = () => {
   });
 
   const renderedPanelList = filteredPanelData.filter(item => item.DateUpdate)
-  .sort((a, b) => new Date(b.DateUpdate) - new Date(a.DateUpdate))
-  .map((item, index) => (
-    <PanelProjectList
-      key={index + 1}
-      projectName={item.projectName}
-      panelName={item.panelName}
-      status={item.DateUpdate}
-    />
-  ))
-
-  const dataNotFound = (
-    <Text style={styles.dataNotFound}>No matching result found.</Text>
-  );
+    .sort((a, b) => new Date(b.DateUpdate) - new Date(a.DateUpdate))
+    .map((item, index) => {
+      return(
+        <PanelProjectList
+        key={index + 1}
+        projectName={item.projectName}
+        panelName={item.panelName}
+        status={FormatDate(item.DateUpdate)}
+        />
+        )
+      });
 
   const contenToRender =
-    renderedPanelList.length > 0 ? renderedPanelList : dataNotFound;
+    renderedPanelList.length > 0 ? renderedPanelList : <DataNotFound />;
 
   return (
-    <View>
-      <View style={{flexDirection: 'row', marginHorizontal: 20, marginTop: 30}}>
-        <IconBack onPress={() => navigation.navigate('Discover')} />
-        <LogoSmpHP style={{marginLeft: 200}} />
-      </View>
+    <View style={{marginVertical: 10}}>
+      <HeaderToDiscover/>
       <Title2 TxtTitle="SHOPDRAWING" SubTitle="APPROVED" />
-      {isLoading ? ( <></>
-      ) : (
-        <>
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Search by project or panel name....."
-            value={searchKeyword}
-            onChangeText={text => setSearchKeyword(text)}
-          />
-          <PanelHeadTable />
-        </>
-      )}
-      <ScrollView
-        style={{ marginHorizontal: 8, marginBottom: 110, height: height*0.65, }}>
-        <View>
-          {isLoading ? (
-            <LoadingComponent />
-          ) : (
-            <>
-              {contenToRender}
-              <EndOf />
-            </>
-          )}
-        </View>
+      {isLoading ? (<></>) : (<>
+        <SearchBar value={searchKeyword} 
+           onChangeText={text => setSearchKeyword(text)} />
+        <PanelHeadTable />
+      </>)}
+      <ScrollView style={{marginHorizontal: 8, height:height*0.65}}>
+        {isLoading ? (<LoadingComponent />) : (<>{contenToRender}<EndOf /></>)}
       </ScrollView>
     </View>
   );
 };
 
 export default SD_Approval;
-
-const styles = StyleSheet.create({
-  searchInput: {
-    borderWidth: 1,
-    borderColor: BiruKu,
-    borderRadius: 6,
-    backgroundColor: '#F7F7F8',
-    paddingHorizontal: 8,
-    paddingVertical: 1,
-    marginHorizontal: 15,
-    marginBottom: 5,
-    height: 35,
-    color: BiruKu,
-    fontFamily: 'Poppins-Medium',
-    fontSize: 13,
-  },
-  dataNotFound: {
-    flex:1,
-    fontFamily: 'Poppins-Italic',
-    fontSize: 14,
-    textAlign: 'center',
-    marginVertical: 50,
-    // height: 
-    color: BiruKu,
-  },
-});

@@ -8,7 +8,7 @@ import FormatDate from '../../components/FormatDate';
 import LoadingComponent from '../../components/LoadingComponent';
 import EndOf from '../../components/Footer';
 import InfoProject from '../../components/InfoProject';
-import Header from '../../components/Header';
+import HeaderToHome from '../../components/HeaderToHome';
 import Title2 from '../../components/Title2';
 import PanelListOnDetail from '../../components/panelListOnDetail';
 const {height} = Dimensions.get('window');
@@ -29,12 +29,14 @@ const ProjectDetails = props => {
     const projectUnsubscribe = firestore().collection('Project')
       .doc(id).onSnapshot(async doc => {
         const FirebaseDate = doc.data().datePO ? doc.data().datePO.toDate(): null;
-        const getDatePO = FirebaseDate ? FormatDate(FirebaseDate) : ' ---';
+        const getDatePO = FirebaseDate ? FormatDate(FirebaseDate) : ' -';
+        const FBNumberPO = doc.data().numberPO ? doc.data().numberPO : null;
+        const getNumberPO = FBNumberPO ? FBNumberPO : ' -';
         setProjectInfo({
           ProjectName: doc.data().projectName,
           ProjectId: doc.data().projectId,
           Customer: doc.data().customer,
-          NumberPO: doc.data().numberPO,
+          NumberPO: getNumberPO,
           DatePO: getDatePO,
         }),
           setIsLoading(false);
@@ -57,7 +59,7 @@ const ProjectDetails = props => {
 
   return (
     <View style={{flex: 1, height: height * 0.85}}>
-      <Header />
+      <HeaderToHome />
       {isLoading ? (
         <LoadingComponent />
       ) : (

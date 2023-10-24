@@ -2,6 +2,7 @@ import {StyleSheet, Text, View, ScrollView, ToastAndroid} from 'react-native';
 import React, {Component} from 'react';
 import {BiruKu} from '../../utils/constant';
 import InputDataUser from '../../components/InputDataUser';
+import InfoDataUser from '../../components/InputDataUserInfo';
 import Button6 from '../../components/Button6';
 import Division from '../../components/Division';
 import auth from '@react-native-firebase/auth';
@@ -9,6 +10,7 @@ import firestore from '@react-native-firebase/firestore';
 import firebase from '@react-native-firebase/app';
 import Header from '../../components/Header';
 import Title1 from '../../components/Title1';
+import ErrorMessage from '../../components/errorMessage';
 
 export default class ProfileEdit extends Component {
   reauthenticate = currentPassword => {
@@ -39,10 +41,7 @@ export default class ProfileEdit extends Component {
 
   componentDidMount() {
     const currentUser = auth().currentUser;
-    firestore()
-      .collection('User')
-      .doc(currentUser.uid)
-      .get()
+    firestore().collection('User').doc(currentUser.uid).get()
       .then(docSnapshot => {
         if (docSnapshot.exists) {
           const user = docSnapshot.data();
@@ -74,8 +73,7 @@ export default class ProfileEdit extends Component {
           ToastAndroid.show(
             'Email address has been changed successfully',
             ToastAndroid.LONG,
-          );
-          // console.log('Email address has been changed successfully');
+          ) // console.log('Email address has been changed successfully');
         })
         .catch(error => {
           console.log('Failed to change email address', error);
@@ -154,58 +152,32 @@ export default class ProfileEdit extends Component {
 
   render() {
     const {
-      displayName,
-      email,
-      division,
-      currentPassword,
-      error,
-      isEmailChanged,
-    } = this.state;
+      displayName, email, division, currentPassword, error, isEmailChanged} = this.state;
     return (
       <ScrollView style={{marginVertical: 30, width: '100%'}}>
         <Header />
         <Title1 TxtTitle={'E D I T   P R O F I L E'} />
-        <View
-          style={{
-            // marginHorizontal: 20,
-            // justifyContent: 'center',
-            // width: '100%',
-            alignItems: 'center',
-          }}>
+        <View style={{alignItems: 'center'}}>
           <View style={{width: '100%'}}>
-            <Text style={styles.label}>
-              {'('}Choose to change Division{')'}
-            </Text>
+            <Text style={styles.label}>{'('}Choose to change Division{')'}</Text>
           </View>
-          <Division
-            value={this.state.division}
-            onValueChange={this.handleDivisionChange}
-          />
-          <InputDataUser label="Division" value={division} />
-          <InputDataUser
-            label="Fullname"
-            value={displayName}
-            onChangeText={text => this.setState({displayName: text})}
-          />
-          <InputDataUser
-            label="Email"
-            value={email}
-            onChangeText={text => this.handleEmailChange(text)}
-          />
+          <Division value={this.state.division} 
+            onValueChange={this.handleDivisionChange}/>
+          <InfoDataUser label='Division' value={division}/>
+          <InputDataUser label="Fullname" value={displayName}
+            onChangeText={text => this.setState({displayName: text})}/>
+          <InputDataUser label="Email" value={email}
+            onChangeText={text => this.handleEmailChange(text)}/>
           {isEmailChanged && (
-            <>
-              <InputDataUser
-                label="Current Password"
-                secureTextEntry
-                value={currentPassword}
-                onChangeText={text => this.setState({currentPassword: text})}
-              />
-            </>
+            <InputDataUser
+              label="Current Password"
+              secureTextEntry
+              value={currentPassword}
+              onChangeText={text => this.setState({currentPassword: text})}
+            />
           )}
         </View>
-        {error ? (
-          <Text style={{color: 'red', fontSize: 14, textAlign: 'center', marginBottom: -15}}>
-            {error} </Text> ) : null}
+        {error ? (<ErrorMessage txt={error}/>) : null}
         <Button6
           text="Save Changes"
           fontColor={'white'}

@@ -1,9 +1,10 @@
 import React, {Component} from 'react';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View, ActivityIndicator } from 'react-native';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {BiruKu} from '../../utils/constant';
 import {useNavigation} from '@react-navigation/native';
 import firestore from '@react-native-firebase/firestore';
 import FormatDate from '../../components/FormatDate';
+import LoadingCompnentS from '../../components/LoadingComponentS'
 
 const Project = props => {
   const navigation = useNavigation();
@@ -71,9 +72,10 @@ class RecapProject extends Component {
         </View>
         <ScrollView style={{marginBottom: 25}}>
           {isLoading ? (
-            <View style={{marginTop: 50}}>
-              <ActivityIndicator size="large" color={BiruKu} />
-            </View>
+            <LoadingCompnentS />
+            // <View style={{marginTop: 50}}>
+            //   <ActivityIndicator size="large" color={BiruKu} />
+            // </View>
           ) : (
             projects.map(item => (
                 <Project
@@ -95,7 +97,7 @@ export default RecapProject;
 const styles = StyleSheet.create({
   container: {
     width: '98%',
-    height: '60%',
+    height: '72%',
     borderRadius: 20,
     marginHorizontal: 4,
     marginBottom: 10,

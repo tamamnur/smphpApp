@@ -8,6 +8,9 @@ import firestore from '@react-native-firebase/firestore';
 import CheckBox from '@react-native-community/checkbox';
 import StagesPODetail from '../../components/StagesPODetail';
 import PickedDateM from '../../components/pickedDateM';
+import Header from '../../components/Header';
+import LoadingComponentS from '../../components/LoadingComponentS';
+import Button6 from '../../components/Button6';
 
 const updateError = (error, stateUpdate) => {
   stateUpdate(error);
@@ -27,7 +30,8 @@ const FormPOConstruction = (props) => {
   const isValidForm = () => {
     if (!projectName.trim() || projectName.length === 0)
       return updateError('Invalid name of project', setError);
-    if (!stagesPODetails.trim() || stagesPODetails.length === 0)
+    // if (!stagesPODetails.trim() || stagesPODetails.length === 0)
+    if (!stagesPODetails)
       return updateError('Required to choice Stages of Procurement Construction', setError);
     if (!date)
       return updateError('Required to choice Date of Proccess!', setError);
@@ -82,22 +86,17 @@ const FormPOConstruction = (props) => {
   };
 
   const handleConstruction = async () => {
+    setIsLoading(true)
     let panelSelected = false;
     let hasPanelWithoutPO = false;
     
     for (const value of constructionInfo.Panels) {
       if (value.selected === true) {
-        // if (!value.stageExist) {
-        //   hasPanelWithoutPO = true;
-        //   break;
-        // }
-
-        let MonitoringID = null;
+      let MonitoringID = null;
         if (value.MonitoringID) {
           MonitoringID = value.MonitoringID.split('/')[2];
         } else {
-          const newMonitoring = await firestore()
-          .collection('Monitoring').add({
+          const newMonitoring = await firestore().collection('Monitoring').add({
             ProjectID: '/Project/' + constructionInfo.FSProjectId,
           });
         MonitoringID = newMonitoring.id;
@@ -146,20 +145,22 @@ const FormPOConstruction = (props) => {
       }
     } 
     if (hasPanelWithoutPO) {
-      updateError('An error occurred, choose the panel correctly and make sure the panel you have selected has been ordered previously.', setError)
+      // updateError('An error occurred, choose the panel correctly and make sure the panel you have selected has been ordered previously.', setError)
+      updateError('Ensure that all panels you have choosen have been ordered previously.', setError)
       return
     } 
     if (!panelSelected) {
-      updateError('An error occurred, choose the panel correctly and make sure the panel you have selected has been ordered previously.', setError)
+      updateError(`Please choose at least one panel by checking the checkbox next to the panel's name.`, setError)
       return
     }
+    setIsLoading(false)
     ToastAndroid.show('Procurement construction updated', ToastAndroid.SHORT)
     if (stagesPODetails === 'Order') {
-      navigation.navigate('ConstructionOrder')
+      navigation.replace('ConstructionOrder')
     } if (stagesPODetails === 'Schedule') {
-      navigation.navigate('ConstructionSchedule')
+      navigation.replace('ConstructionSchedule')
     } if (stagesPODetails === 'Realized') {
-      navigation.navigate('ConstructionRealized')
+      navigation.replace('ConstructionRealized')
     }
   };
     
@@ -239,8 +240,7 @@ const FormPOConstruction = (props) => {
     return (
       <View style={{flexDirection: 'row', marginLeft: 20, marginTop: 2}}>
         <CheckBox
-          // style={{borderColor: BiruKu}}
-          tintColors={{true: BiruKu, false: 'gray'}}
+          tintColors={{true: BiruKu, false: BiruKu}}
           disabled={false}
           value={props.value}
           onValueChange={(newValue, index) => {
@@ -252,43 +252,62 @@ const FormPOConstruction = (props) => {
     );
   };
   return (
-    <View style={styles.page}>
-      <View style={styles.header}>
+    <ScrollView style={{marginVertical: 20}}>
+      {/* <View style={styles.header}>
         <IconBack
           onPress={() => navigation.goBack()}
           style={{marginTop: 10, marginLeft: 30}}
         />
         <LogoSmpHP style={{marginLeft: 180}} />
-      </View>
-      <Title2 TxtTitle="CONSTRUCTION  /  BOX - PROCUREMENT -" />
+      </View> */}
+      <Header/>
+      <Title2 TxtTitle="CONSTRUCTION  /  BOX" SubTitle={"- PROCUREMENT -"}/>
       {error ? (
-        <Text style={{ color: 'red', fontSize: 13, textAlign: 'center', marginBottom: 10, marginTop: -20, }}>
+        <Text style={{ color: 'red', fontSize: 13, textAlign: 'center', marginBottom: 10, marginTop: -15, marginHorizontal: 20}}>
           {error}
         </Text>
       ) : null}
-      <View>
-        <View style={{flexDirection: 'row', marginHorizontal: 20}}>
-          <View>
+      {/* <View> */}
+        <View style={{flexDirection: 'row', marginHorizontal: 10, width: '100%'}}>
+          <View style={{width: '25%'}}>
             <Text style={styles.left}>Project Name </Text>
             <Text style={styles.left}>Customer </Text>
             <Text style={styles.left}>Number SO </Text>
             <Text style={styles.left}>Stages </Text>
             <Text style={styles.left}>Date </Text>
           </View>
-          <View>
+          <View style={{width: '70%'}}>
             <TextInput
               style={styles.right}
               onChangeText={value => handleOnchangeText(value, 'projectName')}
               value={projectName}
-            />
+              />
+              {isProjectNameSuggestionShow ? (
+                <View style={styles.dropdownSugesstion}>
+                  {ProjectList.filter(item => {
+                    const searchTerm = projectName.toLowerCase();
+                    const fullname = item.projectName.toLowerCase();
+                    return (
+                      searchTerm &&
+                      fullname.includes(searchTerm) &&
+                      fullname !== searchTerm
+                    );
+                  }).map(item => (
+                    <TouchableOpacity
+                      key={item.id}
+                      onPress={() => {
+                        handleOnchangeText(item.projectName, 'projectName');
+                      }}>
+                      <Text style={styles.sugesstion}>{item.projectName}</Text>
+                    </TouchableOpacity>
+                  ))}
+                </View>
+              ) : null}
             <Text style={styles.right}>{customer}</Text>
             <Text style={styles.right}>{projectId}</Text>
-            <View style={{width: 250}}>
+            <View style={{width: '98%'}}>
               <StagesPODetail
-                onValueChange={(value) => {
-                  // console.log('selected-- ', value);
-                  handleOnchangeText(value, 'stagesPODetails')}
-                }
+                onValueChange={(value) => {handleOnchangeText(value, 'stagesPODetails')}}
               />
             </View>
             <Text style={styles.txtInput} onChangeText={onDateChange}>
@@ -296,37 +315,14 @@ const FormPOConstruction = (props) => {
             </Text>
           </View>
         </View>
-        {isProjectNameSuggestionShow ? (
-          <View style={styles.dropdownSugesstion}>
-            {ProjectList.filter(item => {
-              const searchTerm = projectName.toLowerCase();
-              const fullname = item.projectName.toLowerCase();
-              return (
-                searchTerm &&
-                fullname.includes(searchTerm) &&
-                fullname !== searchTerm
-              );
-            }).map(item => (
-              <TouchableOpacity
-                key={item.id}
-                onPress={() => {
-                  handleOnchangeText(item.projectName, 'projectName');
-                }}>
-                <Text style={styles.sugesstion}>{item.projectName}</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        ) : null}
-      </View>
+      {/* </View> */}
       <ScrollView style={{marginTop: 5}}>
         {isLoading ? (
-          <View style={{marginTop: 30}}>
-            <ActivityIndicator color={BiruKu} />
-          </View>
+          <LoadingComponentS />
         ) : (
           <View>
             <View style={styles.wrappPanelTitle}>
-              <Text style={{ fontFamily: 'Poppins-Medium', color: BiruKu, fontSize: 13, }}>
+              <Text style={{ fontFamily: 'Poppins-Medium', color: BiruKu, fontSize: 15, }}>
                 Panel Name
               </Text>
             </View>
@@ -357,7 +353,8 @@ const FormPOConstruction = (props) => {
           </View>
         )}
       </ScrollView>
-      <TouchableOpacity style={styles.btn} onPress={submitForm}>
+      <Button6 text={'Submit'} bgColor={BiruKu} fontColor={'white'} onPress={submitForm}/>
+      {/* <TouchableOpacity style={styles.btn} onPress={submitForm}>
         <Text
           style={{
             textAlign: 'center',
@@ -367,8 +364,8 @@ const FormPOConstruction = (props) => {
           }}>
           Submit
         </Text>
-      </TouchableOpacity>
-    </View>
+      </TouchableOpacity> */}
+    </ScrollView>
   );
 };
 
@@ -416,24 +413,25 @@ const styles = StyleSheet.create({
     marginVertical: 4,
     fontSize: 13,
     marginLeft: 5,
-    width: 250,
+    // width: 250,
   },
   dropdownSugesstion: {
-    position: 'absolute',
-    left: 118,
-    right: 26,
     borderWidth: 1,
     borderColor: BiruKu,
     borderTopColor: '#fff',
     borderBottomLeftRadius: 10,
     borderBottomRightRadius: 10,
     backgroundColor: '#E8E8E8',
-    top: 30,
+    marginLeft: 6,
+    position: 'absolute',
+    flex: 1,
+    top: 35,
+    width:'98%',
     zIndex: 1,
   },
   sugesstion: {
     fontFamily: 'Poppins-Medium',
-    fontSize: 12,
+    fontSize: 14,
     color: BiruKu,
     marginHorizontal: 5,
   },
@@ -471,21 +469,22 @@ const styles = StyleSheet.create({
   },
   left: {
     fontFamily: 'Poppins-Medium',
-    fontSize: 13,
+    fontSize: 15,
     marginBottom: 3,
     paddingVertical: 6.5,
     color: BiruKu,
+    height: 35,
+    width: '100%'
   },
   right: {
     fontFamily: 'Poppins-Medium',
-    fontSize: 13,
+    fontSize: 15,
     borderWidth: 1,
     borderColor: BiruKu,
     borderRadius: 5,
     marginBottom: 5,
     marginLeft: 5,
-    height: 33,
-    width: 250,
+    height: 35,
     padding: 7,
     color: BiruKu,
   },

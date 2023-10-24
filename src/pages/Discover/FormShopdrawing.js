@@ -10,6 +10,7 @@ import CheckBox from '@react-native-community/checkbox';
 import Header from '../../components/Header';
 import Button6 from '../../components/Button6'
 import LoadingComponentS from '../../components/LoadingComponentS'
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const updateError = (error, stateUpdate) => {
   stateUpdate(error);
@@ -22,6 +23,7 @@ const FormShopdrawing = props => {
   const navigation = useNavigation();
   const [date, setDate] = useState();
   const [error, setError] = useState('');
+  const [selectAll, setSelectAll] = useState(false)
   const [isLoading, setIsLoading] = useState(true);
   const [ProjectList, setProjectList] = useState([]);
   const onDateChange = value => {
@@ -31,7 +33,6 @@ const FormShopdrawing = props => {
   const isValidForm = () => {
     if (!projectName.trim() || projectName.length === 0)
       return updateError('Invalid name of project', setError);
-    // if (!stages.trim() || stages.length === 0)
     if (!stages)
       return updateError('Required to choice Stages of Shopdrawing', setError);
     if (!date)
@@ -96,19 +97,17 @@ const FormShopdrawing = props => {
   };
 
   const handleFormShopdrawing = async () => {
-    // if (isMountedRef.current) {
+    setIsLoading(true);
     let panelSelected = false;
     let hasPanelWithoutSD = false;
     
     for (const value of shopdrawingInfo.Panels) {
-      // if (isMountedRef.current) {
       if (value.selected === true) {
       let MonitoringID = null;
         if (value.MonitoringID) {
           MonitoringID = value.MonitoringID.split('/')[2];
         } else {
-          const newMonitoring = await firestore()
-            .collection('Monitoring').add({
+          const newMonitoring = await firestore().collection('Monitoring').add({
               ProjectID: '/Project/' + shopdrawingInfo.FSProjectId,
             });
           MonitoringID = newMonitoring.id;
@@ -158,15 +157,16 @@ const FormShopdrawing = props => {
           });
         panelSelected = true;
       }   
-      // }
-    } if (!panelSelected) {
-      updateError('Make sure you select at least one panel, \n and all the panels you have chosen are Submitted.', setError);
-      return;
+      setIsLoading(false)
     } if (hasPanelWithoutSD) {
-      updateError('Make sure you select at least one panel, \n and all the panels you have chosen are Submitted.', setError);
+      updateError('Ensure that all the panels you have chosen are Submitted.', setError);
+      return;
+    } if (!panelSelected) {
+      // updateError('Make sure you select at least one panel, \n and all the panels you have chosen are Submitted.', setError);
+      // updateError(`Please choose at least one panel by checking the checkbox next to the panel's name.`, setError);
+      updateError(`Please choose at least one panel.`, setError);
       return;
     }
-  // }
   ToastAndroid.show('Shopdrawing Procces Updated', ToastAndroid.SHORT)
   if (stages === 'Submission') {
     navigation.replace('SD_Submission');
@@ -250,7 +250,6 @@ const FormShopdrawing = props => {
   };
 
   const Panel = props => {
-    const navigation = useNavigation();
     return (
       <View style={{flexDirection: 'row', marginLeft: 20, marginTop: 2}}>
         <CheckBox
@@ -258,25 +257,34 @@ const FormShopdrawing = props => {
           disabled={false}
           value={props.value}
           onValueChange={(newValue, index) => {
-            props.onValueChange(newValue);
-          }}
+            props.onValueChange(newValue)}}
         />
         <Text style={styles.pname}>{props.pname}</Text>
       </View>
     );
   };
 
+  const toggleSelectAll = () => {
+    const updatedPanels = shopdrawingInfo.Panels.map((panel) => ({
+      ...panel,
+      selected: !selectAll,
+    }));
+    setShopdrawingInfo((prev) => ({
+      ...prev,
+      Panels: updatedPanels,
+    }));
+    setSelectAll(!selectAll);
+  };
+  
   return (
     <ScrollView style={{marginVertical: 20}}>
       <Header/>
       <Title2 TxtTitle="SHOP DRAWING" />
       {error ? (
-        <Text style={{ color: 'red', fontSize: 13, textAlign: 'center', marginBottom: 10, marginTop: -20, }}>
+        <Text style={{ color: 'red', fontSize: 13, textAlign: 'center', marginBottom: 10, marginTop: -20, marginHorizontal:20}}>
           {error}
         </Text>
       ) : null}
-
-
         <View style={{flexDirection: 'row', marginHorizontal: 10, width: '100%'}}>
           <View style={{width: '25%'}}>
             <Text style={styles.left}>Project Name </Text>
@@ -322,19 +330,27 @@ const FormShopdrawing = props => {
             <Text style={styles.txtInput} onChangeText={onDateChange}>
               <PickedDateM onChangeText={onDateChange} />
             </Text>
+            
           </View>
         </View>
         
-      {/* </View> */}
       <ScrollView style={{marginTop: 5}}>
         {isLoading ? (
           <LoadingComponentS />
         ) : (
           <View>
             <View style={styles.wrappPanelTitle}>
-              <Text style={{ fontFamily: 'Poppins-Medium', color: BiruKu, fontSize: 16, }}>
+              <Text style={{ fontFamily: 'Poppins-Medium', color: BiruKu, fontSize: 16, marginRight: 50}}>
                 Panel Name
               </Text>
+              <TouchableOpacity style={{ alignSelf: 'center' }} onPress={toggleSelectAll}>
+                <View style={{ flexDirection: 'row'}}>
+                  <Text style={styles.toggleAll}>{selectAll?'Select All  ':'Unselect All  '}</Text>
+                  <View style={{borderWidth: 2, borderColor: BiruKu, padding: 0.2, marginBottom: 5}}>
+                    <Icon name={'check-bold'} size={20} color={selectAll ? BiruKu : 'white'} />
+                  </View>
+                </View>
+              </TouchableOpacity>
             </View>
             {shopdrawingInfo.Panels.filter(item => !item.stageExist).map(
               item => (
@@ -391,8 +407,6 @@ const styles = StyleSheet.create({
     flex: 1,
     top: 35,
     width:'98%',
-    // left: 5,
-    // right: 0,
     zIndex: 1,
   },
   sugesstion: {
@@ -425,6 +439,9 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   wrappPanelTitle: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     borderBottomWidth: 2,
     borderColor: BiruKu,
     marginRight: 30,
@@ -464,4 +481,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: BiruKu,
   },
+  toggleAll: {
+    fontFamily: 'Poppins-MediumItalic',
+    fontSize: 14,
+    marginTop: 2, 
+    marginBottom: 1,
+    color: BiruKu,
+  }
 });
