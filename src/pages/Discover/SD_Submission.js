@@ -39,13 +39,13 @@ const SD_Submission = () => {
         idRef.onSnapshot(async (snapshot) => {
           const idDoc = snapshot.docs.map((doc) => ({id: doc.id, ...doc.data() }))
           projectNameData.length = 0,
-          // idDoc.forEach
           idDoc.forEach(docIdRef => {
             projectNameData.push(docIdRef.projectName);
           });
           const panelNameData = [];
           let promises = []
           for (const doc of idDoc) {
+            console.log('idProject',doc.id)
             const projectRef = firestore().collection('Project')
               .doc(doc.id).collection('PanelName');
             const panelIdRef = await projectRef.get();
@@ -57,23 +57,31 @@ const SD_Submission = () => {
               panelNameData.push({
                 projectName: doc.projectName,
                 panelName: panel.pnameInput,
+                idProject: doc.id
               });
               const getId = panel.MonitoringID;
               if (getId) {
+                // const idProject = doc.id;
+                // console.log(idProject); 
                 const idRef = firestore().collection('Monitoring');
                 const id = getId.substring(12);
                 const shopdrawingRef = idRef.doc(id)
                   .collection('Shopdrawing').doc('Submission');
                 const submissionDoc = await shopdrawingRef.get();
                 if (submissionDoc.exists) {
+                  // const idProject = doc.id
+                  // console.log('idProject---', idProject); 
                   const submissionData = submissionDoc.data();
                   if (submissionData.DateSubmit) {
+                    const idProject = doc.id
+                    console.log('idProject--2', idProject); 
                     const dateSubmissionValue = submissionData.DateSubmit;
                     // console.log('submit-? ',dateSubmissionValue)
                     panelNameData.push({
                       projectName: panel.projectName,
                       panelName: panel.pnameInput,
                       DateSubmit: dateSubmissionValue.toDate(),
+                      idProject: doc.id
                     });
                   }
                 }
@@ -113,12 +121,14 @@ const SD_Submission = () => {
   });
 
   const renderedPanelList = filteredPanelData
-    .filter(item => item.DateSubmit)
-    .sort((a, b) => new Date(b.DateSubmit) - new Date(a.DateSubmit))
-    .map((item, index) => {
-      // console.log('data filtered ', FormatDate(item.DateSubmit))
+  .filter(item => item.DateSubmit)
+  .sort((a, b) => new Date(b.DateSubmit) - new Date(a.DateSubmit))
+  .map((item, index) => {
+    // const id = idDoc[index].id;
+    // console.log('id',item.idProject)
       return(
         <PanelProjectList
+        idProject={item.idProject}
         key={index + 1}
         projectName={item.projectName}
         panelName={item.panelName}

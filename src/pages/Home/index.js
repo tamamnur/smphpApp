@@ -6,6 +6,7 @@ import {BiruKu} from '../../utils/constant';
 import Memo from './Memo';
 import {LogoAdd} from '../../assets';
 import {useNavigation} from '@react-navigation/native';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 const Home = () => {
   const navigation = useNavigation();
@@ -30,7 +31,23 @@ const Home = () => {
             See More . . .
           </Text>
         </TouchableOpacity> */}
+        <View style={{flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'center',marginTop: 10}}>
+        <TouchableOpacity onPress={() => navigation.navigate('ProjectList')}>
+          <View style={styles.box}>
+            <Text style={styles.txtButton}>
+            <Ionicons name="list-circle-sharp" color={'grey'} size={50} />
+              List Project</Text>
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate('MemoPage')}>
+          <View style={styles.box}>
+            <Text style={styles.txtButton}>
+            <Ionicons name="document-attach" color={BiruKu} size={50} />
+              Memo</Text>
+          </View>
+        </TouchableOpacity>
       </View>
+    </View>
     {/* </ScrollView> */}
     </View>
   );
@@ -39,6 +56,7 @@ const Home = () => {
 export default Home;
 
 const windowHeight = Dimensions.get('window').height;
+console.log('Height?',windowHeight*0.2)
 const windowWidth = Dimensions.get('window').width;
 
 const styles = StyleSheet.create({
@@ -59,18 +77,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: 'Poppins-Bold',
   },
-  wrapperSMPHP: {
-    paddingHorizontal: 30,
-    marginTop: 20,
-  },
-  layanan: {
-    flexDirection: 'row',
-    paddingHorizontal: 15,
-    justifyContent: 'space-between',
-    marginTop: 10,
-    marginLeft: 20,
-    marginRight: 20,
-  },
   selamat: {
     fontFamily: 'Poppins-Bold',
     fontSize: 20,
@@ -78,11 +84,10 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     color: BiruKu,
   },
-
   iconAdd: {
     alignItems: 'flex-end',
     marginHorizontal: 10,
-    marginTop: -30,
+    marginTop: -60,
     marginBottom: 40,
     flex: 2,
   },
@@ -92,5 +97,28 @@ const styles = StyleSheet.create({
     marginTop: -22,
     color: '#BA0A3F',
     elevation: 10,
+  },
+  box: {
+    marginTop: 10,
+    alignItems: 'center',
+    alignContent: 'center',
+    // textAlignVertical:'center',
+    // backgroundColor: '#E5E5E5',
+    // backgroundColor: '#84A2AA',
+    // paddingVertical: 5,
+    borderColor: BiruKu,
+    borderRadius: 15,
+    borderWidth: 1.5,
+    verticalAlign: 'center',
+  },
+  txtButton: {
+    marginHorizontal: 20,
+    // marginTop: 3,
+    marginBottom: 10,
+    textAlignVertical: 'center',
+    textAlign: 'center',
+    fontSize: 14,
+    fontFamily: 'Poppins-Medium',
+    color: BiruKu,
   },
 });

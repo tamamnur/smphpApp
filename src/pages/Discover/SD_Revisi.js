@@ -50,11 +50,14 @@ const SD_Revision = () => {
               if (drawingDoc.exists) {
                 const drawingData = drawingDoc.data();
                 if (drawingData.DateRevisi) {
+                  // const idProject = doc.id
+                  // console.log('idPP',idProject)
                   const dateValue = drawingData.DateRevisi;
                   panelNameData.push({
                     projectName: panel.projectName,
                     panelName: panel.pnameInput,
                     DateUpdate: dateValue.toDate(),
+                    idProject: doc.id
                   });
                 }
               }
@@ -94,6 +97,7 @@ const SD_Revision = () => {
     .map((item, index) => {
       return (
         <PanelProjectList
+        idProject={item.idProject}
         key={index+1}
         projectName={item.projectName}
         panelName={item.panelName}

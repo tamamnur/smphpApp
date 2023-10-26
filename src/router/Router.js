@@ -52,6 +52,7 @@ import WiringStart from '../pages/Discover/fabWiringStart'
 import TestReport from '../pages/Discover/endTested'
 import DeliveryReport from '../pages/Discover/endDelivery'
 import PanelNameInputEdit from '../pages/Home/panelNameInputEdit'
+import ProjectList from '../pages/Home/ProjectList'
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -65,6 +66,7 @@ const SecuredNav = () => {
       <Stack.Screen name="MemoCreate" component={MemoCreate} options={{ headerShown: false}}/>
       <Stack.Screen name="ProjectCreate" component={ProjectCreate}options={{ headerShown: false}}/>
       <Stack.Screen name="PanelNameInput" component={PanelNameInput} options={{ headerShown: false}}/>
+      <Stack.Screen name="ProjectList" component={ProjectList} options={{ headerShown: false}}/>
 
       {/* <Stack.Screen name="CreateSPG" component={CreateSPG} options={{ headerShown: false}}/>
       <Stack.Screen name="CreateSPK" component={CreateSPK} options={{ headerShown: false}}/> */}
@@ -78,7 +80,6 @@ const SecuredNav = () => {
 
       <Stack.Screen name="ProjectDetailsEdit" component={ProjectDetailsEdit} options={{ headerShown: false}}/>
       <Stack.Screen name="PanelNameInputEdit" component={PanelNameInputEdit} options={{ headerShown: false}}/>
-      {/* <Stack.Screen name="PanelNameEdit" component={PanelNameEdit} options={{ headerShown: false}}/> */}
       
       <Stack.Screen name="FormShopdrawing" component={FormShopdrawing} options={{ headerShown: false}}/>
       <Stack.Screen name="FormProcurement" component={FormProcurement} options={{ headerShown: false}}/>

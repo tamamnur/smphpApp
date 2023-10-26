@@ -1,4 +1,4 @@
-import {Text, ToastAndroid, Alert, Dimensions, ScrollView, } from 'react-native';
+import {ToastAndroid, Alert, ScrollView, } from 'react-native';
 import React, {useState} from 'react';
 import {BiruKu} from '../../utils/constant';
 import {useNavigation} from '@react-navigation/native';
@@ -9,7 +9,6 @@ import InfoProjectInput from '../../components/InfoProjectInput';
 import InfoDateProject from '../../components/InfoDateProject';
 import Header from '../../components/Header';
 import ErrorMessage from '../../components/errorMessage'
-const {width} = Dimensions.get('window')
 
 const updateError = (error, stateUpdate) => {
   stateUpdate(error);
@@ -19,6 +18,7 @@ const updateError = (error, stateUpdate) => {
 const ProjectCreate = props => {
   const navigation = useNavigation();
   const [datePO, setDatePO] = useState(null);
+  const [showDatePO, setShowDatePO] = useState(false);
   const onDatePOChange = value => {
     setDatePO(value);
   };
@@ -33,6 +33,11 @@ const ProjectCreate = props => {
   const {projectId, projectName, customer, numberPO} = projectInfo;
   const handleOnchangeText = (value, fieldName) => {
     setProjectInfo({...projectInfo, [fieldName]: value});
+    if(fieldName === 'numberPO' && value.trim() !== '') {
+      setShowDatePO(true)
+    } else {
+      setShowDatePO(false)
+    }
   };
 
   const isValidForm = () => {
@@ -72,27 +77,17 @@ const ProjectCreate = props => {
     if (isValidForm()) {
       try {
         Alert.alert(
-          'Project Data Confirmation',
-          'Is the entered Project data correct?',
-          [
-            {text: 'Cancel', style: 'cancel'},
-            {
-              text: 'Next', style: 'destructive', onPress: async () => {
-                try {
-                  handleCreateProject();
-                  ToastAndroid.show(
-                    'Project Created, Continue to adding Panel Names',
-                    ToastAndroid.SHORT,
-                    );
-                } catch (error) {
-                  Alert.alert(
-                    'Error',
-                    'An error occurred while adding the project.',
-                  );
-                }
-              },
+          'Project Data Confirmation', 'Is the entered Project data correct?',
+          [{text: 'Cancel', style: 'cancel'},
+           {text: 'Next', style: 'destructive', onPress: async () => {
+            try {
+              handleCreateProject();
+              ToastAndroid.show('Project Created, Continue to adding Panel Names',ToastAndroid.SHORT)
+            } catch (error) {
+              Alert.alert('Error', 'An error occurred while adding the project.');
+            }
             },
-          ],
+          }]
         );
       } catch (error) {
         console.error('Error creating project', error);
@@ -104,12 +99,6 @@ const ProjectCreate = props => {
     <ScrollView style={{marginVertical: 20}}>
       <Header />
       <Title2 TxtTitle="N E W     P R O J E C T" />
-      {/* {error ? ( 
-         <Text
-           style={{color: 'red',fontSize: 13, marginBottom: -15,}}>
-           {error}
-         </Text>
-       ) : null} */}
       <ScrollView style={{marginHorizontal: 8}}>
         <InfoProjectInput 
           label={'SO Number'} 
@@ -131,10 +120,12 @@ const ProjectCreate = props => {
           onChangeText={value => handleOnchangeText(value, 'numberPO')}
           value={numberPO}
           />
-        <InfoDateProject 
+        {showDatePO && (
+          <InfoDateProject 
             label={'Date PO'}
             onDateChange={onDatePOChange}
           />
+        )}
       </ScrollView>
       {error ? (<ErrorMessage txt={error} marginBottom={120}/>) : null }
 

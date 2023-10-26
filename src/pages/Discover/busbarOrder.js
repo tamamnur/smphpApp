@@ -1,8 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import { View, ScrollView, Dimensions, } from 'react-native';
 import Title2 from '../../components/Title2';
-import {IconBack, LogoSmpHP} from '../../assets';
-import {useNavigation} from '@react-navigation/native';
 import firestore from '@react-native-firebase/firestore';
 import PanelProjectList from '../../components/panelProjectList';
 import FormatDate from '../../components/FormatDate';
@@ -15,11 +13,9 @@ import Header from '../../components/Header';
 
 const height = Dimensions.get('window').height;
 const BusbarOrder = () => {
-  const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(true);
   const [panelNameData, setPanelNameData] = useState([]);
-  const [searchKeyword, setSearchKeyword] = useState('');
-
+  
   useEffect(() => {
     let isMounted = true;
     const getProject = async () => {
@@ -32,19 +28,16 @@ const BusbarOrder = () => {
         });
         const panelNameData = [];
         for (const doc of idDoc) {
-          const projectRef = firestore().collection('Project').doc(doc.id)
-            .collection('PanelName');
+          const projectRef = firestore().collection('Project')
+            .doc(doc.id).collection('PanelName');
           const panelIdRef = await projectRef.get();
           const panelIdData = panelIdRef.docs.map(panelIdDoc => ({
-            panelId: panelIdDoc.id,
-            ...panelIdDoc.data(),
+            panelId: panelIdDoc.id, ...panelIdDoc.data(),
             projectName: doc.projectName,
           }));
           const fetchDatePromises = panelIdData.map(async panel => {
             panelNameData.push({
-              projectName: doc.projectName,
-              panelName: panel.pnameInput,
-            });
+              projectName: doc.projectName, panelName: panel.pnameInput});
             const getId = panel.MonitoringID;
             if (getId) {
               const idRef = firestore().collection('Monitoring');
@@ -56,34 +49,32 @@ const BusbarOrder = () => {
                 const monitoringData = monitoringDoc.data();
                 if (monitoringData.Order) {
                   const dateValue = monitoringData.Order;
-                  const dateMonitoring = FormatDate(dateValue.toDate());
                   panelNameData.push({
                     projectName: panel.projectName,
                     panelName: panel.pnameInput,
-                    DateMonitoring: dateMonitoring,
+                    DateUpdate: dateValue.toDate(),
+                    idProject: doc.id
                   });
                 }
               }
             }
           });
           await Promise.all(fetchDatePromises);
-        } if (isMounted) {
+        }
+        if (isMounted) {
           setPanelNameData(panelNameData);
           setIsLoading(false);
         }
       } catch (error) {
-        console.log('ERROR Fetching Data', error);
-        if (isMounted) {
-          setIsLoading(false);
-        }
+        console.error('Error Fetching Data ', error);
+        if (isMounted) {setIsLoading(false)}
       }
     };
     getProject();
-    return () => {
-      isMounted = false;
-    };
+    return () => {isMounted = false};
   }, []);
 
+  const [searchKeyword, setSearchKeyword] = useState('');
   const filteredPanelData = panelNameData.filter(item => {
     const projectNameLower = item.projectName.toLowerCase();
     const panelNameLower = item.panelName.toLowerCase();
@@ -94,36 +85,33 @@ const BusbarOrder = () => {
     );
   });
 
-  const renderedPanelList = filteredPanelData.filter(item => item.DateMonitoring)
-  .sort((a, b) => new Date(b.DateMonitoring) - new Date(a.DateMonitoring))
-  .map((item, index) => (
-    <PanelProjectList
-      key={index + 1}
-      projectName={item.projectName}
-      panelName={item.panelName}
-      status={item.DateMonitoring}
-    />
-  ))
-  
-  const contenToRender = renderedPanelList.length > 0 ? renderedPanelList : <DataNotFound />
+  const renderedPanelList = filteredPanelData.filter(item => item.DateUpdate)
+    .sort((a, b) => new Date(b.DateUpdate) - new Date(a.DateUpdate))
+    .map((item, index) => {
+      return(
+        <PanelProjectList
+        key={index + 1}
+        projectName={item.projectName}
+        panelName={item.panelName}
+        status={FormatDate(item.DateUpdate)}
+        idProject={item.idProject}/>
+        )
+      });
+
+  const contenToRender =
+    renderedPanelList.length > 0 ? renderedPanelList : <DataNotFound />;
 
   return (
-    <View>
+    <View style={{marginVertical: 10}}>
       <Header/>
       <Title2 TxtTitle="PURCHASE ORDER" SubTitle="BUSBAR Cu" />
       {isLoading ? (<></>) : (<>
-          <SearchBar value={searchKeyword} onChangeText={text => setSearchKeyword(text)} />
-          <PanelHeadTable />
+        <SearchBar value={searchKeyword} 
+           onChangeText={text => setSearchKeyword(text)} />
+        <PanelHeadTable />
       </>)}
-      <ScrollView style={{marginHorizontal: 8, height: height*0.65}}> 
-        <View>
-          {isLoading ? ( <LoadingComponent /> ) : (
-            <>
-            {contenToRender} 
-            <EndOf /> 
-            </> 
-          )}
-        </View>
+      <ScrollView style={{marginHorizontal: 8, height:height*0.65}}>
+        {isLoading ? (<LoadingComponent />) : (<>{contenToRender}<EndOf /></>)}
       </ScrollView>
     </View>
   );

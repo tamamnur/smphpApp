@@ -1,106 +1,146 @@
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native'
-import React, { Component } from 'react'
-import { BiruKu } from '../../utils/constant'
+import React, {useEffect, useRef, useState} from 'react';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, 
+  View, } from 'react-native';
+import {BiruKu} from '../../utils/constant';
+import {useNavigation} from '@react-navigation/native';
+import firestore from '@react-native-firebase/firestore';
+import Header from '../../components/Header';
+import Title from '../../components/Title1';
+import MCIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import LoadingComponent from '../../components/LoadingComponent';
+import SearchBar from '../../components/SearchBar2'
+import DataNotFound from '../../components/dataNotFound';
 
-const Project = (props) => {
-    return(
-        <View style={styles.recap}>
-            <TouchableOpacity>
-                <Text style={styles.projectName}>
-                    {props.projectName} </Text></TouchableOpacity>
-                <Text style={styles.status}>
-                    Status {props.status}</Text>
-                 <Text style={styles.update}>
-                    {props.update}</Text>
-        </View>
-    )
-} 
-const Memo = () => {
-    return (
-        <View style={styles.MemoContainer}>
-            <View style={styles.titleWrap}>
-                <Text style={styles.title}>Memo</Text>
-            </View>
-            <ScrollView style={styles.select}>
-                <ListMemo 
-                projectName="Sanbe Farma" 
-                status="Shopdrawing -- Submission"
-                update="20-07-2022"/>
-                <ListMemo
-                projectName="Cluster Uptown Lippo" 
-                status="Procurement -- Construction"
-                update="20-07-2022"/>
-                <ListMemo 
-                projectName="Sanbe Farma" 
-                status="Shopdrawing -- Submission"
-                update="20-07-2022"/>
-                <ListMemo
-                projectName="Cluster Uptown Lippo" 
-                status="Procurement -- Construction"
-                update="20-07-2022"/>
+const Projects = (props) => {
+  const navigation = useNavigation();
+  return (
+    <View style={{marginVertical: 2, paddingVertical: 3}}>
+      <View style={styles.container}>
+        <TouchableOpacity 
+            onPress={() => navigation.navigate('ProjectDetails', {id: props.id})}
+            style={{marginVertical: 3, flexDirection: 'row'}}>
+          <View style={{width: '78%'}}>
+            <Text style={styles.projectName}>
+              <MCIcons name="label-variant" /> {props.project}{' '}
+            </Text>
+            <Text style={styles.client}>{props.client}</Text>
+          </View>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.navigate('ProjectStatus', {id: props.id})}>
+          <Text style={styles.qty}>{props.qty} Unit</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+};
 
-            </ScrollView>
-        </View>
-    )
-}
+const ProjectList = () => {
+  const [isLoading, setIsLoading] = useState(true);
+  const [project, setProject] = useState([]);
+  const [searchText, setSearchText] = useState('');
+  const handleSearchText = (text) => {
+    setSearchText(text);
+  };
 
-export default Memo;
+    const filtered = project.filter(item => {
+      const projectNameLower = item.projectName.toLowerCase();
+      const customerLower = item.customer.toLowerCase();
+      const searchKeywordLower = searchText.toLowerCase();
+      return (
+        projectNameLower.includes(searchKeywordLower) ||
+        customerLower.includes(searchKeywordLower)
+      );
+    });
+
+    const sorting = (a, b) => {
+      const nameA = a.projectName.toLowerCase();
+      const nameB = b.projectName.toLowerCase();
+      if (nameA < nameB) {return -1}
+      if (nameA > nameB) {return 1}
+      return 0
+    };
+  
+  useEffect(() => {
+    let isMounted = true
+
+    const unsubscribe = firestore().collection('Project').onSnapshot(snapshot => {
+      const projectData = [];
+      snapshot.forEach(doc => {
+        const data = doc.data();
+        firestore().collection('Project').doc(doc.id).collection('PanelName').get()
+          .then(panelSnapshot => {
+            const panelCount = panelSnapshot.size;
+            const projectPanelCount = { id: doc.id, ...data, panelCount };
+            projectData.push(projectPanelCount);
+            if (projectData.length === snapshot.size && isMounted) {
+              setProject(projectData);
+              setIsLoading(false);
+            }
+          })
+          .catch(error => {
+            console.error('Error fetching panel data: ', error);
+          });
+      });
+
+      return () => {
+        unsubscribe();
+        isMounted = false
+      };
+    }, []);
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const filterResult = filtered.sort(sorting)
+  return (
+    <View style={{marginTop: 20}}>
+      <Header />
+      <Title TxtTitle={'PROJECT LIST'} />
+      <SearchBar value={searchText} onChangeText={handleSearchText}/>
+      <ScrollView style={{marginTop: -6, height: '80%'}}>
+        {isLoading ? (<LoadingComponent />) 
+        : filterResult.length > 0 ? (
+          filterResult.map(item => (
+          <Projects key={item.id} 
+            id={item.id} project={item.projectName} 
+            client={item.customer} qty={item.panelCount}/>
+          ))
+          ) : (<View style={{marginHorizontal: 10}}><DataNotFound/></View>)
+        }
+      </ScrollView>
+    </View>
+  );
+};
+export default ProjectList;
 
 const styles = StyleSheet.create({
-    MemoContainer:{
-        width: '98%',
-        height: '27%',
-        borderRadius: 20,
-        marginTop: 10,
-        marginHorizontal: 4,
-        backgroundColor: '#F9F9F9',
-        elevation: 10
-    },
-    titleWrap:{
-        backgroundColor: '#84A2AA',
-        height: 50,
-        justifyContent: 'center',
-        borderTopLeftRadius: 20,
-        borderTopRightRadius: 20,
-        borderBottomLeftRadius: 20,
-        borderBottomRightRadius: 100,
-        elevation: 8
-    },
-    title:{
-        fontFamily: 'Acme-Regular',
-        fontSize: 20,
-        color: '#FFF',
-        marginHorizontal: 20
-    },
-    iconAdd:{
-        alignItems: 'flex-end',
-        marginHorizontal: 30,
-        marginTop: 15
-    },
-    recap:{
-        marginHorizontal: 15,
-        marginVertical: 6
-    },
-    projectName:{
-        color: BiruKu,
-        fontFamily: "Poppins-Medium",
-        fontSize: 12
-    },
-    status:{
-        color: BiruKu,
-        fontFamily: "Poppins-Medium",
-        fontSize: 10,
-        marginHorizontal: 5
-
-    },
-    update:{
-        color: BiruKu,
-        fontFamily: "Poppins-Medium",
-        fontSize: 11,
-        textAlign: 'right',
-        marginTop: -20,
-        marginEnd: 10
-    }
-
-
-})
+  container: {
+    borderBottomWidth: 2.5,
+    width: '92%',
+    marginHorizontal: 15,
+    borderColor: BiruKu,
+    flexDirection: 'row'
+  },
+  projectName: {
+    color: BiruKu,
+    fontFamily: 'Poppins-SemiBold',
+    fontSize: 16,
+    paddingLeft: 10,
+  },
+  client: {
+    color: BiruKu,
+    fontFamily: 'Poppins-Medium',
+    fontSize: 14.5,
+    paddingLeft: 10,
+  },
+  qty: {
+    color: BiruKu,
+    fontFamily: 'Poppins-Medium',
+    fontSize: 16,
+    textAlign: 'right',
+    paddingRight: 10,
+    marginTop: 10,
+  },
+});

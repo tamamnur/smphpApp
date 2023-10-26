@@ -4,18 +4,19 @@ import {BiruKu, Darkred} from '../../utils/constant';
 import {useNavigation} from '@react-navigation/native';
 import firestore from '@react-native-firebase/firestore';
 import Button6 from '../../components/Button6';
-import FormatDate from '../../components/FormatDate';
 import Title2 from '../../components/Title2';
 import InfoProjectEdit from '../../components/InfoProjectEdit';
 import LoadingComponent from '../../components/LoadingComponent';
 import PickedDateEdit from '../../components/pickedDateEdit';
 import Header from '../../components/Header';
 import ErrorMessage from '../../components/errorMessage';
+import FormatDateFull from '../../components/FormatDateFull';
 
 const ProjectDetailsEdit = props => {
   const id = props.route.params.id;
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(true);
+  const [showDatePO, setShowDatePO] = useState(false);
   const [error, setError] = useState('');
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [projectInfo, setProjectInfo] = useState({
@@ -32,8 +33,8 @@ const ProjectDetailsEdit = props => {
         const data = doc.data();
         console.log('Data from firestore', data)
         if (data) {
-          const datePO = data?.datePO?.toDate() || new Date();
-          // const datePO = data?.datePO?.toDate() || 'Select Date';
+          // const datePO = data?.datePO?.toDate() || new Date();
+          const datePO = data?.datePO?.toDate() || 'Select Date';
           setProjectInfo({
             ProjectName: data?.projectName || '',
             ProjectId: data?.projectId || '',
@@ -46,11 +47,11 @@ const ProjectDetailsEdit = props => {
         } else {
           setProjectInfo(prevProjectInfo => ({
             ...prevProjectInfo,
-            DatePO: new Date(),
-            // DatePO: 'Select Date',
+            // DatePO: new Date(),
+            DatePO: 'Select Date',
           }));
-          setSelectedDate(new Date());
-          // setSelectedDate('Select Date');
+          // setSelectedDate(new Date());
+          setSelectedDate('Select Date');
         }
         setIsLoading(false);
       },
@@ -139,7 +140,7 @@ const ProjectDetailsEdit = props => {
             label={'Number SO'}
             value={projectInfo.ProjectId}
             onChangeText={text =>
-              setProjectInfo({...projectInfo, ProjectId: text})
+              setProjectInfo({...projectInfo, ProjectId: text}) 
             }
           />
           <InfoProjectEdit
@@ -158,32 +159,34 @@ const ProjectDetailsEdit = props => {
           />
           <InfoProjectEdit
             label={'Number PO'}
-            value={projectInfo.NumberPO}
-            onChangeText={text =>
-              setProjectInfo({...projectInfo, NumberPO: text})
-            }
+            value={projectInfo.NumberPO || ''}
+            onChangeText={text => {
+              setProjectInfo({...projectInfo, NumberPO: text});
+              // if(text && text.trim() !=='') {
+              //   setShowDatePO(true)
+              // } else {
+              //   setShowDatePO(false)
+              // };
+            }}
           />
-          <PickedDateEdit
-            value={FormatDate(selectedDate)} // value={selectedDate.toDateString()}
-            onChangeText={selected =>
-              setProjectInfo({...projectInfo, DatePO: selected})
-            }
-          />
+
+          {/* {showDatePO && ( */}
+            <PickedDateEdit
+            // value={projectInfo.DatePO instanceof Date ? FormatDateFull(selectedDate) : 'Select Date'} 
+            value={projectInfo.DatePO || 'Select Date'}
+            onChangeText={selected => {
+              // const newDate = selected instanceof Date ? selected : 'Select Date';
+              const newDate = selected === 'Select Date' ? null : selected;
+              setProjectInfo({...projectInfo, DatePO: newDate})
+            }}
+            />
+          {/* )} */}
           <View style={{marginTop: 30}}>
-            {/* {error ? (
-              <Text style={{color: 'red',fontSize: 15,textAlign: 'center', marginBottom:-15}}>
-            {error}</Text> ) : null} */}
-
             {error ? (<ErrorMessage txt={error}/>) : null}
-
-            <Button6
-              text="Save Changes" bgColor={BiruKu}
-              fontColor={'white'} onPress={handleSaveChanges}
-              />
-            <Button6
-              text="Delete Project" bgColor={Darkred}
-              fontColor={'white'} onPress={handleDeleteProject}
-              />
+            <Button6 text="Save Changes" bgColor={BiruKu}
+              fontColor={'white'} onPress={handleSaveChanges}/>
+            <Button6 text="Delete Project" bgColor={Darkred}
+              fontColor={'white'} onPress={handleDeleteProject}/>
           </View>
         </ScrollView>
       )}

@@ -8,7 +8,7 @@ import FormatDate from '../../components/FormatDate';
 import LoadingComponent from '../../components/LoadingComponent';
 import EndOf from '../../components/Footer';
 import InfoProject from '../../components/InfoProject';
-import HeaderToHome from '../../components/HeaderToHome';
+import Header from '../../components/Header';
 import Title2 from '../../components/Title2';
 import PanelListOnDetail from '../../components/panelListOnDetail';
 const {height} = Dimensions.get('window');
@@ -59,7 +59,7 @@ const ProjectDetails = props => {
 
   return (
     <View style={{flex: 1, height: height * 0.85}}>
-      <HeaderToHome />
+      <Header />
       {isLoading ? (
         <LoadingComponent />
       ) : (
