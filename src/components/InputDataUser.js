@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
     // borderWidth: 1,
   },
   label: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: 'Poppins-Regular',
     marginTop: 10,
     marginBottom: 10,

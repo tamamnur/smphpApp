@@ -34,18 +34,19 @@ const styles = StyleSheet.create({
         borderRadius:5,
         borderWidth: 1,
         borderColor: BiruKu,
-        marginHorizontal: 25,
-        marginTop: 5,
-        marginBottom: 5, 
+        // marginHorizontal: 25,
+        // marginTop: 5,
+        // marginBottom: 5, 
         height: 40,
         width: '80%',
-        fontSize: 14,
+        // fontSize: 14,
         justifyContent: 'center'
     },
     picked:{
-        fontSize: 14,
-        fontFamily: 'Poppins-Regular',
+        fontSize: 15,
+        fontFamily: 'Poppins-Medium',
         color: BiruKu,
+        paddingTop: -5,
         marginHorizontal: -10
     }
 })

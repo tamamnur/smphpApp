@@ -2,7 +2,6 @@ import {StyleSheet, Text, View, ScrollView, ToastAndroid} from 'react-native';
 import React, {Component} from 'react';
 import {BiruKu} from '../../utils/constant';
 import InputDataUser from '../../components/InputDataUser';
-import InfoDataUser from '../../components/InputDataUserInfo';
 import Button6 from '../../components/Button6';
 import Division from '../../components/Division';
 import auth from '@react-native-firebase/auth';
@@ -52,9 +51,7 @@ export default class ProfileEdit extends Component {
           });
         }
       })
-      .catch(error => {
-        console.error(error);
-      });
+      .catch(error => {console.error(error)});
   }
 
   handleDivisionChange = value => {
@@ -66,21 +63,14 @@ export default class ProfileEdit extends Component {
     const currentUser = auth().currentUser;
     if (currentUser) {
       this.reauthenticate(currentPassword)
-        .then(() => {
-          return currentUser.updateEmail(email);
-        })
-        .then(() => {
-          ToastAndroid.show(
-            'Email address has been changed successfully',
-            ToastAndroid.LONG,
-          ) // console.log('Email address has been changed successfully');
+        .then(() => {return currentUser.updateEmail(email)})
+        .then(() => {ToastAndroid.show(
+          'Email address has been changed successfully',ToastAndroid.LONG)
+           // console.log('Email address has been changed successfully');
         })
         .catch(error => {
           console.log('Failed to change email address', error);
-          ToastAndroid.show(
-            'Failed to change email address',
-            ToastAndroid.LONG,
-          );
+          ToastAndroid.show('Failed to change email address',ToastAndroid.LONG)
         });
     }
   };
@@ -112,26 +102,15 @@ export default class ProfileEdit extends Component {
         displayName: displayName,
       })
       .then(() => {
-        firestore()
-          .collection('User')
-          .doc(currentUser.uid)
-          .update({
-            division: division,
-          })
-          .then(() => {
-            ToastAndroid.show(
-              'Press the Refresh Button to see the changes',
-              ToastAndroid.LONG,
-            );
+        firestore().collection('User').doc(currentUser.uid)
+          .update({division: division})
+          .then(() => {ToastAndroid.show(
+              'Press the Refresh Button to see the changes',ToastAndroid.LONG)
             this.props.navigation.navigate('Akun');
           })
-          .catch(error => {
-            console.log(error);
-          });
+          .catch(error => {console.log(error)});
       })
-      .catch(error => {
-        console.log(error);
-      });
+      .catch(error => {console.log(error)});
   };
 
   handleEmailChange = text => {
@@ -163,7 +142,7 @@ export default class ProfileEdit extends Component {
           </View>
           <Division value={this.state.division} 
             onValueChange={this.handleDivisionChange}/>
-          <InfoDataUser label='Division' value={division}/>
+          <InputDataUser label='Division' value={division}/>
           <InputDataUser label="Fullname" value={displayName}
             onChangeText={text => this.setState({displayName: text})}/>
           <InputDataUser label="Email" value={email}
@@ -191,7 +170,7 @@ export default class ProfileEdit extends Component {
 
 const styles = StyleSheet.create({
   label: {
-    fontSize: 14,
+    fontSize: 15,
     fontFamily: 'Poppins-Regular',
     marginTop: 10,
     marginLeft: 15,

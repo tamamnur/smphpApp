@@ -1,121 +1,160 @@
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, ScrollView } from 'react-native'
-import React, { Component } from 'react'
-import { IconBack, LogoSmpHP } from '../../assets'
-import { BiruKu } from '../../utils/constant'
-import Title2 from '../../components/Title2'
-import InputDataUser from '../../components/InputDataUser'
-import Division from '../../components/Division'
+import {View, Text, StyleSheet, TextInput, ToastAndroid, ScrollView, Dimensions, } from 'react-native';
+import React, {useState, useEffect} from 'react';
+import {useNavigation} from '@react-navigation/native';
+import Title from '../../components/Title1';
+import Division from '../../components/Division';
+import Header from '../../components/Header';
+import {BiruKu} from '../../utils/constant';
+import firebase from '@react-native-firebase/app';
+import firestore from '@react-native-firebase/firestore';
+import auth from '@react-native-firebase/auth';
+import Button from '../../components/Button6';
+import ErrorMessage from '../../components/errorMessage';
 
-export default class MemoCreate extends Component {
-  // constructor(props) {
-  //   super(props);
-  //   this.state = {
-  //       division : ['Admin','Direktur','Drafter','Logistics','Production','Sales'],
-  //   }
-  // }
+const DDD = Dimensions.get('window').height;
+console.log(DDD);
+const MemoCreate = () => {
+  const navigation = useNavigation();
+  const [error, setError] = useState('');
+  const [division, setDivision] = useState('');
+  const [displayName, setDisplayName] = useState('');
+  const currentUser = firebase.auth().currentUser;
+  const [attn, setAttn] = useState('');
+  const [subject, setSubject] = useState('');
+  const [message, setMessage] = useState('');
 
-    render(){
-    return (
-    <ScrollView style={styles.page}>
-      <View style={styles.header}>
-          <IconBack onPress={() => this.props.navigation.navigate('Home')} style={{marginTop: 10, marginLeft: 30}}/>
-          <LogoSmpHP style={{marginLeft: 180}}/>
-      </View>
-        <Title2 TxtTitle="MEMO INTERNAL"/>
-        <View>
-          <Text style={styles.label} >From</Text>
+  const errorMessage = (error, errorInfo) => {
+    errorInfo(error);
+    setTimeout(() => {
+      errorInfo('');
+    }, 3000);
+  };
+
+  useEffect(() => {
+    const unsubscribe = firestore().collection('User').doc(currentUser.uid)
+      .onSnapshot(documentSnapshot => {
+        if (documentSnapshot.exists) {
+          const user = documentSnapshot.data();
+          setDivision(user.division);
+        }
+      });
+    return () => {unsubscribe()}
+  }, []);
+  useEffect(() => {
+    const unsubscribe = auth().onAuthStateChanged(user => {
+      if (user) {setDisplayName(currentUser.displayName)}
+    });
+    return () => {unsubscribe()}
+  }, []);
+  // console.log(currentUser.displayName, division);
+  const handleSubmit = () => {
+    if (!attn) {
+      return errorMessage(`You haven't specified a recipient`, setError);
+    } if (!subject) {
+      return errorMessage(`You haven't filled in a subject.`, setError);
+    } if (!message) {
+      return errorMessage(`You haven't provided a message.`, setError);
+    } else {
+      const Created = new Date();
+      firestore().collection('Memo').add({
+          From: currentUser.displayName,
+          FromDivision: division,
+          ToDivision: attn,
+          Subject: subject,
+          Message: message,
+          Created: firestore.Timestamp.fromDate(Created),
+        })
+        .then(() => {
+          console.log('Memo published');
+          ToastAndroid.show('Memo Published', ToastAndroid.LONG);
+          navigation.replace('MemoPage');
+        })
+        .catch(error => {alert('Error', error)});
+    }
+  };
+  console.log(attn, subject, message);
+  return (
+    <View>
+      <ScrollView style={{marginVertical: 20}}>
+        <Header/><Title TxtTitle="CREATE MEMO" />
+        <ErrorMessage txt={error} />
+        <View style={styles.desc}>
+          <View style={{width: '20%'}}>
+            <Text style={styles.label}>To / Attn.</Text>
+            <Text style={styles.label}>Subject</Text>
+          </View>
+          <View style={{marginLeft: 8, width: '95%'}}>
+            <Division
+              values={attn}
+              onValueChange={text => {setAttn(text)}}
+            />
+            <TextInput
+              style={styles.txtInput}
+              placeholder="Project (issue)"
+              placeholderTextColor={'gray'}
+              value={subject}
+              onChangeText={text => setSubject(text)}
+            />
+          </View>
         </View>
-        <Division />
-        <View>
-          <Text style={styles.label} >For</Text>
-        </View>
-        <Division />
-        <InputDataUser label="Project"/>
-        <InputDataUser label="Due Date" />
-        {/* <DateInput /> */}
-        <View><Text style={styles.label}>Message</Text>
-        <TextInput style={styles.txtArea} multiline 
-          // onChangeText={(val) => setMessage(val)}
+        <View style={{flex: 1, height: DDD*0.6}}>
+          <TextInput
+            multiline
+            placeholder="Write your message here..."
+            placeholderTextColor={'gray'}
+            style={styles.txtArea}
+            value={message}
+            onChangeText={text => setMessage(text)}
           />
+          <Button bgColor={BiruKu} text={'Publish'} fontColor={'white'} onPress={handleSubmit} />
         </View>
-        <TouchableOpacity style={styles.btn} onPress={()=> this.props.navigation.navigate('MemoPage')}>
-          <Text style={{textAlign: 'center', color:'#FFF', fontFamily: 'Poppins-Bold', fontSize: 16}}>Create Memo</Text>
-        </TouchableOpacity>
-        
-   </ScrollView>
-  )
-}}
+      </ScrollView>
+    </View>
+  );
+};
 
+export default MemoCreate;
 const styles = StyleSheet.create({
-  page:{
-    marginTop: 30,
-    flex: 1
-    },
-  header:{
+  desc: {
+    marginTop: 20,
+    marginHorizontal: 20,
     flexDirection: 'row',
+    height: '15%',
   },
-  btn:{
-    color: '#FFF',
-    backgroundColor: BiruKu,
-    marginTop: 35,
-    marginHorizontal: 55,
-    paddingHorizontal: 10,
-    paddingVertical: 14,
-    elevation: 10,
-    borderRadius: 10,
-    fontSize: 16,
-    fontFamily: 'Poppins-Bold',
-    textAlign: 'center'
+  label: {
+    fontSize: 15,
+    fontFamily: 'Poppins-Medium',
+    color: BiruKu,
+    height: 45,
+    textAlignVertical: 'center',
+    marginBottom: 5,
   },
-  area:{
-    backgroundColor: '#EDEDED', 
-    borderRadius:5,
+  txtArea: {
+    fontSize: 15,
+    fontFamily: 'Poppins-Medium',
+    color: BiruKu,
+    borderWidth: 1.5,
+    borderColor: BiruKu,
+    borderRadius: 5,
+    marginHorizontal: 20,
+    padding: 10,
+    height: '55%',
+    width: '90%',
+    textAlign: 'justify',
+    textAlignVertical: 'top',
+  },
+  txtInput: {
+    fontFamily: 'Poppins-Medium',
+    fontSize: 15,
+    color: BiruKu,
     borderWidth: 1,
     borderColor: BiruKu,
-    marginHorizontal: 48,
-    marginTop: 5,
-    marginBottom: 5, 
-    elevation: 1,
+    borderRadius: 3,
+    paddingHorizontal: 6,
+    paddingVertical: 4,
+    marginVertical: 12,
+    textAlignVertical: 'center',
+    width: '80%',
     height: 40,
-    fontSize: 11,
-    justifyContent: 'center',
- },
- pickStyl:{
-    fontSize: 13,
-    fontFamily: 'Poppins-Regular'
-},
-label:{
-  fontSize: 14,
-  fontFamily: "Poppins-Regular",
-  color: BiruKu,
-  marginHorizontal: 30,
-  marginLeft: 50,
-  marginTop: 10
-},
-txtArea:{
-  borderWidth: 1,
-  borderColor: BiruKu,
-  borderRadius: 5,
-  marginHorizontal: 50,
-  padding: 10,
-  height: 100,
-  textAlign: 'justify',
-  textAlignVertical: 'top',
-  
-},
-values:{
-  marginBottom: 15,
-  height: 40,
-  width: 230,
-  paddingVertical: 10,
-},
-txtInput:{
-  borderWidth: 1,
-  borderColor: BiruKu,
-  borderRadius: 5,    
-  height: 35,
-  padding: 10,
-  marginVertical: 8,
-  width: 240
-},
-})
+  },
+});

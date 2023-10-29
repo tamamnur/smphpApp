@@ -10,7 +10,6 @@ import LoadingComponent from '../../components/LoadingComponent';
 import PickedDateEdit from '../../components/pickedDateEdit';
 import Header from '../../components/Header';
 import ErrorMessage from '../../components/errorMessage';
-import FormatDateFull from '../../components/FormatDateFull';
 
 const ProjectDetailsEdit = props => {
   const id = props.route.params.id;
@@ -33,7 +32,6 @@ const ProjectDetailsEdit = props => {
         const data = doc.data();
         console.log('Data from firestore', data)
         if (data) {
-          // const datePO = data?.datePO?.toDate() || new Date();
           const datePO = data?.datePO?.toDate() || 'Select Date';
           setProjectInfo({
             ProjectName: data?.projectName || '',
@@ -47,7 +45,6 @@ const ProjectDetailsEdit = props => {
         } else {
           setProjectInfo(prevProjectInfo => ({
             ...prevProjectInfo,
-            // DatePO: new Date(),
             DatePO: 'Select Date',
           }));
           // setSelectedDate(new Date());
@@ -67,7 +64,7 @@ const ProjectDetailsEdit = props => {
 //  console.log('id ?',id)
 
   const handleDeleteProject = async () => { Alert.alert(
-      'Delete Comfirmation',
+      'Delete Confirmation',
       `Are you sure you want to delete the\n${projectInfo.ProjectName} project?`,
       [{text: 'Cancel', style: 'cancel'},
        {text: 'Delete', style: 'destructive',
@@ -162,25 +159,21 @@ const ProjectDetailsEdit = props => {
             value={projectInfo.NumberPO || ''}
             onChangeText={text => {
               setProjectInfo({...projectInfo, NumberPO: text});
-              // if(text && text.trim() !=='') {
-              //   setShowDatePO(true)
-              // } else {
-              //   setShowDatePO(false)
-              // };
+              if(text && text.trim() !=='') {
+                setShowDatePO(true)
+              } else {
+                setShowDatePO(false)
+              };
             }}
           />
-
-          {/* {showDatePO && ( */}
+          {showDatePO && (
             <PickedDateEdit
-            // value={projectInfo.DatePO instanceof Date ? FormatDateFull(selectedDate) : 'Select Date'} 
             value={projectInfo.DatePO || 'Select Date'}
             onChangeText={selected => {
-              // const newDate = selected instanceof Date ? selected : 'Select Date';
               const newDate = selected === 'Select Date' ? null : selected;
               setProjectInfo({...projectInfo, DatePO: newDate})
-            }}
-            />
-          {/* )} */}
+            }}/>
+          )}
           <View style={{marginTop: 30}}>
             {error ? (<ErrorMessage txt={error}/>) : null}
             <Button6 text="Save Changes" bgColor={BiruKu}

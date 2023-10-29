@@ -1,6 +1,6 @@
-import React, {useEffect, useRef, useState} from 'react';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, 
-  View, } from 'react-native';
+import React, {useEffect, useState} from 'react';
+import { Dimensions, ScrollView, StyleSheet, 
+  Text, TouchableOpacity, View, } from 'react-native';
 import {BiruKu} from '../../utils/constant';
 import {useNavigation} from '@react-navigation/native';
 import firestore from '@react-native-firebase/firestore';
@@ -10,6 +10,7 @@ import MCIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import LoadingComponent from '../../components/LoadingComponent';
 import SearchBar from '../../components/SearchBar2'
 import DataNotFound from '../../components/dataNotFound';
+import AddButton8 from '../../components/AddButton8'
 
 const Projects = (props) => {
   const navigation = useNavigation();
@@ -33,15 +34,12 @@ const Projects = (props) => {
     </View>
   );
 };
-
 const ProjectList = () => {
+  const navigation = useNavigation()
   const [isLoading, setIsLoading] = useState(true);
   const [project, setProject] = useState([]);
   const [searchText, setSearchText] = useState('');
-  const handleSearchText = (text) => {
-    setSearchText(text);
-  };
-
+  const handleSearchText = (text) => {setSearchText(text)};
     const filtered = project.filter(item => {
       const projectNameLower = item.projectName.toLowerCase();
       const customerLower = item.customer.toLowerCase();
@@ -62,7 +60,6 @@ const ProjectList = () => {
   
   useEffect(() => {
     let isMounted = true
-
     const unsubscribe = firestore().collection('Project').onSnapshot(snapshot => {
       const projectData = [];
       snapshot.forEach(doc => {
@@ -81,28 +78,21 @@ const ProjectList = () => {
             console.error('Error fetching panel data: ', error);
           });
       });
-
       return () => {
         unsubscribe();
         isMounted = false
       };
     }, []);
-
-    return () => {
-      isMounted = false;
-    };
+    return () => {isMounted = false};
   }, []);
-
   const filterResult = filtered.sort(sorting)
   return (
-    <View style={{marginTop: 20}}>
-      <Header />
-      <Title TxtTitle={'PROJECT LIST'} />
+    <View style={{marginTop: 10}}>
+      <Header /><Title TxtTitle={'PROJECT LIST'} />
       <SearchBar value={searchText} onChangeText={handleSearchText}/>
-      <ScrollView style={{marginTop: -6, height: '80%'}}>
+      <ScrollView style={{marginBottom: 20, height: height*.6}}>
         {isLoading ? (<LoadingComponent />) 
-        : filterResult.length > 0 ? (
-          filterResult.map(item => (
+        : filterResult.length > 0 ? (filterResult.map(item => (
           <Projects key={item.id} 
             id={item.id} project={item.projectName} 
             client={item.customer} qty={item.panelCount}/>
@@ -110,11 +100,14 @@ const ProjectList = () => {
           ) : (<View style={{marginHorizontal: 10}}><DataNotFound/></View>)
         }
       </ScrollView>
+        {!isLoading && <AddButton8 text={'Create New Project'}
+          onPress={() => navigation.navigate('ProjectCreate')}/>}
     </View>
   );
 };
 export default ProjectList;
 
+const height = Dimensions.get('window').height
 const styles = StyleSheet.create({
   container: {
     borderBottomWidth: 2.5,

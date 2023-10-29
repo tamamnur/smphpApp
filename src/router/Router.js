@@ -53,6 +53,8 @@ import TestReport from '../pages/Discover/endTested'
 import DeliveryReport from '../pages/Discover/endDelivery'
 import PanelNameInputEdit from '../pages/Home/panelNameInputEdit'
 import ProjectList from '../pages/Home/ProjectList'
+import MemoView from '../pages/Home/MemoView'
+import MemoEdit from '../pages/Home/MemoEdit'
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -63,13 +65,12 @@ const SecuredNav = () => {
       <Stack.Screen name="MainApp" component={MainApp} options={{ headerShown: false}}/>
       
       <Stack.Screen name="MemoPage" component={MemoPage} options={{ headerShown: false}}/>
+      <Stack.Screen name="MemoView" component={MemoView} />
       <Stack.Screen name="MemoCreate" component={MemoCreate} options={{ headerShown: false}}/>
+      <Stack.Screen name="MemoEdit" component={MemoEdit} />
       <Stack.Screen name="ProjectCreate" component={ProjectCreate}options={{ headerShown: false}}/>
       <Stack.Screen name="PanelNameInput" component={PanelNameInput} options={{ headerShown: false}}/>
       <Stack.Screen name="ProjectList" component={ProjectList} options={{ headerShown: false}}/>
-
-      {/* <Stack.Screen name="CreateSPG" component={CreateSPG} options={{ headerShown: false}}/>
-      <Stack.Screen name="CreateSPK" component={CreateSPK} options={{ headerShown: false}}/> */}
 
       <Stack.Screen name="SD_Submission" component={SD_Submission} options={{ headerShown: false}}/>
       <Stack.Screen name="SD_Approval" component={SD_Approval} options={{ headerShown: false}}/>

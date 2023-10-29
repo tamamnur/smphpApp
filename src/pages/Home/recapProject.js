@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import { Dimensions, ScrollView, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {BiruKu} from '../../utils/constant';
 import {useNavigation} from '@react-navigation/native';
 import firestore from '@react-native-firebase/firestore';
@@ -31,20 +31,16 @@ const Project = props => {
 class RecapProject extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      isLoading: true,
-      Projects: [],
-    };
+    this.state = {isLoading: true, Projects: []}
     this.unsubscribe = null;
   }
-  componentDidMount() {
-    this.subscribeToProject();
-  }
-  componentWillUnmount() {
-    this.unsubscribeFromProject()
+  componentDidMount() {this.subscribeToProject()}
+
+  componentWillUnmount() {this.unsubscribeFromProject()
   }
   subscribeToProject = () => {
-    this.unsubscribe = firestore().collection('Project').orderBy('updatedAt', 'desc').onSnapshot(snapshot => {
+    this.unsubscribe = firestore().collection('Project')
+    .orderBy('updatedAt', 'desc').onSnapshot(snapshot => {
       const projects = snapshot.docs.map(document => {
         const data = document.data();
         const updatedAt = data.updatedAt.toDate();
@@ -59,10 +55,9 @@ class RecapProject extends Component {
     })
   }
   unsubscribeFromProject = () => {
-    if (this.unsubscribe) {
-      this.unsubscribe()
-    }
+    if (this.unsubscribe) {this.unsubscribe()}
   }
+
   render() {
     const {projects, isLoading} = this.state;
     return (
@@ -70,21 +65,15 @@ class RecapProject extends Component {
         <View style={styles.titleWrap}>
           <Text style={styles.title}>Last Progress</Text>
         </View>
-        <ScrollView style={{marginBottom: 25}}>
-          {isLoading ? (
-            <LoadingCompnentS />
-            // <View style={{marginTop: 50}}>
-            //   <ActivityIndicator size="large" color={BiruKu} />
-            // </View>
-          ) : (
-            projects.map(item => (
-                <Project
-                key={item.id}
-                id={item.id}
-                ProjectName={item.projectName}
-                status= {item.status} //'Created at....' //"Procurement -- Component"
-                update={item.updatedAt}
-                />
+        <ScrollView style={{marginBottom: 35}}>
+          {isLoading ? (<LoadingCompnentS />) 
+          : (projects.map(item => (
+            <Project
+              key={item.id}
+              id={item.id}
+              ProjectName={item.projectName}
+              status= {item.status}
+              update={item.updatedAt}/>
             ))
           )}
         </ScrollView>
@@ -93,13 +82,11 @@ class RecapProject extends Component {
   }
 }
 export default RecapProject;
-
+const height = Dimensions.get('window').height
 const styles = StyleSheet.create({
   container: {
-    width: '98%',
-    height: '68%',
+    height: height*.55,
     borderRadius: 20,
-    marginHorizontal: 4,
     marginBottom: 10,
     backgroundColor: '#F9F9F9',
     elevation: 10,

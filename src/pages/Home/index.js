@@ -1,20 +1,20 @@
 import {StyleSheet, Text, View, Dimensions, TouchableOpacity, ScrollView} from 'react-native';
 import React, {Component, useState, useEffect} from 'react';
-import {HeaderInformation, Layanan} from '../../components';
+import HeaderInformation from '../../components/HeaderInformation';
 import RecapProject from './recapProject';
 import {BiruKu} from '../../utils/constant';
 import Memo from './Memo';
 import {LogoAdd} from '../../assets';
 import {useNavigation} from '@react-navigation/native';
-import Ionicons from 'react-native-vector-icons/Ionicons';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const Home = () => {
   const navigation = useNavigation();
   return (
     <View style={styles.page}>
     {/* <ScrollView style={styles.page}> */}
-      <View style={styles.Header}>
-        <Text style={styles.selamat}>Wellcome,</Text>
+      {/* <View style={styles.Header}> */}
+        {/* <Text style={s`tyles.selamat}>Wellcome,</Text> */}
           <HeaderInformation />
         {/* <View style={{marginBottom: -10, marginTop: -10}}>
         </View> */}
@@ -31,23 +31,21 @@ const Home = () => {
             See More . . .
           </Text>
         </TouchableOpacity> */}
-        <View style={{flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'center',marginTop: 10}}>
+        <View style={{flexDirection: 'row', justifyContent: 'space-evenly', alignItems: 'center', marginVertical:8, height: height*.09}}>
         <TouchableOpacity onPress={() => navigation.navigate('ProjectList')}>
           <View style={styles.box}>
-            <Text style={styles.txtButton}>
-            <Ionicons name="list-circle-sharp" color={'grey'} size={50} />
-              List Project</Text>
+            <Icon name="book-multiple" color={BiruKu} size={height*.05} />
+            <Text style={styles.txtButton}>Projects</Text>
           </View>
         </TouchableOpacity>
         <TouchableOpacity onPress={() => navigation.navigate('MemoPage')}>
           <View style={styles.box}>
-            <Text style={styles.txtButton}>
-            <Ionicons name="document-attach" color={BiruKu} size={50} />
-              Memo</Text>
+            <Icon name="android-messages" color={BiruKu} size={height*.05} />
+            <Text style={styles.txtButton}>Memo</Text>
           </View>
         </TouchableOpacity>
       </View>
-    </View>
+    {/* </View> */}
     {/* </ScrollView> */}
     </View>
   );
@@ -55,20 +53,24 @@ const Home = () => {
 
 export default Home;
 
-const windowHeight = Dimensions.get('window').height;
-console.log('Height?',windowHeight*0.2)
-const windowWidth = Dimensions.get('window').width;
+const height = Dimensions.get('window').height;
+const width = Dimensions.get('window').width;
+console.log('Height?',height, 'Wdth?', width)
 
 const styles = StyleSheet.create({
   page: {
     flex: 1,
-    marginBottom: 10,
+    paddingTop:10,
+    // marginBottom: 10,
     height: '100%',
+    // paddingTop: 30,
+    paddingHorizontal: 15
+    // borderWidth: 5
     // height: windowHeight * 0.7
   },
   Header: {
-    paddingHorizontal: 15,
-    paddingTop: 30,
+    // paddingHorizontal: 15,
+    // paddingTop: 30,
   },
   smp: {
     fontSize: 14,
@@ -99,8 +101,13 @@ const styles = StyleSheet.create({
     elevation: 10,
   },
   box: {
-    marginTop: 10,
+    // marginTop: 10,
+    flexDirection: 'row',
     alignItems: 'center',
+    width: width*.4,
+    // justifyContent: 'space-evenly',
+    height: height*.06,
+    paddingHorizontal: 10,
     alignContent: 'center',
     // textAlignVertical:'center',
     // backgroundColor: '#E5E5E5',
@@ -112,9 +119,11 @@ const styles = StyleSheet.create({
     verticalAlign: 'center',
   },
   txtButton: {
-    marginHorizontal: 20,
+    // marginHorizontal: 20,
+    // marginHorizontal: 2,
+    marginLeft: 8,
     // marginTop: 3,
-    marginBottom: 10,
+    // marginBottom: 10,
     textAlignVertical: 'center',
     textAlign: 'center',
     fontSize: 14,

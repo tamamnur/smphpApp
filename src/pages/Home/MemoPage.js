@@ -1,70 +1,90 @@
-import { Text, StyleSheet, View, TouchableOpacity, ScrollView } from 'react-native'
-import React, { Component } from 'react'
-import { LogoAdd, IconBack, LogoSmpHP } from '../../assets'
-import Title2 from '../../components/Title2'
-import Memo from './Memo'
-import { BiruKu } from '../../utils/constant'
-import MemoIndex from './MemoIndex'
+import {View, Dimensions, FlatList} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {useNavigation} from '@react-navigation/native';
+import Title from '../../components/Title1';
+import MemoIndex from './MemoIndex';
+import AddButton from '../../components/AddButton8';
+import Header from '../../components/HeaderToHome';
+import SearchBar from '../../components/SearchBar2';
+import firestore from '@react-native-firebase/firestore';
+import FormatDateTime from '../../components/FormatDateTime';
+import LoadingComponent from '../../components/LoadingComponent';
+import DataNotFound from '../../components/dataNotFound';
+const height = Dimensions.get('window').height;
 
-export default class MemoPage extends Component {
-  render() {
+const MemoPage = () => {
+  const navigation = useNavigation();
+  const [isLoading, setIsLoading] = useState(true);
+  const [memos, setMemos] = useState([]);
+  const [searchText, setSearchText] = useState('');
+  const handleSearchText = text => {
+    setSearchText(text);
+  };
+  const filtered = memos.filter(item => {
+    const subjectLower = item.Subject.toLowerCase();
+    const fromLower = item.From.toLowerCase();
+    const toDivLower = item.ToDivision.toLowerCase();
+    const searchKeywordLower = searchText.toLowerCase();
     return (
-      <View style={{flex: 1}}>
-        <View style={{flexDirection: 'row', marginTop: 30, marginHorizontal: 30}}>
-            <IconBack onPress={()=> this.props.navigation.navigate('Home')}/>
-            <LogoSmpHP style={{marginLeft: 180 }}/>
-        </View>
-            <Text style={styles.title}>MEMO INTERNAL</Text>
-            
-        <ScrollView >
-            <MemoIndex 
-              proj='Adaro MSW' 
-              day='Wednesday, 12 Oktober 2022'
-              from="Marketing" 
-              for="Drafter"
-              due="04-10-2022"
-              message="Untuk Proyek Adaro Mining Electrification Batch-5 mohon segera selesaikan gambar revisi sesuai dengan catatan pada Approval. Shopdrawing akan disubmit pada tanggal 16-10-2022."
-            />
-             <MemoIndex 
-              proj="Sanbe Farma"
-              day="Thursday, 01 Oktober 2022"
-              from="Marketing" 
-              for="Production"
-              due="04-10-2022"
-              message="Jadwal pengiriman panel GCP-DISTRIBUTION pada hari Selasa 04-10-2022, Mohon dikondisikan agar dapat dikirim sesuai jadwal tersebut."
-            />
-            <MemoIndex
-              proj="Orchard Park Batam"
-              day="Thursday, 27 Juli 2022"
-              from="Marketing" 
-              for="Drafter"
-              due="04-10-2022"
-              message="Mohon segera selesaikan gambar revisi sesuai dengan catatan pada Approval."
-            />
-            <MemoIndex
-              proj="Orchard Park Batam"
-              day="Thursday, 27 Juli 2022"
-              from="Marketing" 
-              for="Drafter"
-              due="04-10-2022"
-              message="Mohon segera selesaikan gambar revisi sesuai dengan catatan pada Approval."
-            />
-        </ScrollView>
-            <TouchableOpacity style={{alignItems: 'flex-end', marginHorizontal: 30}}>
-                <LogoAdd onPress={() => this.props.navigation.navigate('MemoCreate')}/>
-            </TouchableOpacity>
-      </View>
-    )
-  }
-}
+      subjectLower.includes(searchKeywordLower) ||
+      toDivLower.includes(searchKeywordLower) ||
+      fromLower.includes(searchKeywordLower)
+    );
+  });
 
-const styles = StyleSheet.create({
-  title:{
-    marginTop: 8,
-    marginBottom: 6, 
-    textAlign: 'center',
-    fontFamily: "Poppins-Bold",
-    fontSize: 18,
-    color: BiruKu
-  }
-})
+  useEffect(() => {
+    let isMounted = true;
+    const unsubscribe = firestore().collection('Memo')
+      .orderBy('Created', 'desc').onSnapshot(snapshot => {
+        const memoData = snapshot.docs.map(doc => {
+          const data = doc.data();
+          const Created = data.Created ? data.Created.toDate() : null;
+          return {
+            id: doc.id,
+            ...data,
+            Created: Created ? FormatDateTime(Created) : null,
+          };
+        });
+        setMemos(memoData);
+        setIsLoading(false);
+      });
+    return () => {
+      unsubscribe();
+      isMounted = false;
+    };
+  }, []);
+  return (
+    <View style={{marginTop: 20}}>
+      <Header />
+      <Title TxtTitle={'INTERNAL MEMO'} />
+      <SearchBar value={searchText} onChangeText={handleSearchText} />
+      {isLoading ? (<LoadingComponent />) 
+      : (<View>
+          {filtered.length > 0 ? (
+            <FlatList
+              style={{marginBottom: 20, height: height * 0.6}}
+              data={filtered}
+              numColumns={2}
+              keyExtractor={item => item.id}
+              renderItem={({item}) => (
+                <MemoIndex
+                  proj={item.From}
+                  for={item.ToDivision}
+                  subject={item.Subject}
+                  due={item.Created}
+                  key={item.id}
+                  id={item.id}
+                />
+              )}
+            />
+          ) : (
+            <View style={{marginHorizontal:10}}><DataNotFound/></View>
+          )}
+        </View>
+      )}
+      {!isLoading && <AddButton text={'Create Memo'}
+        onPress={() => navigation.navigate('MemoCreate')}/>}
+    </View>
+  );
+};
+export default MemoPage;

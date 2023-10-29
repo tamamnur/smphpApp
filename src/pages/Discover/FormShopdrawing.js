@@ -156,15 +156,17 @@ const FormShopdrawing = props => {
             MonitoringID: '/Monitoring/' + MonitoringID,
           });
         panelSelected = true;
+        setIsLoading(false)
       }   
-      setIsLoading(false)
     } if (hasPanelWithoutSD) {
+      setIsLoading(false)
       updateError('Ensure that all the panels you have chosen are Submitted.', setError);
       return;
     } if (!panelSelected) {
       // updateError('Make sure you select at least one panel, \n and all the panels you have chosen are Submitted.', setError);
       // updateError(`Please choose at least one panel by checking the checkbox next to the panel's name.`, setError);
       updateError(`Please choose at least one panel.`, setError);
+      setIsLoading(false)
       return;
     }
   ToastAndroid.show('Shopdrawing Procces Updated', ToastAndroid.SHORT)
@@ -251,7 +253,8 @@ const FormShopdrawing = props => {
 
   const Panel = props => {
     return (
-      <View style={{flexDirection: 'row', marginLeft: 20, marginTop: 2}}>
+      <View>
+      <View style={{flexDirection: 'row', marginLeft: 20, marginTop: 2, paddingVertical: -5}}>
         <CheckBox
           tintColors={{true: BiruKu, false: BiruKu}}
           disabled={false}
@@ -260,6 +263,15 @@ const FormShopdrawing = props => {
             props.onValueChange(newValue)}}
         />
         <Text style={styles.pname}>{props.pname}</Text>
+      </View>
+        
+      <TouchableOpacity style={{alignItems: 'flex-end', paddingTop: 5, marginRight: 20}}>
+        {/* <Icon name='file-upload' size={20} color={BiruKu}/> */}
+        <Text style={{fontSize: 12, fontFamily: 'Poppins-BoldItalic', color: BiruKu, borderWidth: 1, borderRadius: 4, borderColor: BiruKu, backgroundColor: '#b7c2cc', paddingHorizontal: 5, paddingTop: 3}}>
+        Select file
+        </Text>
+      </TouchableOpacity>
+
       </View>
     );
   };
@@ -330,10 +342,8 @@ const FormShopdrawing = props => {
             <Text style={styles.txtInput} onChangeText={onDateChange}>
               <PickedDateM onChangeText={onDateChange} />
             </Text>
-            
           </View>
         </View>
-        
       <ScrollView style={{marginTop: 5}}>
         {isLoading ? (
           <LoadingComponentS />
