@@ -9,6 +9,7 @@ import Button6 from '../../components/Button6';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import LoadingComponent from '../../components/LoadingComponent';
 import Header from '../../components/Header';
+import LoadingComponentS from '../../components/LoadingComponentS';
 
 const PanelNameInputEdit = () => {
   const navigation = useNavigation();
@@ -18,7 +19,8 @@ const PanelNameInputEdit = () => {
   const [formQty, setFormQty] = useState(1);
   const [pnameInput, setPnameInput] = useState(['']);
   const [errorText, setErrorText] = useState(['']);
-
+  const [isSaving, setIsSaving] = useState(false)
+  
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -26,7 +28,6 @@ const PanelNameInputEdit = () => {
         const id = route.params.id;
         const panelNameSnapshot = await firestore()
           .collection(`Project/${id}/PanelName`).get();
-
         const panelNames = panelNameSnapshot.docs.map(doc => doc.data());
         if (isMounted) {
           setFormQty(panelNames.length);
@@ -90,22 +91,22 @@ const PanelNameInputEdit = () => {
 
     const id = route.params.id;
     try {
-      setIsLoading(true);
+      setIsSaving(true);
       const batch = firestore().batch();
       pnameInput.forEach((item, index) => {
         const docRef = firestore().doc(`Project/${id}/PanelName/${index + 1}`);
         batch.set(docRef, {pnameInput: item});
       });
-
       await batch.commit();
-      console.log('Panel names edited successfully');
+      // console.log('Panel names edited successfully');
+      setIsSaving(false)
       ToastAndroid.show('Panel names edited successfully', ToastAndroid.SHORT);
       navigation.replace('ProjectDetails', {id});
     } catch (error) {
       console.error('Error saving changes to panel names', error);
       ToastAndroid.show('Error saving changes to panel names',ToastAndroid.SHORT)
     } finally {
-      if (isMounted) {setIsLoading(false)}
+      if (isMounted) {setIsLoading(false); setIsSaving(false)}
     }
   };
 
@@ -145,8 +146,8 @@ const PanelNameInputEdit = () => {
           <TouchableOpacity style={{marginLeft: 99, marginVertical: 5, flex: 2}} onPress={addForm}>
             <AntDesign name="pluscircle" color={BiruKu} size={30} />
           </TouchableOpacity>
-
-          <Button6 text={'Save Changes'} bgColor={BiruKu} fontColor={'white'} onPress={handlePnameInput}/>
+          {isSaving ? (<LoadingComponentS/>) : (       
+          <Button6 text={'Finish & Save'} bgColor={BiruKu} fontColor={'white'} onPress={handlePnameInput}/>)}
         </ScrollView>
       )}
     </View>

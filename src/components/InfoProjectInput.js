@@ -31,7 +31,7 @@ const styles = StyleSheet.create({
   },
   label: {
     fontFamily: 'Poppins-Medium',
-    fontSize: 14,
+    fontSize: 15,
     marginVertical: 4,
     padding: 2,
     color: BiruKu,

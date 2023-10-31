@@ -59,10 +59,10 @@ const MemoPage = () => {
       <Title TxtTitle={'INTERNAL MEMO'} />
       <SearchBar value={searchText} onChangeText={handleSearchText} />
       {isLoading ? (<LoadingComponent />) 
-      : (<View>
+      : (<View style={{height: height * 0.6}}>
           {filtered.length > 0 ? (
             <FlatList
-              style={{marginBottom: 20, height: height * 0.6}}
+              style={{marginBottom: 20}}
               data={filtered}
               numColumns={2}
               keyExtractor={item => item.id}

@@ -8,7 +8,7 @@ import FormatDate from '../../components/FormatDate';
 import LoadingComponent from '../../components/LoadingComponent';
 import EndOf from '../../components/Footer';
 import InfoProject from '../../components/InfoProject';
-import Header from '../../components/Header';
+import Header from '../../components/HeaderToHome';
 import Title2 from '../../components/Title2';
 import PanelListOnDetail from '../../components/panelListOnDetail';
 const {height} = Dimensions.get('window');

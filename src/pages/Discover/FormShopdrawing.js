@@ -350,9 +350,7 @@ const FormShopdrawing = props => {
         ) : (
           <View>
             <View style={styles.wrappPanelTitle}>
-              <Text style={{ fontFamily: 'Poppins-Medium', color: BiruKu, fontSize: 16, marginRight: 50}}>
-                Panel Name
-              </Text>
+              <Text style={styles.panelTitle}>Panel Name</Text>
               <TouchableOpacity style={{ alignSelf: 'center' }} onPress={toggleSelectAll}>
                 <View style={{ flexDirection: 'row'}}>
                   <Text style={styles.toggleAll}>{selectAll?'Select All  ':'Unselect All  '}</Text>
@@ -459,6 +457,12 @@ const styles = StyleSheet.create({
     marginBottom: 5,
     paddingRight: 20,
     paddingLeft: -20,
+  },
+  panelTitle: {
+    fontFamily: 'Poppins-Medium',
+    color: BiruKu,
+    fontSize: 16,
+    marginRight: 50,
   },
   left: {
     fontFamily: 'Poppins-Medium',

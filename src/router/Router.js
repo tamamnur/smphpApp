@@ -16,7 +16,6 @@ import MemoCreate from '../pages/Home/MemoCreate'
 import ProjectDetails from '../pages/Home/projectDetails';
 import ProjectStatus from '../pages/Home/projectStatus';
 import ProjectDetailsEdit from '../pages/Home/projectDetailsEdit';
-import PanelNameEdit from '../pages/Home/projectPanelNameEdit'
 import FormShopdrawing from '../pages/Discover/FormShopdrawing';
 import FormProcurement from '../pages/Discover/FormProcurement';
 import FormFabrication from '../pages/Discover/FormFabrication';

@@ -6,6 +6,8 @@ import {BiruKu} from '../../utils/constant';
 import firestore from '@react-native-firebase/firestore';
 import Button from '../../components/Button6';
 import ErrorMessage from '../../components/errorMessage';
+import LoadingComponent from '../../components/LoadingComponent';
+import SmallLoading from '../../components/LoadingComponentS';
 
 const MemoEdit = props => {
   const id = props.route.params.id;
@@ -13,13 +15,15 @@ const MemoEdit = props => {
   const [error, setError] = useState('');
   const [subject, setSubject] = useState('');
   const [message, setMessage] = useState('');
-
+  const [isLoading, setIsLoading] = useState(true)
+  const [isSaving, setIsSaving] = useState(false)
   useEffect(() => {
     const memoSubscriber = firestore().collection('Memo')
     .doc(id).onSnapshot(doc => {
       const memoData = doc.data();
       setSubject(memoData.Subject);
       setMessage(memoData.Message);
+      setIsLoading(false)
     });
     return () => {memoSubscriber()}
   }, [props.route.params.id]);
@@ -30,6 +34,7 @@ const MemoEdit = props => {
       setTimeout(() => {setError(null)},2000)
       return
     } else {
+      setIsSaving(true)
       const dateEdit = new Date()
       firestore().collection('Memo').doc(id).update({
         Subject: subject, Message: message, status: 'Edited', 
@@ -39,12 +44,15 @@ const MemoEdit = props => {
         navigation.replace('MemoPage')
         ToastAndroid.show('Memo '+subject+' have been edited.', ToastAndroid.LONG)
       })
-      .catch(error => {Alert.alert('Error', error)})
+      .catch(error => {
+        setIsSaving(false)
+        Alert.alert('Error', error)})
       console.log('error ',error)
     }
   }
   return (
     <View>
+      {isLoading ? ( <LoadingComponent/>) : (
       <ScrollView style={{marginVertical: 20}}>
         <View style={styles.desc}>
           <View style={{width: '20%'}}>
@@ -70,10 +78,12 @@ const MemoEdit = props => {
             onChangeText={text => setMessage(text)}
           />
           <ErrorMessage txt={error} />
-          <Button bgColor={BiruKu} text={'Post Edited'}
-            fontColor={'white'} onPress={handleSaveEdit}/>
+          {isSaving ? (<SmallLoading/>) :
+          (<Button bgColor={BiruKu} text={'Post Edited'}
+            fontColor={'white'} onPress={handleSaveEdit}/>)}
         </View>
       </ScrollView>
+      )}
     </View>
   );
 };

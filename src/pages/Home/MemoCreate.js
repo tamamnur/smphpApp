@@ -10,9 +10,8 @@ import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
 import Button from '../../components/Button6';
 import ErrorMessage from '../../components/errorMessage';
+import LoadingComponent from '../../components/LoadingComponent';
 
-const DDD = Dimensions.get('window').height;
-console.log(DDD);
 const MemoCreate = () => {
   const navigation = useNavigation();
   const [error, setError] = useState('');
@@ -22,6 +21,7 @@ const MemoCreate = () => {
   const [attn, setAttn] = useState('');
   const [subject, setSubject] = useState('');
   const [message, setMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const errorMessage = (error, errorInfo) => {
     errorInfo(error);
@@ -46,7 +46,6 @@ const MemoCreate = () => {
     });
     return () => {unsubscribe()}
   }, []);
-  // console.log(currentUser.displayName, division);
   const handleSubmit = () => {
     if (!attn) {
       return errorMessage(`You haven't specified a recipient`, setError);
@@ -54,7 +53,9 @@ const MemoCreate = () => {
       return errorMessage(`You haven't filled in a subject.`, setError);
     } if (!message) {
       return errorMessage(`You haven't provided a message.`, setError);
-    } else {
+    } 
+    // else {
+      setIsLoading(true)
       const Created = new Date();
       firestore().collection('Memo').add({
           From: currentUser.displayName,
@@ -63,19 +64,27 @@ const MemoCreate = () => {
           Subject: subject,
           Message: message,
           Created: firestore.Timestamp.fromDate(Created),
+          owner: currentUser.uid,
         })
         .then(() => {
+          // setIsLoading(false)
           console.log('Memo published');
           ToastAndroid.show('Memo Published', ToastAndroid.LONG);
           navigation.replace('MemoPage');
         })
-        .catch(error => {alert('Error', error)});
-    }
-  };
-  console.log(attn, subject, message);
+        .catch(error => {alert('Error', error)
+        // setIsLoading(false)
+        })
+        .finally(() => {setIsLoading(false)})
+  }
+  // };
+  // console.log('userId',currentUser.uid)
+  // console.log(attn, subject, message);
   return (
     <View>
-      <ScrollView style={{marginVertical: 20}}>
+      {isLoading && (<LoadingComponent/>)}
+      {!isLoading && (
+        <ScrollView style={{marginVertical: 20}}>
         <Header/><Title TxtTitle="CREATE MEMO" />
         <ErrorMessage txt={error} />
         <View style={styles.desc}>
@@ -87,14 +96,14 @@ const MemoCreate = () => {
             <Division
               values={attn}
               onValueChange={text => {setAttn(text)}}
-            />
+              />
             <TextInput
               style={styles.txtInput}
               placeholder="Project (issue)"
               placeholderTextColor={'gray'}
               value={subject}
               onChangeText={text => setSubject(text)}
-            />
+              />
           </View>
         </View>
         <View style={{flex: 1, height: DDD*0.6}}>
@@ -105,15 +114,17 @@ const MemoCreate = () => {
             style={styles.txtArea}
             value={message}
             onChangeText={text => setMessage(text)}
-          />
+            />
           <Button bgColor={BiruKu} text={'Publish'} fontColor={'white'} onPress={handleSubmit} />
         </View>
       </ScrollView>
+      )}
     </View>
   );
 };
 
 export default MemoCreate;
+const DDD = Dimensions.get('window').height;
 const styles = StyleSheet.create({
   desc: {
     marginTop: 20,

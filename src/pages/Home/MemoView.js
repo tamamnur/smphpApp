@@ -4,12 +4,15 @@ import {BiruKu, Darkred} from '../../utils/constant';
 import { useNavigation } from '@react-navigation/native';
 import MIcon from 'react-native-vector-icons/MaterialCommunityIcons';
 import firestore from '@react-native-firebase/firestore';
+import firebase from '@react-native-firebase/app';
 import LoadingComponent from '../../components/LoadingComponent';
 import FormatDateTime from '../../components/FormatDateTime';
 
 const MemoView = (props) => {
   const navigation = useNavigation()
   const [isLoading, setIsLoading] = useState(true)
+  const [isOwner, setIsOwner] = useState(false)
+  const currentUser = firebase.auth().currentUser;
   const [memo, setMemo] = useState({
     Created: '',
     From: '',
@@ -23,6 +26,7 @@ const MemoView = (props) => {
     const memoSubscriber = firestore().collection('Memo').doc(id).onSnapshot(async doc => {
       const getDate = doc.data().Created.toDate()
       const created = FormatDateTime(getDate)
+      const own = doc.data().owner
       setMemo({
         Created: created,
         From: doc.data().From,
@@ -30,12 +34,16 @@ const MemoView = (props) => {
         ToDivision: doc.data().ToDivision,
         Subject: doc.data().Subject,
         Message: doc.data().Message,
-        status: doc.data().status ? doc.data().status : '' 
+        status: doc.data().status ? doc.data().status : '' ,
+        owner : own
       })
+      const uid = currentUser.uid;
+      if(own === uid) {setIsOwner(true)}
+      setIsLoading(false)
     })
-    setIsLoading(false)
     return() => {memoSubscriber()}
   }, [props.route.params.id])
+
 
   const handleDelete = async () => {
     Alert.alert('Delete Memo', 'Are you sure you want to delete this Memo ?',
@@ -44,37 +52,38 @@ const MemoView = (props) => {
       try {
         const id = props.route.params.id
         await firestore().collection('Memo').doc(id).delete()
-        ToastAndroid.show('Memo about '+subject+' have been deleted.', ToastAndroid.SHORT)
+        ToastAndroid.show('Your memo have been successfully deleted.', ToastAndroid.SHORT)
         navigation.replace('MemoPage')
       } catch (error) {
-        Alert.alert('Error', 'An error occured while deleting the memo')
+        console.error(error)
+        // Alert.alert('Error', 'An error occured while deleting the memo', error)
         navigation.replace('MemoPage')
       }
      }}]
-    )
-  }
-  return (
-    <ScrollView style={{marginBottom: 20, flex: 1}}>
+     )
+    }
+    return (
+      <ScrollView style={{marginBottom: 20, flex: 1}}>
       {isLoading ? (<LoadingComponent/>) :
       (<>
       <View style={styles.MemoContainer}>
         <View style={styles.titleWrap}>
           <Text style={styles.title}>{memo.Subject}</Text>
         </View>
-        <View style={styles.recap}>
+        <View style={{marginHorizontal: 15, marginVertical: 6}}>
           <Text style={styles.for}>From : {memo.From}   (Div.{memo.FromDivision}) </Text>
           <Text style={styles.for}>To : {memo.ToDivision}</Text>
           <Text style={styles.message}>{memo.Message}</Text>
           <Text style={styles.time}>{memo.status}  {memo.Created}</Text>
         </View>
       </View>
-        
+      {isOwner && (
       <View style={{marginRight: 25, flexDirection: 'row', justifyContent: 'space-evenly'}}>
         <TouchableOpacity 
           onPress={() => navigation.navigate('MemoEdit', {id: props.route.params.id})} 
           style={{flexDirection: 'row', marginLeft: 40}}>
           <MIcon name="note-edit-outline" color={BiruKu} size={25} />
-          <Text style={styles.time}> Edit Message</Text>
+          <Text style={{fontSize: 13, fontFamily: 'Poppins-Italic', color: BiruKu, alignSelf: 'flex-end'}}> Edit Message</Text>
         </TouchableOpacity>
         <TouchableOpacity 
           onPress={handleDelete} 
@@ -83,13 +92,13 @@ const MemoView = (props) => {
           <Text style={styles.delete}> Delete</Text>
         </TouchableOpacity>
       </View>
+      )}
       </>)}
     </ScrollView>
   );
 };
 
 export default MemoView;
-
 const styles = StyleSheet.create({
   MemoContainer: {
     width: '90%',
@@ -116,16 +125,14 @@ const styles = StyleSheet.create({
     marginHorizontal: 20,
     marginTop: 5,
   },
-  recap: {
-    marginHorizontal: 15,
-    marginVertical: 6,
-  },
   time: {
     fontSize: 13,
     fontFamily: 'Poppins-Italic',
     color: BiruKu,
     alignSelf: 'flex-end',
     marginRight: 10,
+    marginTop: 30,
+    marginBottom: 10
   },
   delete: {
     fontSize: 13,

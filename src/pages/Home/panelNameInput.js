@@ -1,10 +1,4 @@
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  ScrollView,
-} from 'react-native';
+import {View,Text,StyleSheet,TouchableOpacity,ScrollView, ToastAndroid} from 'react-native';
 import React, {Component, useState} from 'react';
 import {IconBack, IconAdd, LogoSmpHP} from '../../assets';
 import {BiruKu, Darkred} from '../../utils/constant';
@@ -14,15 +8,16 @@ import firestore from '@react-native-firebase/firestore';
 import Title2 from '../../components/Title2';
 import Button6 from '../../components/Button6';
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import SmallLoading from '../../components/LoadingComponentS'
 
 const PanelNameInput = () => {
   const navigation = useNavigation();
   const route = useRoute();
   const [errorText, setErrorText] = useState('');
   const [formQty, setFormQty] = useState(1);
-  const [formToDelete, setFormToDelete] = useState(null);
   const forms = [...Array(formQty)];
   const [pnameInput, setPnameInput] = useState(['']);
+  const [isSaving, setIsSaving] = useState(false)
 
   const onPnameInputChange = (value, index) => {
     const updatedPanelName = [...pnameInput];
@@ -67,6 +62,7 @@ const PanelNameInput = () => {
     }
     const id = route.params.projectId;
     console.log('project Id', id);
+    setIsSaving(true)
     try {
       const batch = firestore().batch();
       pnameInput.forEach((item, index) => {
@@ -77,8 +73,11 @@ const PanelNameInput = () => {
       });
 
       await batch.commit();
-      console.log('Panel names input was successfull');
+      // console.log('Panel names input was successfull');
+      ToastAndroid.show('Panel names input was successfull', ToastAndroid.SHORT)
+      setIsSaving(false)
       navigation.replace('SecuredNav');
+
     } catch (error) {
       console.error('Error saving panel names', error);
     }
@@ -120,14 +119,11 @@ const PanelNameInput = () => {
           onPress={addForm}>
           <AntDesign name="pluscircle" color={BiruKu} size={30} />
         </TouchableOpacity>
-
-      <Button6
-        text={'CREATE PROJECT'}
-        bgColor={BiruKu}
-        fontColor={'white'}
-        onPress={handlePnameInput}
-        />
-        </ScrollView>
+        {isSaving ? (<SmallLoading/>) : (
+        <Button6 text={'Finsih & Submit'}
+          bgColor={BiruKu} fontColor={'white'}
+          onPress={handlePnameInput}/>)}  
+      </ScrollView>
     </View>
   );
 };
@@ -145,6 +141,5 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: Darkred,
     marginTop: -32,
-    // marginBottom: -6
   }
 });

@@ -236,7 +236,7 @@ const ProjectStatus = props => {
     } 
     else {
       return (
-        <View style={{flexDirection: 'row', marginHorizontal: 9}}>
+        <View style={{flexDirection: 'row', marginHorizontal: 8}}>
         {/* <View style={{flexDirection: 'row', marginLeft: 8, marginRight: 27}}> */}
           <Text style={styles.headTableNo}>No.</Text>
           <Text style={styles.headTablePanelName}>Panel Name</Text>
@@ -465,8 +465,8 @@ const styles = StyleSheet.create({
     color: BiruKu,
     borderWidth: 1,
     borderColor: BiruKu,
-    // width: '8%',
-    width: 30,
+    width: '8.5%',
+    // width: 30,
     height: 30,
     textAlign: 'center',
   },
@@ -492,7 +492,7 @@ const styles = StyleSheet.create({
     color: BiruKu,
     borderWidth: 1,
     borderColor: BiruKu,
-    width: '37%',
+    width: '35.5%',
     height: 30,
     textAlignVertical: 'center',
     textAlign: 'center',

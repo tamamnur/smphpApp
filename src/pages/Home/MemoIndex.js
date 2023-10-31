@@ -28,9 +28,10 @@ const styles = StyleSheet.create({
     width: width*.425,
     borderRadius: 20,
     marginTop: 10,
+    marginBottom: 2,
     marginLeft: 20,
     backgroundColor: '#F9F9F9',
-    elevation: 15,
+    elevation: 3,
   },
   titleWrap: {
     backgroundColor: '#84A2AA',

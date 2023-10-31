@@ -10,11 +10,13 @@ import LoadingComponent from '../../components/LoadingComponent';
 import PickedDateEdit from '../../components/pickedDateEdit';
 import Header from '../../components/Header';
 import ErrorMessage from '../../components/errorMessage';
+import LoadingComponentS from '../../components/LoadingComponentS';
 
 const ProjectDetailsEdit = props => {
   const id = props.route.params.id;
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false)
   const [showDatePO, setShowDatePO] = useState(false);
   const [error, setError] = useState('');
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -70,6 +72,7 @@ const ProjectDetailsEdit = props => {
        {text: 'Delete', style: 'destructive',
         onPress: async () => {
           try {
+            setIsSaving(true)
             const projectPanelCollectionRef = firestore().collection('Project')
               .doc(id).collection('PanelName');
             const panelSnapshot = await projectPanelCollectionRef.get()
@@ -84,11 +87,13 @@ const ProjectDetailsEdit = props => {
             }
             await firestore().collection('Project').doc(id).delete();
             ToastAndroid.show('The '+projectInfo.ProjectName+ 'and related documents have been deleted.', ToastAndroid.SHORT)
-            console.log('The Project and related documents have been deleted.')
+            // console.log('The Project and related documents have been deleted.')
+            setIsSaving(false)
             navigation.replace('SecuredNav');
           } catch (error) {
-            console.log(error)
-            Alert.alert('Error','An error occurred while deleting the project')
+            // console.log(error)
+            // Alert.alert('Error','An error occurred while deleting the project')
+            setIsSaving(false)
             navigation.replace('SecuredNav')
         }
       },
@@ -116,13 +121,14 @@ const ProjectDetailsEdit = props => {
         customer: projectInfo.Customer,
         numberPO: projectInfo.NumberPO,
       };
-
       if (datePOChanged) {updateData.datePO = newDatePO}
+      setIsSaving(true)
       await firestore().collection('Project').doc(id).update(updateData);
       navigation.goBack();
-      ToastAndroid.show(`Details project  ${projectInfo.ProjectName}$ updated`,ToastAndroid.SHORT);
+      ToastAndroid.show(`Details project  ${projectInfo.ProjectName} updated`,ToastAndroid.SHORT);
     } catch (error) {
       Alert.alert('Error', 'An error occurred while saving changes.');
+      setIsSaving(false)
     }
   };
   return (
@@ -176,10 +182,12 @@ const ProjectDetailsEdit = props => {
           )}
           <View style={{marginTop: 30}}>
             {error ? (<ErrorMessage txt={error}/>) : null}
+            {isSaving ? (<LoadingComponentS/>) : (<>
             <Button6 text="Save Changes" bgColor={BiruKu}
               fontColor={'white'} onPress={handleSaveChanges}/>
             <Button6 text="Delete Project" bgColor={Darkred}
               fontColor={'white'} onPress={handleDeleteProject}/>
+            </>)}
           </View>
         </ScrollView>
       )}
