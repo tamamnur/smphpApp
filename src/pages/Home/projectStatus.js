@@ -13,10 +13,10 @@ import StatusFull from './projStatusFull';
 import EndOf from '../../components/Footer';
 import Header from '../../components/Header';
 import Title2 from '../../components/Title2'
+import SearchBar from '../../components/SearchBarOnStatus'
 
 const ProjectStatus = props => {
   const navigation = useNavigation();
-  const height = Dimensions.get('screen')
   const [isMounted, setIsMounted] = useState(true);
   const [selectedStage, setSelectedStage] = useState('Full Stages');
   const [state, setState] = useState({
@@ -26,7 +26,9 @@ const ProjectStatus = props => {
     id: '',
     isLoading: true,
   });
-
+  const [searchText, setSearchText] = useState('');
+  const handleSearchText = text => {setSearchText(text)};
+  
   useEffect(() => {
     setIsMounted(true);
     const subscriber = firestore().collection('Project')
@@ -236,7 +238,7 @@ const ProjectStatus = props => {
     } 
     else {
       return (
-        <View style={{flexDirection: 'row', marginHorizontal: 8}}>
+        <View style={{flexDirection: 'row', marginHorizontal: 8, width: '95.5%'}}>
         {/* <View style={{flexDirection: 'row', marginLeft: 8, marginRight: 27}}> */}
           <Text style={styles.headTableNo}>No.</Text>
           <Text style={styles.headTablePanelName}>Panel Name</Text>
@@ -398,9 +400,16 @@ const ProjectStatus = props => {
             </View>
           ) : (
             <View>
+              <SearchBar value={searchText} onChangeText={handleSearchText}/>
               {headerStatus()}
               <ScrollView style={{height: '75%'}}>
-                {state.ListPanel.map((item, index) => {
+                {state.ListPanel
+                .filter(item => {
+                  const panelNameLower = item.pnameInput.toLowerCase();
+                  const searchKeywordLower = searchText.toLowerCase()
+                  return panelNameLower.includes(searchKeywordLower)
+                })
+                .map((item, index) => {
                   return (
                     <StatusFull
                       key={item.id}
@@ -466,7 +475,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: BiruKu,
     width: '8.5%',
-    // width: 30,
+    // width: 25,
     height: 30,
     textAlign: 'center',
   },
@@ -492,7 +501,7 @@ const styles = StyleSheet.create({
     color: BiruKu,
     borderWidth: 1,
     borderColor: BiruKu,
-    width: '35.5%',
+    width: '36.5%',
     height: 30,
     textAlignVertical: 'center',
     textAlign: 'center',

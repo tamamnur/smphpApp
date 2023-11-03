@@ -1,6 +1,6 @@
-import {View,Text,StyleSheet,TouchableOpacity,ScrollView, ToastAndroid} from 'react-native';
-import React, {Component, useState} from 'react';
-import {IconBack, IconAdd, LogoSmpHP} from '../../assets';
+import {View,Text,TouchableOpacity,ScrollView,ToastAndroid} from 'react-native';
+import React, {useState} from 'react';
+import {LogoSmpHP} from '../../assets';
 import {BiruKu, Darkred} from '../../utils/constant';
 import InputDataProject from '../../components/InputDataProject';
 import {useNavigation, useRoute} from '@react-navigation/native';
@@ -25,14 +25,10 @@ const PanelNameInput = () => {
     setPnameInput(updatedPanelName);
 
     const updatedErrorText = [...errorText];
-    if (!value.trim()) {
-      updatedErrorText[index] = 'Please enter the panel name !';
-    } else {
-      updatedErrorText[index] = '';
-    }
+    if (!value.trim()) {updatedErrorText[index] = 'Please enter the panel name !'} 
+    else {updatedErrorText[index] = ''}
     setErrorText(updatedErrorText);
   };
-
 
   const removeForm = index => {
     const updatedPnameInput = [...pnameInput];
@@ -53,15 +49,12 @@ const PanelNameInput = () => {
 
   const handlePnameInput = async () => {
     if (pnameInput.some(item => !item.trim())) {
-      setErrorText(
-        pnameInput.map(item =>
-          !item.trim() ? 'Please enter the panel name !' : '',
-        ),
+      setErrorText(pnameInput.map(item =>!item.trim() 
+        ? 'Please enter the panel name !' : '')
       );
-      return;
+    return;
     }
     const id = route.params.projectId;
-    console.log('project Id', id);
     setIsSaving(true)
     try {
       const batch = firestore().batch();
@@ -71,13 +64,10 @@ const PanelNameInput = () => {
           {pnameInput: item},
         );
       });
-
       await batch.commit();
-      // console.log('Panel names input was successfull');
       ToastAndroid.show('Panel names input was successfull', ToastAndroid.SHORT)
       setIsSaving(false)
       navigation.replace('SecuredNav');
-
     } catch (error) {
       console.error('Error saving panel names', error);
     }
@@ -85,11 +75,8 @@ const PanelNameInput = () => {
 
   return (
     <View style={{marginTop: 20}}>
-      <View style={{flexDirection: 'row'}}>
-        <LogoSmpHP style={{marginLeft: 240}} />
-      </View>
+      <View style={{alignSelf: 'flex-end', marginRight: 25}}><LogoSmpHP/></View>
       <Title2 TxtTitle="PANEL NAMES INPUT" />
-
       <ScrollView style={{height: '82%', marginTop: -15}}>
         {forms.map((_, index) => {
           return (
@@ -101,15 +88,15 @@ const PanelNameInput = () => {
                 value={pnameInput[index]}
                 onChangeText={value => {onPnameInputChange(value, index)}}
               />
-
-              <TouchableOpacity style={styles.iconDel} 
-                onPress={() => removeForm(index)}>
+              <TouchableOpacity onPress={() => removeForm(index)}>
                 <AntDesign name="closecircle" color={Darkred} size={20} />
               </TouchableOpacity>
-
             </View>
               <View style={{flex: 1, alignSelf: 'flex-end', marginRight: 55}}>
-                {errorText[index] !== '' && <Text style={styles.errMessage}>{errorText[index]}</Text>}
+                {errorText[index] !== '' && 
+                <Text style={{fontFamily:'Poppins-Italic', fontSize: 12, color: Darkred, marginTop: -32}}>
+                  {errorText[index]}
+                </Text>}
               </View>
           </React.Fragment>
           );
@@ -120,7 +107,7 @@ const PanelNameInput = () => {
           <AntDesign name="pluscircle" color={BiruKu} size={30} />
         </TouchableOpacity>
         {isSaving ? (<SmallLoading/>) : (
-        <Button6 text={'Finsih & Submit'}
+        <Button6 text={'Finish & Submit'}
           bgColor={BiruKu} fontColor={'white'}
           onPress={handlePnameInput}/>)}  
       </ScrollView>
@@ -129,17 +116,3 @@ const PanelNameInput = () => {
 };
 
 export default PanelNameInput;
-
-const styles = StyleSheet.create({
-  iconAdd: {
-    marginLeft: 105,
-    marginBottom: 45,
-    flex: 2,
-  },
-  errMessage: {
-    fontFamily: 'Poppins-Italic',
-    fontSize: 12,
-    color: Darkred,
-    marginTop: -32,
-  }
-});

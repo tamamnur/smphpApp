@@ -34,7 +34,7 @@ const ProjectDetailsEdit = props => {
         const data = doc.data();
         console.log('Data from firestore', data)
         if (data) {
-          const datePO = data?.datePO?.toDate() || 'Select Date';
+          const datePO = data.datePO ? data.datePO.toDate() : null;
           setProjectInfo({
             ProjectName: data?.projectName || '',
             ProjectId: data?.projectId || '',
@@ -43,19 +43,18 @@ const ProjectDetailsEdit = props => {
             DatePO: datePO,
           }),
           setSelectedDate(datePO);
-          // console.log('get Data ?',data)
         } else {
           setProjectInfo(prevProjectInfo => ({
             ...prevProjectInfo,
             DatePO: 'Select Date',
           }));
-          // setSelectedDate(new Date());
-          setSelectedDate('Select Date');
+          setSelectedDate(null);
         }
         setIsLoading(false);
       },
       error => {
         ToastAndroid.show('Error', error.message, ToastAndroid.SHORT);
+        console.error('', error.message)
         setIsLoading(false);
       },
     );
@@ -63,10 +62,9 @@ const ProjectDetailsEdit = props => {
     unsubscribe();
   };
   }, [id]);
-//  console.log('id ?',id)
 
-  const handleDeleteProject = async () => { Alert.alert(
-      'Delete Confirmation',
+  const handleDeleteProject = async () => { 
+    Alert.alert('Delete Confirmation',
       `Are you sure you want to delete the\n${projectInfo.ProjectName} project?`,
       [{text: 'Cancel', style: 'cancel'},
        {text: 'Delete', style: 'destructive',
@@ -87,12 +85,10 @@ const ProjectDetailsEdit = props => {
             }
             await firestore().collection('Project').doc(id).delete();
             ToastAndroid.show('The '+projectInfo.ProjectName+ 'and related documents have been deleted.', ToastAndroid.SHORT)
-            // console.log('The Project and related documents have been deleted.')
             setIsSaving(false)
             navigation.replace('SecuredNav');
           } catch (error) {
-            // console.log(error)
-            // Alert.alert('Error','An error occurred while deleting the project')
+            Alert.alert('Error','An error occurred while deleting the project', error)
             setIsSaving(false)
             navigation.replace('SecuredNav')
         }
@@ -103,16 +99,18 @@ const ProjectDetailsEdit = props => {
   const handleSaveChanges = async () => {
     try {
       const newDatePO = new Date(projectInfo.DatePO);
-      const datePOChanged = newDatePO.toString() !== selectedDate.toString();
+      let datePOChanged = true;
+      if(selectedDate && projectInfo.DatePO) {
+        datePOChanged = newDatePO.toString() !== selectedDate.toString();
+      } else if (!selectedDate && !projectInfo.DatePO) {
+        datePOChanged = false
+      }
       if (
-        !projectInfo.ProjectId.trim()||
-        !projectInfo.ProjectName.trim()||
-        !projectInfo.Customer.trim()
-        // || !projectInfo.NumberPO.trim()
+        !projectInfo.ProjectId.trim()||!projectInfo.ProjectName.trim()||
+        !projectInfo.Customer.trim() // || !projectInfo.NumberPO.trim()
       ) {
         setError('Please fill in all required fields.')
-        setTimeout(()=> { setError(null);
-        },3000)
+        setTimeout(()=> { setError(null)},3000)
         return
       }
       const updateData = {
@@ -121,12 +119,15 @@ const ProjectDetailsEdit = props => {
         customer: projectInfo.Customer,
         numberPO: projectInfo.NumberPO,
       };
-      if (datePOChanged) {updateData.datePO = newDatePO}
+      if (datePOChanged) {
+        updateData.datePO = newDatePO
+      }
       setIsSaving(true)
       await firestore().collection('Project').doc(id).update(updateData);
       navigation.goBack();
       ToastAndroid.show(`Details project  ${projectInfo.ProjectName} updated`,ToastAndroid.SHORT);
     } catch (error) {
+      console.error('erorr?', error)
       Alert.alert('Error', 'An error occurred while saving changes.');
       setIsSaving(false)
     }
@@ -134,47 +135,25 @@ const ProjectDetailsEdit = props => {
   return (
     <View style={{flex: 1, marginBottom: 0}}>
       <Header />
-      {isLoading ? (
-        <LoadingComponent />
-      ) : (
+      {isLoading ? (<LoadingComponent />) : (
         <ScrollView>
           <Title2 TxtTitle={'EDIT PROJECT DETAILS'} />
-          <InfoProjectEdit
-            label={'Number SO'}
-            value={projectInfo.ProjectId}
-            onChangeText={text =>
-              setProjectInfo({...projectInfo, ProjectId: text}) 
-            }
+          <InfoProjectEdit label={'Number SO'} value={projectInfo.ProjectId}
+            onChangeText={text => setProjectInfo({...projectInfo, ProjectId: text})}
           />
-          <InfoProjectEdit
-            label={'Project Name'}
-            value={projectInfo.ProjectName}
-            onChangeText={text =>
-              setProjectInfo({...projectInfo, ProjectName: text})
-            }
+          <InfoProjectEdit label={'Project Name'} value={projectInfo.ProjectName}
+            onChangeText={text => setProjectInfo({...projectInfo, ProjectName: text})}
           />
-          <InfoProjectEdit
-            label={'Customer'}
-            value={projectInfo.Customer}
-            onChangeText={text =>
-              setProjectInfo({...projectInfo, Customer: text})
-            }
+          <InfoProjectEdit label={'Customer'} value={projectInfo.Customer}
+            onChangeText={text => setProjectInfo({...projectInfo, Customer: text})}
           />
-          <InfoProjectEdit
-            label={'Number PO'}
-            value={projectInfo.NumberPO || ''}
-            onChangeText={text => {
-              setProjectInfo({...projectInfo, NumberPO: text});
-              if(text && text.trim() !=='') {
-                setShowDatePO(true)
-              } else {
-                setShowDatePO(false)
-              };
+          <InfoProjectEdit label={'Number PO'} value={projectInfo.NumberPO || ''}
+            onChangeText={text => { setProjectInfo({...projectInfo, NumberPO: text});
+              if(text && text.trim() !=='') {setShowDatePO(true)}
+              else {setShowDatePO(false)};
             }}
           />
-          {showDatePO && (
-            <PickedDateEdit
-            value={projectInfo.DatePO || 'Select Date'}
+          {showDatePO && (<PickedDateEdit value={projectInfo.DatePO || 'Select Date'}
             onChangeText={selected => {
               const newDate = selected === 'Select Date' ? null : selected;
               setProjectInfo({...projectInfo, DatePO: newDate})

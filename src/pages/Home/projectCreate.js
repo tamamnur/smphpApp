@@ -10,6 +10,7 @@ import InfoDateProject from '../../components/InfoDateProject';
 import Header from '../../components/Header';
 import ErrorMessage from '../../components/errorMessage'
 import SmallLoading from '../../components/LoadingComponentS';
+
 const updateError = (error, stateUpdate) => {
   stateUpdate(error);
   setTimeout(() => {stateUpdate('')}, 3000);
@@ -29,7 +30,6 @@ const ProjectCreate = props => {
     customer: '',
     numberPO: '',
   });
-
   const [error, setError] = useState('');
   const {projectId, projectName, customer, numberPO} = projectInfo;
   const handleOnchangeText = (value, fieldName) => {
@@ -60,10 +60,10 @@ const ProjectCreate = props => {
           projectId: projectInfo.projectId,
           projectName: projectInfo.projectName,
           customer: projectInfo.customer,
-          numberPO: projectInfo.numberPO,
-          datePO: datePO?.firestore.Timestamp.fromDate(datePO) || null,
           updatedAt: firestore.Timestamp.fromDate(createdAt),
           status: 'Created At',
+          numberPO: projectInfo.numberPO,
+          datePO: datePO ? firestore.Timestamp.fromDate(datePO) : null
         })
         .then((response) =>{
           ToastAndroid.show('Project Created, Continue to adding Panel Name Forms', ToastAndroid.SHORT)
@@ -71,7 +71,7 @@ const ProjectCreate = props => {
           navigation.replace('PanelNameInput', {projectId: response.id})
         })
     } catch (error) {
-      console.error(error);
+      Alert.alert(error)
     }
   };
 
@@ -84,49 +84,30 @@ const ProjectCreate = props => {
            {text: 'Next', style: 'destructive', onPress: async () => {
             try {
               handleCreateProject();
-              ToastAndroid.show('Project Created, Continue to adding Panel Names',ToastAndroid.SHORT)
-            } catch (error) {
-              Alert.alert('Error', 'An error occurred while adding the project.');
-            }
-            },
+              ToastAndroid.show('Project Created, Continue to adding Panel Names',
+              ToastAndroid.SHORT)
+            } catch (error) {Alert.alert('Error', 'An error occurred while adding the project.')}},
           }]
         );
       } catch (error) {
-        console.error('Error creating project', error);
+        Alert.alert('Error creating project.', error)
       }
     }
   };
-
   return (
     <ScrollView style={{marginVertical: 20}}>
-      <Header />
-      <Title2 TxtTitle="N E W     P R O J E C T" />
+      <Header/><Title2 TxtTitle="N E W     P R O J E C T" />
       <ScrollView style={{marginHorizontal: 8}}>
-        <InfoProjectInput 
-          label={'SO Number'} 
-          onChangeText={value => handleOnchangeText(value, 'projectId')}
-          value={projectId}
-          />
-        <InfoProjectInput 
-          label={'Project Name'} 
-          onChangeText={value => handleOnchangeText(value, 'projectName')}
-          value={projectName}
-          />
-        <InfoProjectInput 
-          label={'Customer'} 
-          onChangeText={value => handleOnchangeText(value, 'customer')}
-          value={customer}
-          />
-        <InfoProjectInput 
-          label={'PO Number'} 
-          onChangeText={value => handleOnchangeText(value, 'numberPO')}
-          value={numberPO}
-          />
+        <InfoProjectInput label={'SO Number'} value={projectId}
+          onChangeText={value => handleOnchangeText(value, 'projectId')}/>
+        <InfoProjectInput label={'Project Name'} value={projectName}
+          onChangeText={value => handleOnchangeText(value, 'projectName')}/>
+        <InfoProjectInput label={'Customer'} value={customer}
+          onChangeText={value => handleOnchangeText(value, 'customer')}/>
+        <InfoProjectInput label={'PO Number'} value={numberPO}
+          onChangeText={value => handleOnchangeText(value, 'numberPO')}/>
         {showDatePO && (
-          <InfoDateProject 
-            label={'Date PO'}
-            onDateChange={onDatePOChange}
-          />
+          <InfoDateProject label={'Date PO'} onDateChange={onDatePOChange}/>
         )}
       </ScrollView>
       {error ? (<ErrorMessage txt={error} marginBottom={120}/>) : null }
@@ -136,5 +117,4 @@ const ProjectCreate = props => {
     </ScrollView>
   );
 };
-
 export default ProjectCreate;
