@@ -54,6 +54,7 @@ import PanelNameInputEdit from '../pages/Home/panelNameInputEdit'
 import ProjectList from '../pages/Home/ProjectList'
 import MemoView from '../pages/Home/MemoView'
 import MemoEdit from '../pages/Home/MemoEdit'
+import PanelStatus from '../pages/Home/panelStatus'
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -77,6 +78,7 @@ const SecuredNav = () => {
 
       <Stack.Screen name="ProjectDetails" component={ProjectDetails} options={{ headerShown: false}}/>
       <Stack.Screen name="ProjectStatus" component={ProjectStatus} options={{ headerShown: false}}/>
+      <Stack.Screen name="PanelStatus" component={PanelStatus} options={{ headerShown: false}}/>
 
       <Stack.Screen name="ProjectDetailsEdit" component={ProjectDetailsEdit} options={{ headerShown: false}}/>
       <Stack.Screen name="PanelNameInputEdit" component={PanelNameInputEdit} options={{ headerShown: false}}/>

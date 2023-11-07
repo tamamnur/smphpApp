@@ -46,6 +46,7 @@ const ProjectDetails = props => {
         const PanelNames = snapshot.docs.map(item => ({
           id: item.id, ...item.data(),
         }));
+        console.log('id?',PanelNames)
         const sortedPanelNames = PanelNames.sort((a, b) => {
           return a.id - b.id;
         });
@@ -80,9 +81,16 @@ const ProjectDetails = props => {
                 {id: props.route.params.id})} />
         </View>
         <ScrollView style={{marginBottom: 50, height: '55%'}}>
-          {ListPanel.map(item => {
+          {ListPanel.map((item, index) => {
             return (<PanelListOnDetail key={item.id}
-              pnomor={item.id} pname={item.pnameInput}/>);
+              // pname={item.MonitoringID || null}/>);
+              pnomor={index+1}
+              pname={item.pnameInput}
+              monitoringId={item.MonitoringID}
+              projectName={projectInfo.ProjectName}
+              // panelName={projectInfo.}
+              // monitoringId={item.MonitoringID}
+              />);
           })}
           <EndOf />
         </ScrollView>

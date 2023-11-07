@@ -44,6 +44,7 @@ const ProjectStatus = props => {
               let SubmissionDate;
               if (Submission && Submission.data()) {
                 SubmissionDate = Submission.data().DateSubmit;
+                console.log('get?',Submission.data())
               }
               // console.log('cek Submit Date?',SubmissionDate)
               const Revisi = await Monitoring.collection('Shopdrawing').doc('Revision').get();
@@ -120,8 +121,7 @@ const ProjectStatus = props => {
               }
 
               const Result = {
-                SubmissionDate: SubmissionDate
-                  ? FormatDate2(SubmissionDate.toDate()) : '---',
+                SubmissionDate: SubmissionDate ? FormatDate2(SubmissionDate.toDate()) : '---',
                 RevisionDate: RevisionDate
                   ? FormatDate2(RevisionDate.toDate()) : '---',
                 ApprovalDate: ApprovalDate
