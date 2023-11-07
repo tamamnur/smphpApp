@@ -12,7 +12,6 @@ import SearchBar from '../../components/SearchBar';
 import Header from '../../components/HeaderToDiscover';
 
 const height = Dimensions.get('window').height;
-console.log(height)
 const SD_Submission = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [panelNameData, setPanelNameData] = useState([]);
@@ -45,7 +44,6 @@ const SD_Submission = () => {
           const panelNameData = [];
           let promises = []
           for (const doc of idDoc) {
-            console.log('idProject',doc.id)
             const projectRef = firestore().collection('Project')
               .doc(doc.id).collection('PanelName');
             const panelIdRef = await projectRef.get();
@@ -61,27 +59,22 @@ const SD_Submission = () => {
               });
               const getId = panel.MonitoringID;
               if (getId) {
-                // const idProject = doc.id;
-                // console.log(idProject); 
                 const idRef = firestore().collection('Monitoring');
                 const id = getId.substring(12);
                 const shopdrawingRef = idRef.doc(id)
                   .collection('Shopdrawing').doc('Submission');
                 const submissionDoc = await shopdrawingRef.get();
                 if (submissionDoc.exists) {
-                  // const idProject = doc.id
-                  // console.log('idProject---', idProject); 
                   const submissionData = submissionDoc.data();
                   if (submissionData.DateSubmit) {
                     const idProject = doc.id
-                    console.log('idProject--2', idProject); 
                     const dateSubmissionValue = submissionData.DateSubmit;
-                    // console.log('submit-? ',dateSubmissionValue)
                     panelNameData.push({
                       projectName: panel.projectName,
                       panelName: panel.pnameInput,
                       DateSubmit: dateSubmissionValue.toDate(),
-                      idProject: doc.id
+                      idProject: doc.id,
+                      monitorId: getId
                     });
                   }
                 }
@@ -90,7 +83,6 @@ const SD_Submission = () => {
               promises = promises.concat(fetchDatePromises)
           }
           await Promise.all(promises);
-          // }
           if (isMounted) {
             setPanelNameData(panelNameData);
             setIsLoading(false);
@@ -124,37 +116,28 @@ const SD_Submission = () => {
   .filter(item => item.DateSubmit)
   .sort((a, b) => new Date(b.DateSubmit) - new Date(a.DateSubmit))
   .map((item, index) => {
-    // const id = idDoc[index].id;
-    // console.log('id',item.idProject)
       return(
         <PanelProjectList
-        idProject={item.idProject}
-        key={index + 1}
-        projectName={item.projectName}
-        panelName={item.panelName}
-        status={FormatDate(item.DateSubmit)}
-        />
-        )
+          key={index + 1}
+          projectName={item.projectName}
+          panelName={item.panelName}
+          status={FormatDate(item.DateSubmit)}
+          idProject={item.idProject}
+          monitoringId={item.monitorId}
+        />)
       });
-      console.log('length.. ', renderedPanelList.length)
-
-  const contenToRender =
-    renderedPanelList.length > 0 ? renderedPanelList : <DataNotFound />;
+  const contenToRender = renderedPanelList.length > 0 ? renderedPanelList : <DataNotFound />;
 
   return (
-    <View style={{marginVertical: 10, height: height}}>
+    <View style={{marginVertical: 10, height: height*.9}}>
       <Header/>
       <Title2 TxtTitle="SHOPDRAWING" SubTitle="SUBMISSION" />
       {isLoading ? (<></>) : (<>
-        <SearchBar value={searchKeyword} 
-           onChangeText={text => setSearchKeyword(text)} />
+        <SearchBar value={searchKeyword} onChangeText={text => setSearchKeyword(text)} />
         <PanelHeadTable />
       </>)}
       <ScrollView style={{marginHorizontal: 8, marginBottom: 30}}>
-        <View>
-          {isLoading ? (<LoadingComponent />) 
-          : (<>{contenToRender}<EndOf /></>)}
-        </View>
+        <View>{isLoading ? (<LoadingComponent />) : (<>{contenToRender}<EndOf/></>)}</View>
       </ScrollView>
     </View>
   );

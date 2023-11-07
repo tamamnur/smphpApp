@@ -23,7 +23,8 @@ const PanelStatus = (props) => {
   })
   const monitorId = props.route.params.monitoringId
   const projectName= props.route.params.projectName
-  const panelName = props.route.params.pname
+  const panelName = props.route.params.panelName
+  // console.log('onPstatus',monitorId, projectName, panelName)
 
   const fetchData = async () => {
     setIsMounted(true);
@@ -133,9 +134,7 @@ const PanelStatus = (props) => {
   useEffect(() => {
     setIsMounted(true);
     fetchData();
-    return () => {
-      ToastAndroid.show('Fetching data canceled', ToastAndroid.SHORT)
-    }
+    return;
   },[]);
 
   return (

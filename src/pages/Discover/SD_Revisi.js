@@ -38,8 +38,7 @@ const SD_Revision = () => {
           }));
           const fetchDatePromises = panelIdData.map(async panel => {
             panelNameData.push({
-              projectName: doc.projectName,
-              panelName: panel.pnameInput,
+              projectName: doc.projectName, panelName: panel.pnameInput,
             });
             const getId = panel.MonitoringID;
             if (getId) {
@@ -50,14 +49,13 @@ const SD_Revision = () => {
               if (drawingDoc.exists) {
                 const drawingData = drawingDoc.data();
                 if (drawingData.DateRevisi) {
-                  // const idProject = doc.id
-                  // console.log('idPP',idProject)
                   const dateValue = drawingData.DateRevisi;
                   panelNameData.push({
                     projectName: panel.projectName,
                     panelName: panel.pnameInput,
                     DateUpdate: dateValue.toDate(),
-                    idProject: doc.id
+                    idProject: doc.id,
+                    monitoringId: getId,
                   });
                 }
               }
@@ -70,9 +68,7 @@ const SD_Revision = () => {
         }
       } catch (error) {
         console.error('Error Fetching Data ', error);
-        if (isMounted) {
-          setIsLoading(false);
-        }
+        if (isMounted) {setIsLoading(false)}
       }
     };
     getProject();
@@ -80,7 +76,6 @@ const SD_Revision = () => {
   }, []);
 
   const [searchKeyword, setSearchKeyword] = useState('');
-
   const filteredPanelData = panelNameData.filter(item => {
     const projectNameLower = item.projectName.toLowerCase();
     const panelNameLower = item.panelName.toLowerCase();
@@ -97,17 +92,17 @@ const SD_Revision = () => {
     .map((item, index) => {
       return (
         <PanelProjectList
-        idProject={item.idProject}
-        key={index+1}
-        projectName={item.projectName}
-        panelName={item.panelName}
-        status={FormatDate(item.DateUpdate)}
+          key={index+1}
+          projectName={item.projectName}
+          panelName={item.panelName}
+          status={FormatDate(item.DateUpdate)}
+          idProject={item.idProject}
+          monitoringId={item.monitoringId}
         />
         )
       });
       
-  const contenToRender =
-    renderedPanelList.length > 0 ? renderedPanelList : <DataNotFound/>;
+  const contenToRender = renderedPanelList.length > 0 ? renderedPanelList : <DataNotFound/>;
 
   return (
     <View>

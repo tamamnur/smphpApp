@@ -12,7 +12,7 @@ const PanelListOnDetail = props => {
         onPress={()=> navigation.navigate('PanelStatus', {
           monitoringId: props.monitoringId ? props.monitoringId : null,
           projectName: props.projectName,
-          pname: props.pname
+          panelName: props.pname
           })}>
         <Text style={[styles.panelTxt, {paddingLeft: 6}]}>{props.pname}</Text>
       </TouchableOpacity>

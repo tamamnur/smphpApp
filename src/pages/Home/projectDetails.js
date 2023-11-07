@@ -46,7 +46,6 @@ const ProjectDetails = props => {
         const PanelNames = snapshot.docs.map(item => ({
           id: item.id, ...item.data(),
         }));
-        console.log('id?',PanelNames)
         const sortedPanelNames = PanelNames.sort((a, b) => {
           return a.id - b.id;
         });
@@ -60,9 +59,8 @@ const ProjectDetails = props => {
 
   return (
     <View style={{flex: 1, height: height * 0.85}}>
-      <Header />
-      {isLoading ? (<LoadingComponent />) 
-      : (
+      <Header /> 
+      {isLoading ? (<LoadingComponent />) : (
       <View>
         <Title2 TxtTitle={projectInfo.ProjectName} SubTitle={'Project Details'} />
         <View style={{marginVertical: 2, marginRight: 25, alignItems: 'flex-end' }}>
@@ -83,13 +81,10 @@ const ProjectDetails = props => {
         <ScrollView style={{marginBottom: 50, height: '55%'}}>
           {ListPanel.map((item, index) => {
             return (<PanelListOnDetail key={item.id}
-              // pname={item.MonitoringID || null}/>);
               pnomor={index+1}
               pname={item.pnameInput}
               monitoringId={item.MonitoringID}
               projectName={projectInfo.ProjectName}
-              // panelName={projectInfo.}
-              // monitoringId={item.MonitoringID}
               />);
           })}
           <EndOf />

@@ -15,10 +15,8 @@ const User = props => {
   const currentUser = firebase.auth().currentUser;
 
   useEffect(() => {
-    const unsubscribe = firestore()
-      .collection('User')
-      .doc(currentUser.uid)
-      .onSnapshot(documentSnapshot => {
+    const unsubscribe = firestore().collection('User')
+      .doc(currentUser.uid).onSnapshot(documentSnapshot => {
         if (documentSnapshot.exists) {
           const user = documentSnapshot.data();
           setDivision(user.division);
@@ -30,22 +28,17 @@ const User = props => {
   }, []);
   useEffect(() => {
     const unsubscribe = auth().onAuthStateChanged(user => {
-      if (user) {
-        setDisplayName(currentUser.displayName);
-      }
+      if (user) {setDisplayName(currentUser.displayName)}
     });
     return () => {
       unsubscribe();
     };
   }, []);
-  console.log(currentUser.displayName, currentUser.email, division);
 
   const handleLogOut = () => {
     Alert.alert('Logout', 'Are you sure that you want to log out ?', [
       {text: 'Yes', onPress: () => {
-        auth()
-        .signOut()
-        .then(() => {
+        auth().signOut().then(() => {
           navigation.replace('PublicNav');
           ToastAndroid.show('User signed out!', ToastAndroid.SHORT);
         });
@@ -59,9 +52,7 @@ const User = props => {
   // const [refresh, setRefresh] = useState(false);
   // const handleReload = () => {
   //   setRefresh(true);
-  //   setTimeout(()=>{
-  //     setRefresh(false)
-  //     console.log('Refreshh!!')
+  //   setTimeout(()=>{setRefresh(false)
   //   }, 1000)
   // }
   const handleReload = () => {
@@ -87,16 +78,14 @@ const User = props => {
 
   return (
     <ScrollView>
-      <View style={styles.LogoSmpHP}>
-        <LogoCubicle />
-      </View>
+      <View style={styles.LogoSmpHP}><LogoCubicle/></View>
       <View style={{marginHorizontal: 10}}>
-      <InfoProjectL label={'Division'} value={division}/>
-      <InfoProjectL label={'Fullname'} value={displayName}/>
-      <InfoProjectL label={'Email'} value={currentUser.email}/>
-      <TouchableOpacity onPress={() => handleReload()}>
-        <Text style={styles.btnRefresh}>Refresh</Text>
-      </TouchableOpacity>
+        <InfoProjectL label={'Division'} value={division}/>
+        <InfoProjectL label={'Fullname'} value={displayName}/>
+        <InfoProjectL label={'Email'} value={currentUser.email}/>
+        <TouchableOpacity onPress={() => handleReload()}>
+          <Text style={styles.btnRefresh}>Refresh</Text>
+        </TouchableOpacity>
       </View>
       <View style={{marginHorizontal: 15, width: 200, marginBottom: 20}}>
         <TouchableOpacity onPress={() => navigation.navigate('Profile Edit')}>

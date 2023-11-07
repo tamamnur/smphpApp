@@ -53,7 +53,8 @@ const SD_Approval = () => {
                     projectName: panel.projectName,
                     panelName: panel.pnameInput,
                     DateUpdate: dateValue.toDate(),
-                    idProject: doc.id
+                    idProject: doc.id,
+                    monitorId: getId
                   });
                 }
               }
@@ -90,12 +91,13 @@ const SD_Approval = () => {
     .map((item, index) => {
       return(
         <PanelProjectList
-        idProject={item.idProject}
-        key={index + 1}
-        projectName={item.projectName}
-        panelName={item.panelName}
-        status={FormatDate(item.DateUpdate)}/>
-        )
+          key={index + 1}
+          projectName={item.projectName}
+          panelName={item.panelName}
+          status={FormatDate(item.DateUpdate)}
+          idProject={item.idProject}
+          monitoringId={item.monitorId}
+        />)
       });
 
   const contenToRender =

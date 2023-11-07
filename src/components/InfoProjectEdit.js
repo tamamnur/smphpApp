@@ -1,6 +1,6 @@
-import {Dimensions, StyleSheet, Text, TextInput, View} from 'react-native';
+import {StyleSheet, Text, TextInput, View} from 'react-native';
 import React from 'react';
-import {BiruKu, Ral11} from '../utils/constant';
+import BiruKu from '../utils/constant';
 
 const InfoProjectEdit = props => {
   return (

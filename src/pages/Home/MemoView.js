@@ -24,7 +24,7 @@ const MemoView = (props) => {
   useEffect(() => {
     const id = props.route.params.id
     const memoSubscriber = firestore().collection('Memo').doc(id).onSnapshot(async doc => {
-      const getDate = doc.data().Created.toDate()
+      const getDate = doc.data() && doc.data().Created ? doc.data().Created.toDate() : null;
       const created = FormatDateTime(getDate)
       const own = doc.data().owner
       setMemo({

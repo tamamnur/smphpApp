@@ -44,9 +44,7 @@ const ProjectStatus = props => {
               let SubmissionDate;
               if (Submission && Submission.data()) {
                 SubmissionDate = Submission.data().DateSubmit;
-                console.log('get?',Submission.data())
               }
-              // console.log('cek Submit Date?',SubmissionDate)
               const Revisi = await Monitoring.collection('Shopdrawing').doc('Revision').get();
               let RevisionDate;
               if (Revisi && Revisi.data()) {

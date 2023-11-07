@@ -32,7 +32,7 @@ const ProjectDetailsEdit = props => {
     const unsubscribe = firestore().collection('Project').doc(id)
       .onSnapshot((doc) => {
         const data = doc.data();
-        console.log('Data from firestore', data)
+        // console.log('Data from firestore', data)
         if (data) {
           const datePO = data.datePO ? data.datePO.toDate() : null;
           setProjectInfo({
@@ -119,9 +119,7 @@ const ProjectDetailsEdit = props => {
         customer: projectInfo.Customer,
         numberPO: projectInfo.NumberPO,
       };
-      if (datePOChanged) {
-        updateData.datePO = newDatePO
-      }
+      if (datePOChanged) {updateData.datePO = newDatePO}
       setIsSaving(true)
       await firestore().collection('Project').doc(id).update(updateData);
       navigation.goBack();
