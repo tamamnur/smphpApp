@@ -32,9 +32,8 @@ const ProjectDetailsEdit = props => {
     const unsubscribe = firestore().collection('Project').doc(id)
       .onSnapshot((doc) => {
         const data = doc.data();
-        // console.log('Data from firestore', data)
         if (data) {
-          const datePO = data.datePO ? data.datePO.toDate() : null;
+          const datePO = data && data.datePO ? data.datePO.toDate() : null;
           setProjectInfo({
             ProjectName: data?.projectName || '',
             ProjectId: data?.projectId || '',
@@ -131,7 +130,7 @@ const ProjectDetailsEdit = props => {
     }
   };
   return (
-    <View style={{flex: 1, marginBottom: 0}}>
+    <View style={{flex: 1}}>
       <Header />
       {isLoading ? (<LoadingComponent />) : (
         <ScrollView>
