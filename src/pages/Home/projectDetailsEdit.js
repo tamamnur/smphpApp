@@ -33,7 +33,8 @@ const ProjectDetailsEdit = props => {
       .onSnapshot((doc) => {
         const data = doc.data();
         if (data) {
-          const datePO = data && data.datePO ? data.datePO.toDate() : null;
+          // const datePO = data && data.datePO ? data.datePO.toDate() : null;
+          const datePO = doc.data() && doc.data().datePO ? doc.data().datePO.toDate() : null;
           setProjectInfo({
             ProjectName: data?.projectName || '',
             ProjectId: data?.projectId || '',
@@ -87,6 +88,7 @@ const ProjectDetailsEdit = props => {
             setIsSaving(false)
             navigation.replace('SecuredNav');
           } catch (error) {
+            console.error('erorr?', error)
             Alert.alert('Error','An error occurred while deleting the project', error)
             setIsSaving(false)
             navigation.replace('SecuredNav')

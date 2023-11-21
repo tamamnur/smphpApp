@@ -1,10 +1,13 @@
 import {StyleSheet, Text, View, ScrollView, TouchableOpacity, Dimensions} from 'react-native';
-import React, {Component} from 'react';
+import React, {Component, useState, useEffect} from 'react';
 import {IconInput2, IconSD_Pengajuan, IconSD_Approv, IconSD_Revisi, IconKonsutruksi, 
   IconCu, IconKomponen, IconLayouting, IconMekanik, IconWiring, } from '../../assets';
 import {BiruKu, Darkred} from '../../utils/constant';
 import {useNavigation} from '@react-navigation/native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import auth from '@react-native-firebase/auth';
+import firebase from '@react-native-firebase/app';
+import firestore from '@react-native-firebase/firestore';
 
 const Input = props => {
   const navigation = useNavigation();
@@ -19,13 +22,28 @@ const Input = props => {
     </TouchableOpacity>
   );
 };
+
+
 class Discover extends Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      isDrafterOrAdmin: false
+    };
+  }
+  componentDidMount() {
+    const currentUser = firebase.auth().currentUser;
+    const Division = firestore().collection('User')
+      .doc(currentUser.uid).onSnapshot(doc => {
+          const user = doc.data();
+          console.log('getDiv',user.division)
+          const isDrafterOrAdmin = user.division === 'Drafter' || user.division === 'Admin'
+          this.setState({isDrafterOrAdmin})
+        });
   }
 
   render() {
+    const {isDrafterOrAdmin} = this.state;
     return (
       <View style={styles.page}>
         <View style={{marginTop: 30, marginBottom: 10}}><Text 
@@ -56,8 +74,11 @@ class Discover extends Component {
                 </TouchableOpacity>
               </View>
             </View>
-            <Input title="Input Shopdrawing Progress"
+
+            {isDrafterOrAdmin && (
+              <Input title="Input Shopdrawing Progress"
               onPress={() => this.props.navigation.navigate('FormShopdrawing')} />
+            )}
           </View>
           <View style={styles.container}>
             <View><Text style={styles.Progress}> Material Procurement</Text></View>

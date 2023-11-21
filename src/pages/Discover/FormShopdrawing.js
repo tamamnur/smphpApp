@@ -25,10 +25,19 @@ const FormShopdrawing = props => {
   const [error, setError] = useState('');
   const [selectAll, setSelectAll] = useState(false)
   const [isLoading, setIsLoading] = useState(true);
+  const [isSaving, setIsSaving] = useState(false)
   const [ProjectList, setProjectList] = useState([]);
   const onDateChange = value => {
     setDate(value);
   };
+  const isMountedRef = useRef(false);
+
+  useEffect(() => {
+    isMountedRef.current= true;
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
   const isValidForm = () => {
     if (!projectName.trim() || projectName.length === 0)
@@ -40,12 +49,7 @@ const FormShopdrawing = props => {
     return true;
   };
 
-  const isMountedRef = useRef(true);
-  useEffect(() => {
-    return () => {
-      isMountedRef.current = false;
-    };
-  }, []);
+
   const [shopdrawingInfo, setShopdrawingInfo] = useState({
     projectId: '',
     FSProjectId: '',
@@ -61,7 +65,7 @@ const FormShopdrawing = props => {
   const handleOnchangeText = async (value, fieldName) => {
     setShopdrawingInfo({...shopdrawingInfo, [fieldName]: value});
     if (fieldName === 'stages') {
-      setIsLoading(true);
+      // setIsLoading(true);
       shopdrawingInfo.Panels.forEach(async item => {
         if (item.MonitoringID) {
           const MonitoringID = item.MonitoringID.substring(1);
@@ -98,6 +102,7 @@ const FormShopdrawing = props => {
 
   const handleFormShopdrawing = async () => {
     setIsLoading(true);
+    setIsSaving(true);
     let panelSelected = false;
     let hasPanelWithoutSD = false;
     
@@ -155,10 +160,16 @@ const FormShopdrawing = props => {
             pnameInput: value.pnameInput,
             MonitoringID: '/Monitoring/' + MonitoringID,
           });
+          ToastAndroid.show('Shopdrawing Procces Updated', ToastAndroid.SHORT)
+            if (stages === 'Submission') {navigation.replace('SD_Submission')} 
+            if (stages === 'Revision') {navigation.replace('SD_Revisi')} 
+            if (stages === 'Approval') {navigation.replace('SD_Approval')}   
         panelSelected = true;
         setIsLoading(false)
+        setIsSaving(false)
       }   
     } if (hasPanelWithoutSD) {
+      setIsSaving(false)
       setIsLoading(false)
       updateError('Ensure that all the panels you have chosen are Submitted.', setError);
       return;
@@ -166,17 +177,14 @@ const FormShopdrawing = props => {
       // updateError('Make sure you select at least one panel, \n and all the panels you have chosen are Submitted.', setError);
       // updateError(`Please choose at least one panel by checking the checkbox next to the panel's name.`, setError);
       updateError(`Please choose at least one panel.`, setError);
-      setIsLoading(false)
+      // setIsLoading(false)
+      setIsSaving(false)
       return;
     }
-  ToastAndroid.show('Shopdrawing Procces Updated', ToastAndroid.SHORT)
-  if (stages === 'Submission') {
-    navigation.replace('SD_Submission');
-  } if (stages === 'Revision') {
-    navigation.replace('SD_Revisi');
-  } if (stages === 'Approval') {
-    navigation.replace('SD_Approval');
-  }   
+    // ToastAndroid.show('Shopdrawing Procces Updated', ToastAndroid.SHORT)
+    //   if (stages === 'Submission') {navigation.replace('SD_Submission')} 
+    //   if (stages === 'Revision') {navigation.replace('SD_Revisi')} 
+    //   if (stages === 'Approval') {navigation.replace('SD_Approval')}   
   };
 
   const submitForm = () => {
@@ -192,7 +200,7 @@ const FormShopdrawing = props => {
 
   useEffect(() => {
     const InitiationFirebase = async () => {
-      setIsLoading(true);
+      setIsLoading(false);
       const FBProject = await firestore().collection('Project').get();
       const projectRef = FBProject.docs.map(async doc => {
         const panelName = await doc.ref.collection('PanelName').get();
@@ -251,43 +259,56 @@ const FormShopdrawing = props => {
     return null;
   };
 
-  const Panel = props => {
-    return (
-      <View>
-      <View style={{flexDirection: 'row', marginLeft: 20, marginTop: 2, paddingVertical: -5}}>
-        <CheckBox
-          tintColors={{true: BiruKu, false: BiruKu}}
-          disabled={false}
-          value={props.value}
-          onValueChange={(newValue, index) => {
-            props.onValueChange(newValue)}}
-        />
-        <Text style={styles.pname}>{props.pname}</Text>
-      </View>
-        
-      <TouchableOpacity style={{alignItems: 'flex-end', paddingTop: 5, marginRight: 20}}>
-        {/* <Icon name='file-upload' size={20} color={BiruKu}/> */}
-        <Text style={{fontSize: 12, fontFamily: 'Poppins-BoldItalic', color: BiruKu, borderWidth: 1, borderRadius: 4, borderColor: BiruKu, backgroundColor: '#b7c2cc', paddingHorizontal: 5, paddingTop: 3}}>
-        Select file
-        </Text>
-      </TouchableOpacity>
-
-      </View>
-    );
-  };
-
+  
   const toggleSelectAll = () => {
+    // const allSelected = shopdrawingInfo.Panels.every(panel => panel.selected);
     const updatedPanels = shopdrawingInfo.Panels.map((panel) => ({
-      ...panel,
-      selected: !selectAll,
+      ...panel, selected: !selectAll,
     }));
+    // console.log('allSelected..',allSelected)
     setShopdrawingInfo((prev) => ({
       ...prev,
       Panels: updatedPanels,
     }));
     setSelectAll(!selectAll);
   };
+  const togglePanel = (panelId) => {
+    const updatedPanels = shopdrawingInfo.Panels.map(panel => {
+      if (panel.id === panelId) {
+        return {...panel, selected: !panel.selected}
+      }
+      return panel
+    })
+    setShopdrawingInfo(prev => ({...prev, Panels: updatedPanels}))
+    setSelectAll(updatedPanels.every(panel => panel.selected))
+  }
   
+  const Panel = ({id, pnameInput, selected}) => (
+    // return (
+    <View>
+      <View style={{flexDirection: 'row', marginLeft: 20, marginTop: 2, paddingVertical: -5}}>
+        <CheckBox
+          tintColors={{true: BiruKu, false: BiruKu}}
+          disabled={false}
+          value={selected}
+          onValueChange={() => togglePanel(id)}
+          // onValueChange={(newValue, index) => {
+          //   props.onValueChange(newValue)}}
+        />
+        <Text style={styles.pname}>{pnameInput}</Text>
+      </View>
+        
+      {/* <TouchableOpacity style={{alignItems: 'flex-end', paddingTop: 5, marginRight: 20}}>
+        <Icon name='file-upload' size={20} color={BiruKu}/>
+        <Text style={{fontSize: 12, fontFamily: 'Poppins-BoldItalic', color: BiruKu, borderWidth: 1, borderRadius: 4, borderColor: BiruKu, backgroundColor: '#b7c2cc', paddingHorizontal: 5, paddingTop: 3}}>
+        Select file
+        </Text>
+      </TouchableOpacity> */}
+
+      </View>
+    );
+  // };
+
   return (
     <ScrollView style={{marginVertical: 20}}>
       <Header/>
@@ -353,19 +374,23 @@ const FormShopdrawing = props => {
               <Text style={styles.panelTitle}>Panel Name</Text>
               <TouchableOpacity style={{ alignSelf: 'center' }} onPress={toggleSelectAll}>
                 <View style={{ flexDirection: 'row'}}>
-                  <Text style={styles.toggleAll}>{selectAll?'Select All  ':'Unselect All  '}</Text>
-                  <View style={{borderWidth: 2, borderColor: BiruKu, padding: 0.2, marginBottom: 5}}>
-                    <Icon name={'check-bold'} size={20} color={selectAll ? BiruKu : 'white'} />
+                  <Text style={styles.toggleAll}>{selectAll?'Unselect All  ':'Select All  '}</Text>
+                  <View style={{borderWidth: 2, borderColor: BiruKu, paddingHorizontal: 0.2, marginBottom: 5}}>
+                    <Icon name={'check-bold'} size={16} color={selectAll ? BiruKu : 'white'} />
                   </View>
                 </View>
               </TouchableOpacity>
             </View>
+
+          <ScrollView style={{marginTop: 5}}>
             {shopdrawingInfo.Panels.filter(item => !item.stageExist).map(
               item => (
                 <Panel
                   key={item.id}
-                  pname={item.pnameInput}
-                  value={item.selected}
+                  id={item.id}
+                  pnameInput={item.pnameInput}
+                  // value={item.selected}
+                  selected={item.selected}
                   onValueChange={value =>
                     setShopdrawingInfo(prev => ({
                       ...prev,
@@ -384,10 +409,14 @@ const FormShopdrawing = props => {
               ),
             )}
             <AllPanelsExistMessage />
+          </ScrollView>
           </View>
         )}
       </ScrollView>
-      <Button6 bgColor={BiruKu} fontColor={'white'} text={'Submit'} onPress={submitForm}/>
+      {isSaving? (<LoadingComponentS/>):(
+        <Button6 bgColor={BiruKu} fontColor={'white'} text={'Submit'} 
+        onPress={submitForm}/>
+      )}
     </ScrollView>
   );
 };
