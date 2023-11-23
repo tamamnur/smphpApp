@@ -1,14 +1,25 @@
 import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {useNavigation} from '@react-navigation/native';
 import {BiruKu} from '../../utils/constant';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import InputProgress from '../../components/inputProgress';
 import Title2 from '../../components/Title2';
 import Header from '../../components/HeaderToDiscover';
+import firebase from '@react-native-firebase/app';
+import firestore from '@react-native-firebase/firestore';
 
 const PageConstruction = () => {
   const navigation = useNavigation();
+  const [division, setDivision] = useState(false)
+  const currentUser = firebase.auth().currentUser
+  useEffect(() => {
+    firestore().collection('User').doc(currentUser.uid).onSnapshot(doc => {
+      const user = doc.data();
+      const isLogistic = user.division === 'Logistic' || user.division === 'Admin'
+      setDivision(isLogistic)
+    })
+  })
   return (
     <View style={{marginTop: 20}}>
       <Header/><Title2 TxtTitle={'CONSTRUCTION / BOX'} SubTitle={'- MONITORING -'} />
@@ -32,7 +43,9 @@ const PageConstruction = () => {
           </View>
         </TouchableOpacity>
       </View>
-      <InputProgress onPress={() => navigation.navigate('FormPOConstruction')} />
+      {division && (
+        <InputProgress onPress={() => navigation.navigate('FormPOConstruction')} />
+      )}
     </View>
   );
 };
@@ -48,6 +61,8 @@ const styles = StyleSheet.create({
     color: BiruKu,
   },
   container: {
+    marginTop: 30,
+    marginBottom: 20,
     alignSelf: 'center',
     flexDirection: 'row',
     justifyContent: 'space-around',

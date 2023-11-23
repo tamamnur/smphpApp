@@ -1,13 +1,23 @@
 import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {IconBack, LogoSmpHP} from '../../assets';
 import {useNavigation} from '@react-navigation/native';
 import {BiruKu} from '../../utils/constant';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import InputProgress from '../../components/inputProgress';
-
+import firebase from '@react-native-firebase/app'
+import firestore from '@react-native-firebase/firestore'
 const PageMechanic = () => {
   const navigation = useNavigation();
+  const [isDivision, setIsDivision] = useState(false)
+  const currentUser = firebase.auth().currentUser
+  useEffect(()=> {
+    firestore().collection('User').doc(currentUser.uid).onSnapshot(doc => {
+      const user = doc.data()
+      const isProduction = user.division === 'Production' || user.division === 'Admin'
+      setIsDivision(isProduction)
+    })
+  })
   return (
     <View style={{marginTop: 20}}>
       <View style={{flexDirection: 'row'}}>
@@ -35,7 +45,9 @@ const PageMechanic = () => {
           </View>
         </TouchableOpacity>
       </View>
-      <InputProgress onPress={() => navigation.navigate('FormFBMechanic')} />
+      {isDivision && (
+        <InputProgress onPress={() => navigation.navigate('FormFBMechanic')} />
+      )}
     </View>
   );
 };

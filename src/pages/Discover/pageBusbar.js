@@ -1,13 +1,24 @@
 import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {IconBack, LogoSmpHP} from '../../assets';
 import {useNavigation} from '@react-navigation/native';
 import {BiruKu} from '../../utils/constant';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import InputProgress from '../../components/inputProgress';
+import firebase from '@react-native-firebase/app';
+import firestore from '@react-native-firebase/firestore';
 
 const PageBusbar = () => {
   const navigation = useNavigation();
+  const [isDivision, setIsDivision] = useState(false)
+  const currentUser = firebase.auth().currentUser
+  useEffect(()=> {
+    firestore().collection('User').doc(currentUser.uid).onSnapshot(doc => {
+    const user = doc.data()
+    const isLogistic = user.division === 'Logistic' || user.division === 'Admin'
+    setIsDivision(isLogistic)
+    })
+  })
   return (
     <View style={{marginTop: 20}}>
       <View style={{flexDirection: 'row'}}>
@@ -37,7 +48,9 @@ const PageBusbar = () => {
           </View>
         </TouchableOpacity>
       </View>
+      {isDivision && (
         <InputProgress onPress={()=> navigation.navigate('FormPOBusbar')}/>
+      )}
     </View>
   );
 };

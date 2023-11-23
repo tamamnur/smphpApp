@@ -5,7 +5,6 @@ import {IconInput2, IconSD_Pengajuan, IconSD_Approv, IconSD_Revisi, IconKonsutru
 import {BiruKu, Darkred} from '../../utils/constant';
 import {useNavigation} from '@react-navigation/native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import auth from '@react-native-firebase/auth';
 import firebase from '@react-native-firebase/app';
 import firestore from '@react-native-firebase/firestore';
 
@@ -28,22 +27,25 @@ class Discover extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      isDrafterOrAdmin: false
+      isDrafterOrAdmin: false,
+      isProductionOrAdmin: false
     };
   }
   componentDidMount() {
     const currentUser = firebase.auth().currentUser;
-    const Division = firestore().collection('User')
+    firestore().collection('User')
       .doc(currentUser.uid).onSnapshot(doc => {
           const user = doc.data();
-          console.log('getDiv',user.division)
-          const isDrafterOrAdmin = user.division === 'Drafter' || user.division === 'Admin'
-          this.setState({isDrafterOrAdmin})
+          const isDrafterOrAdmin = user.division === 'Drafter' || user.division === 'Admin';
+          const isProductionOrAdmin = user.division === 'Production' || user.division === 'Admin';
+          this.setState({isDrafterOrAdmin});
+          this.setState({isProductionOrAdmin});
         });
   }
 
   render() {
     const {isDrafterOrAdmin} = this.state;
+    const {isProductionOrAdmin} = this.state;
     return (
       <View style={styles.page}>
         <View style={{marginTop: 30, marginBottom: 10}}><Text 
@@ -132,33 +134,24 @@ class Discover extends Component {
           <View style={styles.container}>
             <View><Text style={styles.Progress}> Finishing</Text></View>
             <View style={styles.wrapper}>
-              <View style={styles.icon}>
-                <TouchableOpacity style={{marginTop: -5}}
-                  onPress={() => {this.props.navigation.navigate('FormFinishing')}}>
-                  <View style={{alignSelf: 'center', marginHorizontal: -20}}>
-                    <MaterialCommunityIcons name="application-import" color={'blue'} size={35}/>
-                  </View>
-                  <Text style={styles.titleIcon}>Input {'\n'} Progress</Text>
-                </TouchableOpacity>
-              </View>
-              <View style={styles.icon}>
+              <View style={styles.iconEnd}>
                 <TouchableOpacity onPress={() => {this.props.navigation.navigate('TestReport')}}>
-                  <View style={{alignSelf: 'center', paddingHorizontal: 2}}>
-                    <MaterialCommunityIcons name="archive-check-outline" color={'#10324A'} size={60}/>  
-                  </View>
+                    <MaterialCommunityIcons name="archive-check-outline" color={'#10324A'} size={50}/>  
                   <Text style={styles.titleIcon}>Tested</Text>
                 </TouchableOpacity>
               </View>
-              <View style={styles.icon}>
+              <View style={styles.iconEnd}>
                 <TouchableOpacity style={{marginHorizontal: -7}}
                   onPress={() => {this.props.navigation.navigate('DeliveryReport')}}>
-                  <View style={{alignSelf: 'center', paddingHorizontal: 9}}>
-                    <MaterialCommunityIcons name="truck-delivery-outline" color={Darkred} size={60}/>
-                  </View>
+                    <MaterialCommunityIcons name="truck-delivery-outline" color={Darkred} size={50}/>
                   <Text style={styles.titleIcon}>Delivery</Text>
                 </TouchableOpacity>
               </View>
             </View>
+            {isProductionOrAdmin && (
+              <Input title="Input Finishing Date"
+              onPress={() => this.props.navigation.navigate('FormFinishing')} />
+            )}
           </View>
         </ScrollView>
       </View>
@@ -193,6 +186,13 @@ const styles = StyleSheet.create({
   icon: {
     borderWidth: 3,
     padding: 15,
+    borderRadius: 10,
+    borderColor: BiruKu,
+  },
+  iconEnd: {
+    borderWidth: 3,
+    paddingHorizontal: '16.5%',
+    paddingBottom: 10,
     borderRadius: 10,
     borderColor: BiruKu,
   },
