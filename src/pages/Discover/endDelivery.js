@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import { View, ScrollView, Dimensions, } from 'react-native';
+import { View, ScrollView, Dimensions, ToastAndroid, } from 'react-native';
 import Title2 from '../../components/Title2';
 import firestore from '@react-native-firebase/firestore';
 import PanelProjectList from '../../components/panelProjectList';
@@ -28,8 +28,7 @@ const DeliveryReport = () => {
         });
         const panelNameData = [];
         for (const doc of idDoc) {
-          const projectRef = firestore().collection('Project')
-            .doc(doc.id).collection('PanelName');
+          const projectRef = firestore().collection('Project').doc(doc.id).collection('PanelName');
           const panelIdRef = await projectRef.get();
           const panelIdData = panelIdRef.docs.map(panelIdDoc => ({
             panelId: panelIdDoc.id, ...panelIdDoc.data(),
@@ -42,8 +41,7 @@ const DeliveryReport = () => {
             if (getId) {
               const idRef = firestore().collection('Monitoring');
               const id = getId.substring(12);
-              const monitoringRef = idRef.doc(id)
-                .collection('End').doc('Sent');
+              const monitoringRef = idRef.doc(id).collection('End').doc('Sent');
               const monitoringDoc = await monitoringRef.get();
               if (monitoringDoc.exists) {
                 const monitoringData = monitoringDoc.data();
@@ -53,7 +51,7 @@ const DeliveryReport = () => {
                     projectName: panel.projectName,
                     panelName: panel.pnameInput,
                     DateUpdate: dateValue.toDate(),
-                    idProject: doc.id
+                    idProject: doc.id, monitoringId: getId
                   });
                 }
               }
@@ -66,8 +64,7 @@ const DeliveryReport = () => {
           setIsLoading(false);
         }
       } catch (error) {
-        alert('Error Fetching Data ', error)
-        console.error('Error Fetching Data ', error);
+        ToastAndroid.show('Error Fetching Data '+error, ToastAndroid.LONG);
         if (isMounted) {setIsLoading(false)}
       }
     };
@@ -91,21 +88,21 @@ const DeliveryReport = () => {
     .map((item, index) => {
       return(
         <PanelProjectList
-        key={index + 1}
-        projectName={item.projectName}
-        panelName={item.panelName}
-        status={FormatDate(item.DateUpdate)}
-        idProject={item.idProject}/>
-        )
-      });
+          key={index + 1}
+          projectName={item.projectName}
+          panelName={item.panelName}
+          status={FormatDate(item.DateUpdate)}
+          idProject={item.idProject}
+          monitoringId={item.monitoringId}
+        />
+      )
+    });
 
-  const contenToRender =
-    renderedPanelList.length > 0 ? renderedPanelList : <DataNotFound />;
+  const contenToRender = renderedPanelList.length > 0 ? renderedPanelList : <DataNotFound/>;
 
   return (
     <View style={{marginVertical: 10}}>
-      <Header/>
-      <Title2 TxtTitle="DELIVERY REPORT" />
+      <Header/><Title2 TxtTitle="DELIVERY REPORT"/>
       {isLoading ? (<></>) : (<>
         <SearchBar value={searchKeyword} 
            onChangeText={text => setSearchKeyword(text)} />
@@ -118,4 +115,4 @@ const DeliveryReport = () => {
   );
 };
 
-export default DeliveryReport
+export default DeliveryReport;

@@ -1,203 +1,187 @@
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, ToastAndroid, ScrollView, ActivityIndicator, } from 'react-native';
+import {View,Text,TextInput,TouchableOpacity,ToastAndroid,ScrollView} from 'react-native';
 import React, {useEffect, useMemo, useState, useRef} from 'react';
-import {IconBack, LogoSmpHP} from '../../assets';
 import {BiruKu} from '../../utils/constant';
 import {useNavigation} from '@react-navigation/native';
-import Title2 from '../../components/Title2';
 import firestore from '@react-native-firebase/firestore';
-import CheckBox from '@react-native-community/checkbox';
+import Header from '../../components/Header';
+import Title2 from '../../components/Title2';
 import StagesPODetail from '../../components/StagesPODetail';
 import PickedDateM from '../../components/pickedDateM';
-import Header from '../../components/Header';
 import LoadingComponentS from '../../components/LoadingComponentS';
 import Button6 from '../../components/Button6';
+import PanelWrapperOnForm from '../../components/PanelWrapperOnForm';
+import PanelItemOnForm from '../../components/PanelItemOnForm';
+import {errorTxt, left, right, unvailable, txtInput, dropdownSugesstion,sugesstion } from '../../utils/fontStyles';
 
 const updateError = (error, stateUpdate) => {
-  stateUpdate(error);
-  setTimeout(() => {
-    stateUpdate('');
-  }, 3000);
+  stateUpdate(error); setTimeout(() => {stateUpdate('')},3000);
 };
 
-const FormPOConstruction = (props) => {
+const FormPOConstruction = props => {
   const navigation = useNavigation();
   const [date, setDate] = useState();
-  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
+  const [selectAll, setSelectAll] = useState(false);
   const [ProjectList, setProjectList] = useState([]);
+  const [visiblePanels, setVisiblePanels] = useState([]);
   const onDateChange = value => {setDate(value)};
 
-  const isValidForm = () => {
-    if (!projectName.trim() || projectName.length === 0)
-      return updateError('Invalid name of project', setError);
-    // if (!stagesPODetails.trim() || stagesPODetails.length === 0)
-    if (!stagesPODetails)
-      return updateError('Required to choice Stages of Procurement Construction', setError);
-    if (!date)
-      return updateError('Required to choice Date of Proccess!', setError);
-    return true;
-  };
   const isMountedRef = useRef(true);
-  useEffect(() => {
-    return () => {
-      isMountedRef.current = false;
-    }
+  useEffect(() => {isMountedRef.current = true;
+    return () => {isMountedRef.current = false};
   }, []);
+
   const [constructionInfo, setConstructionInfo] = useState({
-    projectId: '', FSProjectId: '', projectName: '', stagesPODetails: '', customer: '', projectsList: [], Panels: []
+    projectId: '', FSProjectId: '', projectName: '', stagesPODetails: '', customer: '',
+    projectsList: [], Panels: [],
   });
   const {projectId, projectName, stagesPODetails, customer} = constructionInfo;
   const handleOnchangeText = async (value, fieldName) => {
     setConstructionInfo({...constructionInfo, [fieldName]: value});
     if (fieldName === 'stagesPODetails') {
-      setIsLoading(true)
       const selectedStage = value;
       constructionInfo.Panels.forEach(async item => {
         if (item.MonitoringID) {
           const MonitoringID = item.MonitoringID.substring(1);
-          const _Data = await firestore().collection(MonitoringID+'/Procurement').doc('Construction').get();
+          const _Data = await firestore().collection(MonitoringID + '/Procurement').doc('Construction').get();
           const isExist = _Data.exists && _Data.data() && _Data.data().hasOwnProperty(selectedStage);
           setConstructionInfo(prev => ({
-            ...prev,
-            Panels: prev.Panels.map(panel => {
+            ...prev, Panels: prev.Panels.map(panel => {
               if (panel.pnameInput === item.pnameInput) {
                 return {...panel, stageExist: isExist};
               }
               return panel;
             }),
           }));
-          console.log('cek--',item.pnameInput, isExist);
-          } else {
-            setConstructionInfo(prev => ({
-              ...prev,
-              Panels: prev.Panels.map(panel => {
-                if (panel.pnameInput === item.pnameInput) {
-                  return {...panel, stageExist: false};
-                }
-                return panel;
-              }),
-            }));
-          }
-          if (isMountedRef.current) {
-            setIsLoading(false);
-          }
+        } else {
+          setConstructionInfo(prev => ({
+            ...prev, Panels: prev.Panels.map(panel => {
+              if (panel.pnameInput === item.pnameInput) {
+                return {...panel, stageExist: false};
+              }
+              return panel;
+            }),
+          }));
+        }
+        if (isMountedRef.current) {setIsSaving(false)}
       });
     }
   };
-
+  
   const handleConstruction = async () => {
-    setIsLoading(true)
+    setIsSaving(true);
     let panelSelected = false;
-    let hasPanelWithoutPO = false;
-    
-    for (const value of constructionInfo.Panels) {
+    const batch = firestore().batch();
+    const operations = [];
+    const visiblePanelsIds = visiblePanels.map(panel => panel.id)
+    const panelsToUpdate = constructionInfo.Panels.filter(panel => visiblePanelsIds.includes(panel.id))
+    for (const value of panelsToUpdate) {
+      let MonitoringID = value.MonitoringID ? value.MonitoringID.split('/').pop() : null;
+      const projectRef = firestore().collection('Project').doc(constructionInfo.FSProjectId);
+      const POConst = firestore().collection('Monitoring').doc(MonitoringID).collection('Procurement').doc('Construction');
+      const validPanels = await firestore().collection('Monitoring/' + MonitoringID + '/Procurement').doc('Construction').get();
+      const isValid = validPanels.exists;
+      const invalidMsg = () => {
+        return updateError(value.pnameInput+' is not valid. \n Ensure the selected panel has an Order Date', setError)
+      }
       if (value.selected === true) {
-      let MonitoringID = null;
-        if (value.MonitoringID) {
-          MonitoringID = value.MonitoringID.split('/')[2];
-        } else {
-          const newMonitoring = await firestore().collection('Monitoring').add({
-            ProjectID: '/Project/' + constructionInfo.FSProjectId,
-          });
-        MonitoringID = newMonitoring.id;
-      }
-      const Procurement = firestore()
-      .collection('Monitoring').doc(MonitoringID).collection('Procurement');
-      if (constructionInfo.stagesPODetails === 'Order') {
-        await Procurement.doc('Construction').set({
-          Order: firestore.Timestamp.fromDate(date),
-        });
-        await firestore().collection('Project').doc(constructionInfo.FSProjectId).update({
-          status: 'Procurement Construction - Order',
-          updatedAt: firestore.Timestamp.fromDate(date),
-        })
-      } else {
-        const poConstructionDoc = await Procurement.doc('Construction').get();
-        if (!poConstructionDoc.exists) {
-          hasPanelWithoutPO = true;
-          break;
-        } 
-        if (constructionInfo.stagesPODetails === 'Schedule') {
-          await Procurement.doc('Construction').update({
-            Schedule: firestore.Timestamp.fromDate(date),
-          })
-          await firestore().collection('Project').doc(constructionInfo.FSProjectId).update({
-            status: 'Procurement Construction - Scheduled',
-            updatedAt: firestore.Timestamp.fromDate(date),
-          })
+        if (constructionInfo.stagesPODetails === 'Order') {
+          if (value.MonitoringID) {
+            MonitoringID = value.MonitoringID.split('/')[2];
+          } else {
+            const newMonitoring = await firestore().collection('Monitoring').add({
+                ProjectID: '/Project/' + constructionInfo.FSProjectId,
+              });
+              MonitoringID = newMonitoring.id;
+          }
+          const orderData = {Order: firestore.Timestamp.fromDate(date)};
+          operations.push(
+            batch.set(POConst, orderData),
+            batch.update(projectRef, {
+              status: 'Procurement Construction - Ordered',
+              updatedAt: firestore.Timestamp.fromDate(date),
+            }),
+          );
+        } else if (constructionInfo.stagesPODetails === 'Schedule') {
+          if (!MonitoringID) {setIsSaving(false), invalidMsg(); return}
+          if (!isValid) {setIsSaving(false), invalidMsg(); return}
+          const scheduleData = {Schedule: firestore.Timestamp.fromDate(date)};
+          operations.push(
+            batch.update(POConst, scheduleData),
+            batch.update(projectRef, {
+              status: 'Procurement Construction - Scheduled',
+              updatedAt: firestore.Timestamp.fromDate(date),
+            }),
+          );
+        } else if (constructionInfo.stagesPODetails === 'Realized') {
+          if (!MonitoringID) {setIsSaving(false), invalidMsg(); return}
+          if (!isValid) {setIsSaving(false), invalidMsg(); return}          
+          const realizedData = {Realized: firestore.Timestamp.fromDate(date)};
+          operations.push(
+            batch.update(POConst, realizedData),
+            batch.update(projectRef, {
+              status: 'Procurement Construction - Ready',
+              updatedAt: firestore.Timestamp.fromDate(date),
+            }),
+            );
+          }
+          
+          const panelRef = firestore().collection('Project').doc(constructionInfo.FSProjectId).collection('PanelName').doc(value.id);
+          const panelData = {pnameInput: value.pnameInput, MonitoringID: '/Monitoring/' + MonitoringID};
+          operations.push(batch.set(panelRef, panelData));
+          panelSelected = true;
         }
-        if (constructionInfo.stagesPODetails === 'Realized') {
-          await Procurement.doc('Construction').update({
-            Realized: firestore.Timestamp.fromDate(date),
-          });
-          await firestore().collection('Project').doc(constructionInfo.FSProjectId).update({
-            status: 'Procurement Construction - Ready',
-            updatedAt: firestore.Timestamp.fromDate(date),
-          })
+      }
+      if (panelSelected && operations.length > 0) {
+        try {
+          await Promise.all(operations);
+          await batch.commit();
+          setIsSaving(false);
+          ToastAndroid.show('Procurement construction updated',ToastAndroid.SHORT);
+          if (stagesPODetails === 'Order') {navigation.replace('ConstructionOrder')}
+          if (stagesPODetails === 'Schedule') {navigation.replace('ConstructionSchedule')}
+          if (stagesPODetails === 'Realized') {navigation.replace('ConstructionRealized')}
+        } catch (error) {
+          setIsSaving(false); console.error('Error', error);
         }
-      }
-      await firestore().collection('Project').doc(constructionInfo.FSProjectId)
-      .collection('PanelName').doc(value.id).set({
-          pnameInput: value.pnameInput,
-          MonitoringID: '/Monitoring/' + MonitoringID,
-        });
-        panelSelected = true
-      }
-    } 
-    if (hasPanelWithoutPO) {
-      // updateError('An error occurred, choose the panel correctly and make sure the panel you have selected has been ordered previously.', setError)
-      updateError('Ensure that all panels you have choosen have been ordered previously.', setError)
-      return
-    } 
-    if (!panelSelected) {
-      updateError(`Please choose at least one panel by checking the checkbox next to the panel's name.`, setError)
-      return
-    }
-    setIsLoading(false)
-    ToastAndroid.show('Procurement construction updated', ToastAndroid.SHORT)
-    if (stagesPODetails === 'Order') {
-      navigation.replace('ConstructionOrder')
-    } if (stagesPODetails === 'Schedule') {
-      navigation.replace('ConstructionSchedule')
-    } if (stagesPODetails === 'Realized') {
-      navigation.replace('ConstructionRealized')
-    }
-  };
+      } else {updateError('Please choose at least one panel', setError);setIsSaving(false)}
+    };
     
-  const submitForm = () => {
-    if (isValidForm()) {
-      handleConstruction();
-    } else {
-      error;
-    }
+    const isValidForm = () => {
+      if (!projectName.trim() || projectName.length === 0)
+        return updateError('Invalid name of project', setError);
+      if (!stagesPODetails)
+        return updateError('Required to choice Stages of Procurement Construction', setError);
+      if (!date)
+        return updateError('Required to choice Date of Proccess!', setError);
+      return true;
+    };
+    const submitForm = () => {
+    if (isValidForm()) {handleConstruction()} 
+    else {error}
   };
   const isProjectNameSuggestionShow = useMemo(() => {
-    return projectName.length > 0;
+    return projectName.length > 0
   }, [projectName.length]);
 
   useEffect(() => {
     const InitiationFirebase = async () => {
-      setIsLoading(true)
       const FBProject = await firestore().collection('Project').get();
       const projectRef = FBProject.docs.map(async doc => {
         const panelName = await doc.ref.collection('PanelName').get();
         const Panels = panelName.docs.map(panelDoc => {
           return {
-            id: panelDoc.id,
-            ...panelDoc.data(),
-            selected: false,
+            id: panelDoc.id, ...panelDoc.data(), selected: false,
           };
         });
         return {
-          id: doc.id,
-          ...doc.data(),
-          Panels: Panels,
+          id: doc.id, ...doc.data(), Panels: Panels
         };
       });
       const projectList = await Promise.all(projectRef);
       if (isMountedRef.current) {
         setProjectList(projectList);
-        setIsLoading(false);
       }
     };
     InitiationFirebase();
@@ -209,8 +193,7 @@ const FormPOConstruction = (props) => {
         return value.projectName === projectName;
       });
       if (MatchProject) {
-        setConstructionInfo(prev => ({
-          ...prev,
+        setConstructionInfo(prev => ({ ...prev, 
           projectId: MatchProject.projectId,
           FSProjectId: MatchProject.id,
           customer: MatchProject.customer,
@@ -218,10 +201,7 @@ const FormPOConstruction = (props) => {
         }));
       } else {
         setConstructionInfo(prev => ({
-          ...prev,
-          projectId: '',
-          Panels: [],
-          customer: '',
+          ...prev, projectId: '', Panels: [],customer: '',
         }));
       }
     }
@@ -230,272 +210,99 @@ const FormPOConstruction = (props) => {
   const AllPanelsExistMessage = () => {
     if (constructionInfo.Panels.every(item => item.stageExist)) {
       return (
-        <Text style={styles.unvailable}>Panel name data is not unvailable.</Text>
+        <Text style={unvailable}>Panel data not available.</Text>
       );
     }
     return null;
   };
-  const Panel = props => {
-    const navigation = useNavigation();
-    return (
-      <View style={{flexDirection: 'row', marginLeft: 20, marginTop: 2}}>
-        <CheckBox
-          tintColors={{true: BiruKu, false: BiruKu}}
-          disabled={false}
-          value={props.value}
-          onValueChange={(newValue, index) => {
-            props.onValueChange(newValue);
-          }}
-        />
-        <Text style={styles.pname}>{props.pname}</Text>
-      </View>
-    );
+  useEffect(() => {
+    const filteredPanels = constructionInfo.Panels.filter(item => !item.stageExist);
+    setVisiblePanels(filteredPanels)
+  }, [constructionInfo.Panels]);
+  
+  const toggleSelectAll = () => {
+    const updatedPanels = constructionInfo.Panels.map(panel => {
+      if (visiblePanels.some(visiblePanels => visiblePanels.id === panel.id)) {
+        return { ...panel, selected: !selectAll }
+      }
+      return panel;
+    });
+    setConstructionInfo(prev => ({...prev, Panels: updatedPanels}));
+    setSelectAll(!selectAll);
   };
+  const togglePanel = panelId => {
+    const updatedPanels = constructionInfo.Panels.map(panel => {
+      if (panel.id === panelId) {
+        return {...panel, selected: !panel.selected};
+      }
+      return panel;
+    });
+    setConstructionInfo(prev => ({...prev, Panels: updatedPanels}));
+    setSelectAll(updatedPanels.every(panel => panel.selected));
+  };
+
   return (
     <ScrollView style={{marginVertical: 20}}>
-      {/* <View style={styles.header}>
-        <IconBack
-          onPress={() => navigation.goBack()}
-          style={{marginTop: 10, marginLeft: 30}}
-        />
-        <LogoSmpHP style={{marginLeft: 180}} />
-      </View> */}
-      <Header/>
-      <Title2 TxtTitle="CONSTRUCTION  /  BOX" SubTitle={"- PROCUREMENT -"}/>
-      {error ? (
-        <Text style={{ color: 'red', fontSize: 13, textAlign: 'center', marginBottom: 10, marginTop: -15, marginHorizontal: 20}}>
-          {error}
-        </Text>
-      ) : null}
-      {/* <View> */}
-        <View style={{flexDirection: 'row', marginHorizontal: 10, width: '100%'}}>
-          <View style={{width: '25%'}}>
-            <Text style={styles.left}>Project Name </Text>
-            <Text style={styles.left}>Customer </Text>
-            <Text style={styles.left}>Number SO </Text>
-            <Text style={styles.left}>Stages </Text>
-            <Text style={styles.left}>Date </Text>
-          </View>
-          <View style={{width: '70%'}}>
-            <TextInput
-              style={styles.right}
-              onChangeText={value => handleOnchangeText(value, 'projectName')}
-              value={projectName}
-              />
-              {isProjectNameSuggestionShow ? (
-                <View style={styles.dropdownSugesstion}>
-                  {ProjectList.filter(item => {
-                    const searchTerm = projectName.toLowerCase();
-                    const fullname = item.projectName.toLowerCase();
-                    return (
-                      searchTerm &&
-                      fullname.includes(searchTerm) &&
-                      fullname !== searchTerm
-                    );
-                  }).map(item => (
-                    <TouchableOpacity
-                      key={item.id}
-                      onPress={() => {
-                        handleOnchangeText(item.projectName, 'projectName');
-                      }}>
-                      <Text style={styles.sugesstion}>{item.projectName}</Text>
-                    </TouchableOpacity>
-                  ))}
-                </View>
-              ) : null}
-            <Text style={styles.right}>{customer}</Text>
-            <Text style={styles.right}>{projectId}</Text>
-            <View style={{width: '98%'}}>
-              <StagesPODetail
-                onValueChange={(value) => {handleOnchangeText(value, 'stagesPODetails')}}
-              />
-            </View>
-            <Text style={styles.txtInput} onChangeText={onDateChange}>
-              <PickedDateM onChangeText={onDateChange}/>
-            </Text>
-          </View>
+      <Header /><Title2 TxtTitle="CONSTRUCTION  /  BOX" SubTitle={'PROCUREMENT'} />
+      {error ? (<Text style={errorTxt}>{error}</Text>) : null}
+      <View style={{flexDirection: 'row', marginHorizontal: 10, width: '100%'}}>
+        <View style={{width: '25%'}}>
+          <Text style={left}>Project Name </Text>
+          <Text style={left}>Customer </Text>
+          <Text style={left}>Number SO </Text>
+          <Text style={left}>Stages </Text>
+          <Text style={left}>Date </Text>
         </View>
-      {/* </View> */}
-      <ScrollView style={{marginTop: 5}}>
-        {isLoading ? (
-          <LoadingComponentS />
-        ) : (
-          <View>
-            <View style={styles.wrappPanelTitle}>
-              <Text style={{ fontFamily: 'Poppins-Medium', color: BiruKu, fontSize: 15, }}>
-                Panel Name
-              </Text>
+        <View style={{width: '70%'}}>
+          <TextInput style={right}
+            onChangeText={value => handleOnchangeText(value, 'projectName')}
+            value={projectName}
+          />
+          {isProjectNameSuggestionShow ? (
+            <View style={dropdownSugesstion}>
+              {ProjectList.filter(item => {
+                const searchTerm = projectName.toLowerCase();
+                const fullname = item.projectName.toLowerCase();
+                return (
+                  searchTerm && fullname.includes(searchTerm) && fullname !== searchTerm
+                );
+              }).map(item => (
+                <TouchableOpacity key={item.id}
+                  onPress={() => {handleOnchangeText(item.projectName, 'projectName')}}>
+                  <Text style={sugesstion}>{item.projectName}</Text>
+                </TouchableOpacity>
+              ))
+            }
             </View>
-            {constructionInfo.Panels.filter(item => !item.stageExist).map(
-              item => (
-                <Panel
-                  key={item.id}
-                  pname={item.pnameInput}
-                  value={item.selected}
-                  onValueChange={value =>
-                    setConstructionInfo(prev => ({
-                      ...prev,
-                      Panels: prev.Panels.map(panelItem => {
-                        if (panelItem.id === item.id) {
-                          return {
-                            ...panelItem,
-                            selected: value,
-                          };
-                        }
-                        return panelItem;
-                      }),
-                    }))
-                  }
-                />
-              ),
-            )}
-            <AllPanelsExistMessage />
+          ) : null}
+          <Text style={right}>{customer}</Text>
+          <Text style={right}>{projectId}</Text>
+          <View style={{width: '98%'}}>
+            <StagesPODetail onValueChange={value => {handleOnchangeText(value, 'stagesPODetails')}}/>
           </View>
-        )}
+          <Text style={txtInput} onChangeText={onDateChange}>
+            <PickedDateM onChangeText={onDateChange} />
+          </Text>
+        </View>
+      </View>
+      <ScrollView style={{marginTop: 5}}>
+        <PanelWrapperOnForm selectAll={selectAll} onPress={toggleSelectAll}/>
+          {constructionInfo.Panels.filter(item => !item.stageExist).map(item => (
+            <PanelItemOnForm
+              key={item.id} panelId={item.id}
+              panelName={item.pnameInput}
+              selected={item.selected}
+              selectAll={selectAll}
+              onToggle={togglePanel}
+            />
+          ))}
+          <AllPanelsExistMessage />
       </ScrollView>
-      <Button6 text={'Submit'} bgColor={BiruKu} fontColor={'white'} onPress={submitForm}/>
-      {/* <TouchableOpacity style={styles.btn} onPress={submitForm}>
-        <Text
-          style={{
-            textAlign: 'center',
-            color: '#FFF',
-            fontFamily: 'Poppins-Bold',
-            fontSize: 16,
-          }}>
-          Submit
-        </Text>
-      </TouchableOpacity> */}
+      {isSaving ? (<LoadingComponentS />) : (
+        <Button6 text={'Submit'} bgColor={BiruKu} fontColor={'white'} onPress={submitForm}/>
+      )}
     </ScrollView>
   );
 };
 
 export default FormPOConstruction;
-
-const styles = StyleSheet.create({
-  page: {
-    marginTop: 20,
-  },
-  header: {
-    flexDirection: 'row',
-  },
-  btn: {
-    color: '#FFF',
-    backgroundColor: BiruKu,
-    marginTop: 35,
-    marginHorizontal: 55,
-    paddingHorizontal: 10,
-    paddingVertical: 14,
-    elevation: 10,
-    borderRadius: 10,
-    fontSize: 16,
-    fontFamily: 'Poppins-Bold',
-    textAlign: 'center',
-  },
-  container: {
-    justifyContent: 'flex-end',
-    flexDirection: 'row',
-    marginHorizontal: 20,
-  },
-  label: {
-    fontSize: 14,
-    fontFamily: 'Poppins-Regular',
-    marginBottom: 5,
-    color: BiruKu,
-    textAlignVertical: 'center',
-    textAlign: 'right',
-  },
-  txtInput: {
-    borderWidth: 1,
-    borderColor: BiruKu,
-    borderRadius: 5,
-    height: 33,
-    padding: -10,
-    marginVertical: 4,
-    fontSize: 13,
-    marginLeft: 5,
-    // width: 250,
-  },
-  dropdownSugesstion: {
-    borderWidth: 1,
-    borderColor: BiruKu,
-    borderTopColor: '#fff',
-    borderBottomLeftRadius: 10,
-    borderBottomRightRadius: 10,
-    backgroundColor: '#E8E8E8',
-    marginLeft: 6,
-    position: 'absolute',
-    flex: 1,
-    top: 35,
-    width:'98%',
-    zIndex: 1,
-  },
-  sugesstion: {
-    fontFamily: 'Poppins-Medium',
-    fontSize: 14,
-    color: BiruKu,
-    marginHorizontal: 5,
-  },
-  pname: {
-    fontFamily: 'Poppins-Medium',
-    fontSize: 12,
-    color: BiruKu,
-    marginVertical: 2,
-    marginHorizontal: 2,
-    paddingTop: 4,
-    paddingLeft: 10,
-    borderWidth: 1,
-    borderColor: BiruKu,
-    width: 310,
-  },
-  pnomor: {
-    fontFamily: 'Poppins-Medium',
-    fontSize: 12,
-    marginVertical: 2,
-    marginLeft: 20,
-    color: BiruKu,
-    borderWidth: 1,
-    borderColor: BiruKu,
-    width: 30,
-    textAlign: 'center',
-  },
-  wrappPanelTitle: {
-    borderBottomWidth: 2,
-    borderColor: BiruKu,
-    marginRight: 30,
-    marginLeft: 20,
-    marginBottom: 5,
-    paddingRight: 20,
-    paddingLeft: -20,
-  },
-  left: {
-    fontFamily: 'Poppins-Medium',
-    fontSize: 15,
-    marginBottom: 3,
-    paddingVertical: 6.5,
-    color: BiruKu,
-    height: 35,
-    width: '100%'
-  },
-  right: {
-    fontFamily: 'Poppins-Medium',
-    fontSize: 15,
-    borderWidth: 1,
-    borderColor: BiruKu,
-    borderRadius: 5,
-    marginBottom: 5,
-    marginLeft: 5,
-    height: 35,
-    padding: 7,
-    color: BiruKu,
-  },
-  unvailable: {
-    fontFamily: 'Poppins-Italic',
-    fontSize: 12,
-    textAlign: 'center',
-    color: BiruKu,
-    marginHorizontal: 30,
-    padding: 10,
-    borderWidth: 1,
-    borderColor: BiruKu,
-  },
-});

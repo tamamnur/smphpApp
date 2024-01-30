@@ -14,6 +14,7 @@ import LoadingComponentS from '../../components/LoadingComponentS';
 const PanelNameInputEdit = () => {
   const navigation = useNavigation();
   const route = useRoute();
+  const [date, setDate] = useState(new Date());
   const [isMounted, setIsMounted] = useState(true);
   const [isLoading, setIsLoading] = useState(true);
   const [formQty, setFormQty] = useState(1);
@@ -45,36 +46,36 @@ const PanelNameInputEdit = () => {
         if (isMounted) {setIsLoading(false)}
       }
     };
-
+    
     fetchData();
     return () => {setIsMounted(false)};
   }, [route.params.id]);
-
   const onPnameInputChange = (value, index) => {
     const updatedPanelName = [...pnameInput];
     updatedPanelName[index] = value;
     setPnameInput(updatedPanelName);
-
+    
     const updatedErrorText = [...errorText];
     if (!value.trim()) {updatedErrorText[index] = 'Please enter the panel name !   '} 
     else {updatedErrorText[index] = ''}
     setErrorText(updatedErrorText);
   };
-
+  
   const removeForm = index => {
     const updatedPnameInput = [...pnameInput];
     updatedPnameInput.splice(index, 1);
-
+    
     const updatedErrorText = [...errorText];
     updatedErrorText.splice(index, 1);
-
+    
     setFormQty(formQty - 1);
     setPnameInput(updatedPnameInput);
     setErrorText(updatedErrorText);
-
+    
     if(monitoringID[index]) {
       console.log(monitoringID[index])
       setIDsToDelete(prevIds => [...prevIds, monitoringID[index]])
+      setMonitoringID(prev => prev.filter((item, _index) => index !== _index))
       return monitoringID[index];
     }
     return null;
@@ -96,39 +97,32 @@ const PanelNameInputEdit = () => {
       setIsSaving(true);
       const batch = firestore().batch();
       const deletionOpr = [];
+      const projectRef = firestore().collection('Project').doc(id);
       
       for (let index = 0; index< pnameInput.length; index++) {
         const item = pnameInput[index];
         const docRef = firestore().doc(`Project/${id}/PanelName/${index + 1}`);
         const monitoringIDValue = monitoringID[index] || null;
         batch.set(docRef, {pnameInput: item, MonitoringID: monitoringIDValue});
+        batch.update(projectRef,{
+          status: 'Updated - Adding Panel Changes',
+          updatedAt: firestore.Timestamp.fromDate(date)
+        })
       }
-
-      // for (const idToDelete of IDsToDelete) {
-      //   console.log('id will deletion',IDsToDelete)
-      //   const quarySnapshot = await firestore().collection(`Project/${id}/PanelName`)
-      //   .where('MonitoringID', '==', idToDelete).get();
-      //   quarySnapshot.forEach(async (doc) => {
-      //     // console.log('doc Ref', doc.data().MonitoringID)
-      //     // const getId =  doc.data().MonitoringID
-      //     // console.log('doc Ref', getId.substring(12))
-      //     // const idSubs12 = getId.substring(12)
-      //     // console.log('idSubs12..', idSubs12)
-      //     // await firestore().collection('Monitoring').doc(idSubs12).delete();
-      //     // batch.delete(doc.ref)
-      //   })
-      // }
 
       if (formQty < panelNames.length) {
         for (let i = formQty; i < panelNames.length; i++) {
           const panelRef = firestore().doc(`Project/${id}/PanelName/${i + 1}`);
-          if(IDsToDelete) {
+          if(IDsToDelete && IDsToDelete.length > 0) {
             const value = IDsToDelete[0].split('/').pop();
-            console.log('get..',IDsToDelete)
             await firestore().collection('Monitoring').doc(value).delete()
           }
           batch.delete(panelRef)
         }
+        batch.update(projectRef, {
+          status: 'Updated - Deleting Several Panels ',
+          updatedAt: firestore.Timestamp.fromDate(date)
+        })
       }
       
       await batch.commit();

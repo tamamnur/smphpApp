@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
         marginLeft: -8
     },
     pickerItem:{
-      fontSize: 14,
+      fontSize: 17,
       fontFamily: 'Poppins-Medium',
       color: BiruKu
     },

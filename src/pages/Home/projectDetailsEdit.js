@@ -71,17 +71,21 @@ const ProjectDetailsEdit = props => {
         onPress: async () => {
           try {
             setIsSaving(true)
+            const batch = firestore().batch()
             const projectPanelCollectionRef = firestore().collection('Project')
               .doc(id).collection('PanelName');
             const panelSnapshot = await projectPanelCollectionRef.get()
             for (const panelDoc of panelSnapshot.docs) {
-              const panelData = panelDoc.data()
-              const monitoringId = panelData.MonitoringID
-              if (monitoringId) {
-                const idSubs12 = monitoringId.substring(12)
-                await firestore().collection('Monitoring').doc(idSubs12).delete()
-              }
-              await panelDoc.ref.delete()
+            const panelData = panelDoc.data()
+            const monitoringId = panelData.MonitoringID
+            if (monitoringId) {
+              // const value = monitoringId.substring(12)
+              const value = monitoringId.split('/').pop()
+              console.log(monitoringId, value)
+              await firestore().collection('Monitoring').doc(value).delete()
+            }
+            // batch.delete(panelDoc)
+            await panelDoc.ref.delete()
             }
             await firestore().collection('Project').doc(id).delete();
             ToastAndroid.show('The '+projectInfo.ProjectName+ 'and related documents have been deleted.', ToastAndroid.SHORT)

@@ -1,21 +1,39 @@
 import {StyleSheet,Text,View,Dimensions,TouchableOpacity} from 'react-native';
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import HeaderInformation from '../../components/HeaderInformation';
 import RecapProject from './recapProject';
 import {BiruKu} from '../../utils/constant';
 import {LogoAdd} from '../../assets';
 import {useNavigation} from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import firebase from '@react-native-firebase/app';
+import firestore from '@react-native-firebase/firestore';
 
 const Home = () => {
   const navigation = useNavigation();
+  const [division, setDivision] = useState(false)
+  const isMountedRef = useRef(true);
+  useEffect(() => {
+    const currentUser = firebase.auth().currentUser
+    const unsubscribe = firestore().collection('User').doc(currentUser.uid).onSnapshot(doc => {
+      if (isMountedRef.current) {
+        const user = doc.data()
+        const isRight = user.division === 'Marketing' || user.division === 'Admin'
+        setDivision(isRight)
+      }
+    })
+    return() => {unsubscribe()}
+  },[])
   return (
     <View style={styles.page}>
       <HeaderInformation />
       <RecapProject />
+      {division && (
       <TouchableOpacity style={styles.iconAdd}>
         <LogoAdd onPress={() => navigation.navigate('ProjectCreate')} />
       </TouchableOpacity>
+      )}
+
       <View style={styles.boxWrapper}>
         <TouchableOpacity onPress={() => navigation.navigate('ProjectList')}>
           <View style={styles.box}>

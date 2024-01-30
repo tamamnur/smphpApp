@@ -35,5 +35,5 @@ const styles = StyleSheet.create({
     marginVertical: 1, marginLeft: 5,marginRight: -5,
     elevation: 1, height: 33},
   picked: {marginTop: -10,marginLeft: -8},
-  pickerItem: {fontSize: 14,fontFamily: 'Poppins-Medium',color: BiruKu},
+  pickerItem: {fontSize: 17,fontFamily: 'Poppins-Medium',color: BiruKu},
 });

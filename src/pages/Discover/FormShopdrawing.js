@@ -1,22 +1,21 @@
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, ToastAndroid, ScrollView, } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, ToastAndroid, ScrollView} from 'react-native';
 import React, {useEffect, useMemo, useState, useRef} from 'react';
 import {BiruKu} from '../../utils/constant';
+import {left, right, unvailable, txtInput, dropdownSugesstion,sugesstion, errorTxt } from '../../utils/fontStyles';
 import {useNavigation} from '@react-navigation/native';
 import Title2 from '../../components/Title2';
 import firestore from '@react-native-firebase/firestore';
 import PickedDateM from '../../components/pickedDateM';
 import StagesSD from '../../components/StagesSD';
-import CheckBox from '@react-native-community/checkbox';
 import Header from '../../components/Header';
 import Button6 from '../../components/Button6'
 import LoadingComponentS from '../../components/LoadingComponentS'
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-
+import PanelWrapperOnForm from '../../components/PanelWrapperOnForm';
+import PanelItemOnForm from '../../components/PanelItemOnForm';
+// import NetInfo from '@react-native-community/netinfo';
 const updateError = (error, stateUpdate) => {
   stateUpdate(error);
-  setTimeout(() => {
-    stateUpdate('');
-  }, 3000);
+  setTimeout(() => {stateUpdate('')}, 3000);
 };
 
 const FormShopdrawing = props => {
@@ -26,17 +25,13 @@ const FormShopdrawing = props => {
   const [selectAll, setSelectAll] = useState(false)
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false)
+  const [visiblePanels, setVisiblePanels] = useState([])
   const [ProjectList, setProjectList] = useState([]);
-  const onDateChange = value => {
-    setDate(value);
-  };
-  const isMountedRef = useRef(false);
-
-  useEffect(() => {
-    isMountedRef.current= true;
-    return () => {
-      isMountedRef.current = false;
-    };
+  const onDateChange = value => {setDate(value)};
+  
+  const isMountedRef = useRef(true);
+  useEffect(() => {isMountedRef.current = true;
+    return () => {isMountedRef.current = false};
   }, []);
 
   const isValidForm = () => {
@@ -49,32 +44,21 @@ const FormShopdrawing = props => {
     return true;
   };
 
-
   const [shopdrawingInfo, setShopdrawingInfo] = useState({
-    projectId: '',
-    FSProjectId: '',
-    projectName: '',
-    stages: '',
-    customer: '',
-    projectsList: [],
-    Panels: [],
+    projectId: '', FSProjectId: '', projectName: '', stages: '', customer: '', 
+    projectsList: [], Panels: [],
   });
-
   const {projectId, projectName, stages, customer} = shopdrawingInfo;
-
   const handleOnchangeText = async (value, fieldName) => {
     setShopdrawingInfo({...shopdrawingInfo, [fieldName]: value});
     if (fieldName === 'stages') {
-      // setIsLoading(true);
+      const selectedStage = value;
       shopdrawingInfo.Panels.forEach(async item => {
         if (item.MonitoringID) {
           const MonitoringID = item.MonitoringID.substring(1);
-          const _Data = await firestore()
-            .collection(MonitoringID + '/Shopdrawing').doc(value).get();
+          const _Data = await firestore().collection(MonitoringID + '/Shopdrawing').doc(value).get();
           const isExist = _Data.exists;
-          console.log(item.pnameInput, isExist);
-          setShopdrawingInfo(prev => ({
-            ...prev,
+          setShopdrawingInfo(prev => ({...prev,
             Panels: prev.Panels.map(panel => {
               if (panel.pnameInput === item.pnameInput) {
                 return {...panel, stageExist: isExist};
@@ -83,8 +67,7 @@ const FormShopdrawing = props => {
             }),
           }));
         } else {
-          setShopdrawingInfo(prev => ({
-            ...prev,
+          setShopdrawingInfo(prev => ({...prev, 
             Panels: prev.Panels.map(panel => {
               if (panel.pnameInput === item.pnameInput) {
                 return {...panel, stageExist: false};
@@ -99,100 +82,104 @@ const FormShopdrawing = props => {
       });
     }
   };
-
+  
   const handleFormShopdrawing = async () => {
-    setIsLoading(true);
     setIsSaving(true);
     let panelSelected = false;
-    let hasPanelWithoutSD = false;
-    
-    for (const value of shopdrawingInfo.Panels) {
+    const batch = firestore().batch()
+    const operations = []
+    const visiblePanelsIds = visiblePanels.map(panel => panel.id)
+    const panelsToUpdate = shopdrawingInfo.Panels.filter(panel => visiblePanelsIds.includes(panel.id))
+    for (const value of panelsToUpdate) {
+      let MonitoringID = value.MonitoringID ? value.MonitoringID.split('/').pop() : null;
+      const projectRef = firestore().collection('Project').doc(shopdrawingInfo.FSProjectId);
+      const Submit = firestore().collection('Monitoring').doc(MonitoringID).collection('Shopdrawing').doc('Submission');
+      const Revision = firestore().collection('Monitoring').doc(MonitoringID).collection('Shopdrawing').doc('Revision');
+      const Approve = firestore().collection('Monitoring').doc(MonitoringID).collection('Shopdrawing').doc('Approval');
+      const validPanels = await Submit.get();
+      const isValid = validPanels.exists;
+      const invalidMsg = () => {
+        return updateError(value.pnameInput+' is not valid. \n Ensure the selected panel has a Submission Date', setError)
+      }
       if (value.selected === true) {
-      let MonitoringID = null;
-        if (value.MonitoringID) {
-          MonitoringID = value.MonitoringID.split('/')[2];
-        } else {
-          const newMonitoring = await firestore().collection('Monitoring').add({
-              ProjectID: '/Project/' + shopdrawingInfo.FSProjectId,
-            });
-          MonitoringID = newMonitoring.id;
-        }
-        const Shopdrawing = firestore()
-          .collection('Monitoring').doc(MonitoringID).collection('Shopdrawing');
-          if (shopdrawingInfo.stages === 'Submission') {
-            await Shopdrawing.doc('Submission').set({
-              DateSubmit: firestore.Timestamp.fromDate(date),
-            });
-            await firestore()
-              .collection('Project').doc(shopdrawingInfo.FSProjectId).update({
-                status: 'Shopdrawing - Submission',
-                updatedAt: firestore.Timestamp.fromDate(date),
-              });
+        if (shopdrawingInfo.stages === 'Submission') {
+          if (value.MonitoringID) {
+            MonitoringID = value.MonitoringID.split('/')[2];
           } else {
-            const submissionDoc = await Shopdrawing.doc('Submission').get();
-            if (!submissionDoc.exists) {
-              hasPanelWithoutSD = true;
-              break;
-            }
-            if (shopdrawingInfo.stages === 'Revision') {
-              await Shopdrawing.doc('Revision').set({
-                DateRevisi: firestore.Timestamp.fromDate(date),
+            const newMonitoring = await firestore().collection('Monitoring').add({
+                ProjectID: '/Project/' + shopdrawingInfo.FSProjectId,
               });
-              await firestore()
-                .collection('Project').doc(shopdrawingInfo.FSProjectId).update({
-                  status: 'Shopdrawing - Revision',
-                  updatedAt: firestore.Timestamp.fromDate(date),
-                });
-            }
-            if (shopdrawingInfo.stages === 'Approval') {
-              await Shopdrawing.doc('Approval').set({
-                DateApprove: firestore.Timestamp.fromDate(date),
-              });
-              await firestore()
-                .collection('Project').doc(shopdrawingInfo.FSProjectId).update({
-                  status: 'Shopdrawing - Approval',
-                  updatedAt: firestore.Timestamp.fromDate(date),
-                });
-            }
+            MonitoringID = newMonitoring.id;
           }
-          await firestore().collection('Project').doc(shopdrawingInfo.FSProjectId)
-          .collection('PanelName').doc(value.id).set({
-            pnameInput: value.pnameInput,
-            MonitoringID: '/Monitoring/' + MonitoringID,
-          });
-          ToastAndroid.show('Shopdrawing Procces Updated', ToastAndroid.SHORT)
-            if (stages === 'Submission') {navigation.replace('SD_Submission')} 
-            if (stages === 'Revision') {navigation.replace('SD_Revisi')} 
-            if (stages === 'Approval') {navigation.replace('SD_Approval')}   
+          const submitData = {DateSubmit: firestore.Timestamp.fromDate(date)}
+          operations.push(
+            batch.set(Submit, submitData),
+            batch.update(projectRef,{
+              status: 'Shopdrawing - Submission',
+              updatedAt: firestore.Timestamp.fromDate(date),
+            })
+          )
+        }
+        else if (shopdrawingInfo.stages === 'Revision') {
+          if (!MonitoringID) {setIsSaving(false), invalidMsg(); return}
+          if (!isValid) {setIsSaving(false), invalidMsg(); return}
+          const revisiData = {DateRevisi: firestore.Timestamp.fromDate(date)}
+          operations.push(
+            batch.set(Revision, revisiData),
+            batch.update(projectRef, {
+              status: 'Shopdrawing - Revision',
+              updatedAt: firestore.Timestamp.fromDate(date),
+            })
+          )
+        }
+        else if (shopdrawingInfo.stages === 'Approval') {
+          if (!MonitoringID) {setIsSaving(false), invalidMsg(); return}
+          if (!isValid) {setIsSaving(false), invalidMsg(); return}
+          const approveData = {DateApprove: firestore.Timestamp.fromDate(date)}
+          operations.push(
+            batch.set(Approve, approveData),
+            batch.update(projectRef, {
+              status: 'Shopdrawing - Approval',
+              updatedAt: firestore.Timestamp.fromDate(date),
+            })
+          )
+        }
+        const panelRef = firestore().collection('Project').doc(shopdrawingInfo.FSProjectId).collection('PanelName').doc(value.id);
+        const panelData =  {pnameInput: value.pnameInput, MonitoringID: '/Monitoring/'+MonitoringID};
+        operations.push(batch.set(panelRef, panelData));
         panelSelected = true;
-        setIsLoading(false)
-        setIsSaving(false)
       }   
-    } if (hasPanelWithoutSD) {
-      setIsSaving(false)
-      setIsLoading(false)
-      updateError('Ensure that all the panels you have chosen are Submitted.', setError);
-      return;
-    } if (!panelSelected) {
-      // updateError('Make sure you select at least one panel, \n and all the panels you have chosen are Submitted.', setError);
-      // updateError(`Please choose at least one panel by checking the checkbox next to the panel's name.`, setError);
-      updateError(`Please choose at least one panel.`, setError);
-      // setIsLoading(false)
-      setIsSaving(false)
-      return;
+    } 
+    if (panelSelected && operations.length > 0) {
+      try {
+        await Promise.all(operations);
+        await batch.commit()
+        setIsLoading(false), setIsSaving(false);
+        ToastAndroid.show('Shopdrawing Procces Updated', ToastAndroid.SHORT)
+        if (stages === 'Submission') {navigation.replace('SD_Submission')} 
+        if (stages === 'Revision') {navigation.replace('SD_Revisi')} 
+        if (stages === 'Approval') {navigation.replace('SD_Approval')}   
+      } catch (error) {
+        setIsSaving(false); 
+        // ToastAndroid.show('Please check your internet connection and try again.', ToastAndroid.LONG)
+        // console.error('Error:', error)
     }
-    // ToastAndroid.show('Shopdrawing Procces Updated', ToastAndroid.SHORT)
-    //   if (stages === 'Submission') {navigation.replace('SD_Submission')} 
-    //   if (stages === 'Revision') {navigation.replace('SD_Revisi')} 
-    //   if (stages === 'Approval') {navigation.replace('SD_Approval')}   
+    } else {
+      updateError('Ensure you have chosen the right panel.', setError);
+      setIsLoading(false); setIsSaving(false)
+    }
   };
 
   const submitForm = () => {
-    if (isValidForm()) {
-      handleFormShopdrawing();
-    } else {
-      error;
-    }
+    // NetInfo.fetch().then((state) => {
+      // if(state.isConnected) {
+        if (isValidForm()) {handleFormShopdrawing()} 
+        else {error}
+      // }
+      // else {
+      //   ToastAndroid.show('Please check your internet connection and try again.', ToastAndroid.LONG)
+      // }
+    // })
   };
   const isProjectNameSuggestionShow = useMemo(() => {
     return projectName.length > 0;
@@ -205,22 +192,13 @@ const FormShopdrawing = props => {
       const projectRef = FBProject.docs.map(async doc => {
         const panelName = await doc.ref.collection('PanelName').get();
         const Panels = panelName.docs.map(panelDoc => {
-          return {
-            id: panelDoc.id,
-            ...panelDoc.data(),
-            selected: false,
-          };
+          return {id: panelDoc.id, ...panelDoc.data(), selected: false};
         });
-        return {
-          id: doc.id,
-          ...doc.data(),
-          Panels: Panels,
-        };
+        return {id: doc.id, ...doc.data(), Panels: Panels};
       });
       const projectList = await Promise.all(projectRef);
       if (isMountedRef.current) {
-        setProjectList(projectList);
-        setIsLoading(false);
+        setProjectList(projectList); setIsLoading(false); setIsSaving(false)
       }
     };
     InitiationFirebase();
@@ -232,303 +210,121 @@ const FormShopdrawing = props => {
         return value.projectName === projectName;
       });
       if (MatchProject) {
-        setShopdrawingInfo(prev => ({
-          ...prev,
+        setShopdrawingInfo(prev => ({...prev,
           projectId: MatchProject.projectId,
           FSProjectId: MatchProject.id,
           customer: MatchProject.customer,
           Panels: MatchProject.Panels,
         }));
       } else {
-        setShopdrawingInfo(prev => ({
-          ...prev,
-          projectId: '',
-          Panels: [],
-          customer: '',
-        }));
+        setShopdrawingInfo(prev => ({...prev, projectId: '', Panels: [], customer: ''}));
       }
     }
   }, [ProjectList, projectName]);
 
   const AllPanelsExistMessage = () => {
-    if (shopdrawingInfo.Panels.every(item => item.stageExist)) {
+    if (shopdrawingInfo.Panels.every((item) => item.stageExist)) {
       return (
-        <Text style={styles.unvailable}>Panel name data is not unvailable.</Text>
+        <Text style={unvailable}>Panel data not available.</Text>
       );
     }
     return null;
   };
+  useEffect(()=> {
+    const filteredPanels = shopdrawingInfo.Panels.filter(item =>  !item.stageExist);
+    setVisiblePanels(filteredPanels)
+  }, [shopdrawingInfo.Panels])
 
-  
   const toggleSelectAll = () => {
-    // const allSelected = shopdrawingInfo.Panels.every(panel => panel.selected);
-    const updatedPanels = shopdrawingInfo.Panels.map((panel) => ({
-      ...panel, selected: !selectAll,
-    }));
-    // console.log('allSelected..',allSelected)
-    setShopdrawingInfo((prev) => ({
-      ...prev,
-      Panels: updatedPanels,
-    }));
+    const updatedPanels = shopdrawingInfo.Panels.map((panel) => {
+      if(visiblePanels.some(visiblePanels => visiblePanels.id === panel.id)) {
+        return { ...panel, selected: !selectAll}
+      }
+      return panel;
+    });
+    setShopdrawingInfo((prev) => ({...prev, Panels: updatedPanels}))
     setSelectAll(!selectAll);
-  };
+  }
+  
   const togglePanel = (panelId) => {
-    const updatedPanels = shopdrawingInfo.Panels.map(panel => {
+    const updatedPanels = shopdrawingInfo.Panels.map((panel) => {
       if (panel.id === panelId) {
         return {...panel, selected: !panel.selected}
       }
       return panel
     })
-    setShopdrawingInfo(prev => ({...prev, Panels: updatedPanels}))
+    setShopdrawingInfo((prev) => ({...prev, Panels: updatedPanels}))
     setSelectAll(updatedPanels.every(panel => panel.selected))
   }
-  
-  const Panel = ({id, pnameInput, selected}) => (
-    // return (
-    <View>
-      <View style={{flexDirection: 'row', marginLeft: 20, marginTop: 2, paddingVertical: -5}}>
-        <CheckBox
-          tintColors={{true: BiruKu, false: BiruKu}}
-          disabled={false}
-          value={selected}
-          onValueChange={() => togglePanel(id)}
-          // onValueChange={(newValue, index) => {
-          //   props.onValueChange(newValue)}}
-        />
-        <Text style={styles.pname}>{pnameInput}</Text>
-      </View>
-        
-      {/* <TouchableOpacity style={{alignItems: 'flex-end', paddingTop: 5, marginRight: 20}}>
-        <Icon name='file-upload' size={20} color={BiruKu}/>
-        <Text style={{fontSize: 12, fontFamily: 'Poppins-BoldItalic', color: BiruKu, borderWidth: 1, borderRadius: 4, borderColor: BiruKu, backgroundColor: '#b7c2cc', paddingHorizontal: 5, paddingTop: 3}}>
-        Select file
-        </Text>
-      </TouchableOpacity> */}
-
-      </View>
-    );
-  // };
 
   return (
     <ScrollView style={{marginVertical: 20}}>
       <Header/>
       <Title2 TxtTitle="SHOP DRAWING" />
-      {error ? (
-        <Text style={{ color: 'red', fontSize: 13, textAlign: 'center', marginBottom: 10, marginTop: -20, marginHorizontal:20}}>
-          {error}
-        </Text>
-      ) : null}
-        <View style={{flexDirection: 'row', marginHorizontal: 10, width: '100%'}}>
-          <View style={{width: '25%'}}>
-            <Text style={styles.left}>Project Name </Text>
-            <Text style={styles.left}>Customer </Text>
-            <Text style={styles.left}>Number SO </Text>
-            <Text style={styles.left}>Stages </Text>
-            <Text style={styles.left}>Date </Text>
-          </View>
-          <View style={{width: '70%'}}>
-            <TextInput
-              style={styles.right}
-              onChangeText={value => handleOnchangeText(value, 'projectName')}
-              value={projectName}
-            />
-            {isProjectNameSuggestionShow ? (
-          <View style={styles.dropdownSugesstion}>
-            {ProjectList.filter(item => {
-              const searchTerm = projectName.toLowerCase();
-              const fullname = item.projectName.toLowerCase();
-              return (
-                searchTerm &&
-                fullname.includes(searchTerm) &&
-                fullname !== searchTerm
-              );
-            }).map(item => (
-              <TouchableOpacity
-                key={item.id}
-                onPress={() => {
-                  handleOnchangeText(item.projectName, 'projectName');
-                }}>
-                <Text style={styles.sugesstion}>{item.projectName}</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
-        ) : null}
-            <Text style={styles.right}>{customer}</Text>
-            <Text style={styles.right}>{projectId}</Text>
-            <View style={{width: '98%'}}>
-              <StagesSD
-                onValueChange={value => handleOnchangeText(value, 'stages')}
-              />
-            </View>
-            <Text style={styles.txtInput} onChangeText={onDateChange}>
-              <PickedDateM onChangeText={onDateChange} />
-            </Text>
-          </View>
+      {error ? (<Text style={errorTxt}>{error}</Text>) : null}
+      <View style={{flexDirection: 'row', marginHorizontal: 10, width: '100%'}}>
+        <View style={{width: '25%'}}>
+          <Text style={left}>Project Name </Text>
+          <Text style={left}>Customer </Text>
+          <Text style={left}>Number SO </Text>
+          <Text style={left}>Stages </Text>
+          <Text style={left}>Date </Text>
         </View>
-      <ScrollView style={{marginTop: 5}}>
-        {isLoading ? (
-          <LoadingComponentS />
-        ) : (
-          <View>
-            <View style={styles.wrappPanelTitle}>
-              <Text style={styles.panelTitle}>Panel Name</Text>
-              <TouchableOpacity style={{ alignSelf: 'center' }} onPress={toggleSelectAll}>
-                <View style={{ flexDirection: 'row'}}>
-                  <Text style={styles.toggleAll}>{selectAll?'Unselect All  ':'Select All  '}</Text>
-                  <View style={{borderWidth: 2, borderColor: BiruKu, paddingHorizontal: 0.2, marginBottom: 5}}>
-                    <Icon name={'check-bold'} size={16} color={selectAll ? BiruKu : 'white'} />
-                  </View>
-                </View>
-              </TouchableOpacity>
+        <View style={{width: '70%'}}>
+          <TextInput style={right}
+            onChangeText={value => handleOnchangeText(value, 'projectName')}
+            value={projectName}
+          />
+          {isProjectNameSuggestionShow ? (
+            <View style={dropdownSugesstion}>
+              {ProjectList.filter(item => {
+                const searchTerm = projectName.toLowerCase();
+                const fullname = item.projectName.toLowerCase();
+                return (
+                  searchTerm && fullname.includes(searchTerm) && fullname !== searchTerm
+                );
+              }).map(item => (
+                <TouchableOpacity key={item.id} onPress={() => {
+                    handleOnchangeText(item.projectName, 'projectName');
+                  }}>
+                  <Text style={sugesstion}>{item.projectName}</Text>
+                </TouchableOpacity>
+              ))}
             </View>
-
+          ) : null}
+          <Text style={right}>{customer}</Text>
+          <Text style={right}>{projectId}</Text>
+          <View style={{width: '98%'}}>
+            <StagesSD onValueChange={value => handleOnchangeText(value, 'stages')}/>
+          </View>
+          <Text style={txtInput} onChangeText={onDateChange}>
+            <PickedDateM onChangeText={onDateChange} />
+          </Text>
+        </View>
+      </View>
+      <ScrollView style={{marginTop: 5}}>
+        <PanelWrapperOnForm selectAll={selectAll} onPress={toggleSelectAll}/>
           <ScrollView style={{marginTop: 5}}>
             {shopdrawingInfo.Panels.filter(item => !item.stageExist).map(
               item => (
-                <Panel
-                  key={item.id}
-                  id={item.id}
-                  pnameInput={item.pnameInput}
-                  // value={item.selected}
+                <PanelItemOnForm
+                  key={item.id} panelId={item.id}
+                  panelName={item.pnameInput}
                   selected={item.selected}
-                  onValueChange={value =>
-                    setShopdrawingInfo(prev => ({
-                      ...prev,
-                      Panels: prev.Panels.map(panelItem => {
-                        if (panelItem.id === item.id) {
-                          return {
-                            ...panelItem,
-                            selected: value,
-                          };
-                        }
-                        return panelItem;
-                      }),
-                    }))
-                  }
+                  selectAll={selectAll}
+                  onToggle={togglePanel}
                 />
               ),
             )}
             <AllPanelsExistMessage />
           </ScrollView>
-          </View>
-        )}
       </ScrollView>
       {isSaving? (<LoadingComponentS/>):(
         <Button6 bgColor={BiruKu} fontColor={'white'} text={'Submit'} 
-        onPress={submitForm}/>
+          onPress={submitForm}/>
       )}
     </ScrollView>
   );
 };
 
 export default FormShopdrawing;
-
-const styles = StyleSheet.create({
-  txtInput: {
-    borderWidth: 1,
-    borderColor: BiruKu,
-    borderRadius: 5,
-    marginVertical: 4,
-    marginLeft: 5,
-    height: 33,
-  },
-  dropdownSugesstion: {
-    borderWidth: 1,
-    borderColor: BiruKu,
-    borderTopColor: '#fff',
-    borderBottomLeftRadius: 10,
-    borderBottomRightRadius: 10,
-    backgroundColor: '#E8E8E8',
-    marginLeft: 6,
-    position: 'absolute',
-    flex: 1,
-    top: 35,
-    width:'98%',
-    zIndex: 1,
-  },
-  sugesstion: {
-    fontFamily: 'Poppins-Regular',
-    fontSize: 14,
-    color: BiruKu,
-    marginHorizontal: 5,
-  },
-  pname: {
-    fontFamily: 'Poppins-Medium',
-    fontSize: 14,
-    color: BiruKu,
-    marginVertical: 2,
-    marginHorizontal: 2,
-    paddingTop: 4,
-    paddingLeft: 10,
-    borderWidth: 1,
-    borderColor: BiruKu,
-    width: '85%'
-  },
-  pnomor: {
-    fontFamily: 'Poppins-Medium',
-    fontSize: 14,
-    marginVertical: 2,
-    marginLeft: 20,
-    color: BiruKu,
-    borderWidth: 1,
-    borderColor: BiruKu,
-    width: 30,
-    textAlign: 'center',
-  },
-  wrappPanelTitle: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    borderBottomWidth: 2,
-    borderColor: BiruKu,
-    marginRight: 30,
-    marginLeft: 20,
-    marginBottom: 5,
-    paddingRight: 20,
-    paddingLeft: -20,
-  },
-  panelTitle: {
-    fontFamily: 'Poppins-Medium',
-    color: BiruKu,
-    fontSize: 16,
-    marginRight: 50,
-  },
-  left: {
-    fontFamily: 'Poppins-Medium',
-    fontSize: 15,
-    marginBottom: 3,
-    height: 35,
-    width: '100%',
-    paddingVertical: 6.5,
-    color: BiruKu,
-  },
-  right: {
-    fontFamily: 'Poppins-Medium',
-    fontSize: 15,
-    borderWidth: 1,
-    borderColor: BiruKu,
-    borderRadius: 5,
-    marginBottom: 5,
-    marginLeft: 5,
-    height: 35,
-    padding: 7,
-    color: BiruKu,
-  },
-  unvailable: {
-    fontFamily: 'Poppins-Italic',
-    fontSize: 15,
-    textAlign: 'center',
-    color: BiruKu,
-    marginHorizontal: 30,
-    padding: 10,
-    borderWidth: 1,
-    borderColor: BiruKu,
-  },
-  toggleAll: {
-    fontFamily: 'Poppins-MediumItalic',
-    fontSize: 14,
-    marginTop: 2, 
-    marginBottom: 1,
-    color: BiruKu,
-  }
-});

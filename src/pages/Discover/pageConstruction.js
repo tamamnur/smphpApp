@@ -1,5 +1,5 @@
 import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {useNavigation} from '@react-navigation/native';
 import {BiruKu} from '../../utils/constant';
 import AntDesign from 'react-native-vector-icons/AntDesign';
@@ -10,16 +10,27 @@ import firebase from '@react-native-firebase/app';
 import firestore from '@react-native-firebase/firestore';
 
 const PageConstruction = () => {
+  const isMountedRef = useRef(true);
+  useEffect(() => {
+    const currentUser = firebase.auth().currentUser;
+    const unsubscribe = firestore().collection('User').doc(currentUser.uid).onSnapshot(doc => {
+      if (isMountedRef.current) {
+        const user = doc.data();
+        const isLogistic = user.division === 'Logistic' || user.division === 'Admin'
+        setDivision(isLogistic)
+      }
+    })
+    return () => {unsubscribe()}
+  },[])
+
   const navigation = useNavigation();
   const [division, setDivision] = useState(false)
   const currentUser = firebase.auth().currentUser
-  useEffect(() => {
-    firestore().collection('User').doc(currentUser.uid).onSnapshot(doc => {
-      const user = doc.data();
-      const isLogistic = user.division === 'Logistic' || user.division === 'Admin'
-      setDivision(isLogistic)
-    })
-  })
+  // useEffect(() => {
+  //   firestore().collection('User').doc(currentUser.uid).onSnapshot(doc => {
+  //   })
+  // })
+  // return () => {unsub}
   return (
     <View style={{marginTop: 20}}>
       <Header/><Title2 TxtTitle={'CONSTRUCTION / BOX'} SubTitle={'- MONITORING -'} />

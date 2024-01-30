@@ -1,9 +1,10 @@
 import {Text, View, ScrollView, Dimensions} from 'react-native';
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import {EditButton} from '../../assets';
 import {BiruKu} from '../../utils/constant';
 import {useNavigation} from '@react-navigation/native';
 import firestore from '@react-native-firebase/firestore';
+import firebase from '@react-native-firebase/app';
 import FormatDate from '../../components/FormatDate';
 import LoadingComponent from '../../components/LoadingComponent';
 import EndOf from '../../components/Footer';
@@ -15,6 +16,19 @@ const {height} = Dimensions.get('window');
 
 const ProjectDetails = props => {
   const navigation = useNavigation();
+  const [division, setDivision] = useState(false)
+  const isMountedRef = useRef(true);
+  useEffect(() => {
+    const currentUser = firebase.auth().currentUser
+    const unsubscribe = firestore().collection('User').doc(currentUser.uid).onSnapshot(doc => {
+      if (isMountedRef.current) {
+        const user = doc.data()
+        const isRight = user.division === 'Marketing' || user.division === 'Admin'
+        setDivision(isRight)
+      }
+    })
+    return() => {unsubscribe()}
+  },[])
   const [projectInfo, setProjectInfo] = useState({
     ProjectName: '',
     ProjectId: '',
@@ -63,10 +77,12 @@ const ProjectDetails = props => {
       {isLoading ? (<LoadingComponent />) : (
       <View>
         <Title2 TxtTitle={projectInfo.ProjectName} SubTitle={'Project Details'} />
-        <View style={{marginVertical: 2, marginRight: 25, alignItems: 'flex-end' }}>
-          <EditButton onPress={() => navigation.navigate('ProjectDetailsEdit', 
-                {id: props.route.params.id})} />
-        </View>
+        {division && (
+          <View style={{marginVertical: 2, marginRight: 25, alignItems: 'flex-end' }}>
+            <EditButton onPress={() => navigation.navigate('ProjectDetailsEdit', 
+                  {id: props.route.params.id})} />
+          </View>
+        )}
         <InfoProject label={'Number SO'} value={projectInfo.ProjectId} />
         <InfoProject label={'Customer'} value={projectInfo.Customer} />
         <InfoProject label={'Number PO'} value={projectInfo.NumberPO} />
@@ -74,10 +90,12 @@ const ProjectDetails = props => {
         <View style={{marginTop: 15, marginLeft: 20}}>
           <Text style={{fontFamily:'Poppins-Medium', fontSize: 15, color: BiruKu}}>
             Panel Name's :</Text></View>
-        <View style={{marginTop: -27, marginBottom: 5, marginRight: 30, alignItems: 'flex-end'}}>
-          <EditButton onPress={() => navigation.navigate('PanelNameInputEdit',
-                {id: props.route.params.id})} />
-        </View>
+        {division && (
+          <View style={{marginTop: -27, marginBottom: 5, marginRight: 30, alignItems: 'flex-end'}}>
+            <EditButton onPress={() => navigation.navigate('PanelNameInputEdit',
+                  {id: props.route.params.id})} />
+          </View>
+        )}
         <ScrollView style={{marginBottom: 50, height: '55%'}}>
           {ListPanel.map((item, index) => {
             return (<PanelListOnDetail key={item.id}

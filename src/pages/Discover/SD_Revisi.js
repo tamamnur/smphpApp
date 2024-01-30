@@ -1,8 +1,6 @@
 import React, {useState, useEffect} from 'react';
-import { View, ScrollView, Dimensions, } from 'react-native';
+import { View, ScrollView, Dimensions, ToastAndroid, } from 'react-native';
 import Title2 from '../../components/Title2';
-import {IconBack, LogoSmpHP} from '../../assets';
-import {useNavigation} from '@react-navigation/native';
 import firestore from '@react-native-firebase/firestore';
 import PanelProjectList from '../../components/panelProjectList';
 import FormatDate from '../../components/FormatDate';
@@ -11,10 +9,10 @@ import PanelHeadTable from '../../components/panelHeadTable';
 import LoadingComponent from '../../components/LoadingComponent'
 import DataNotFound from '../../components/dataNotFound';
 import SearchBar from '../../components/SearchBar';
+import Header from '../../components/Header';
 
 const height = Dimensions.get('window').height;
 const SD_Revision = () => {
-  const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(true);
   const [panelNameData, setPanelNameData] = useState([]);
   
@@ -67,7 +65,7 @@ const SD_Revision = () => {
           setIsLoading(false);
         }
       } catch (error) {
-        console.error('Error Fetching Data ', error);
+        ToastAndroid.show('Error Fetching Data '+ error, ToastAndroid.LONG)
         if (isMounted) {setIsLoading(false)}
       }
     };
@@ -100,17 +98,13 @@ const SD_Revision = () => {
           monitoringId={item.monitoringId}
         />
         )
-      });
+    });
       
   const contenToRender = renderedPanelList.length > 0 ? renderedPanelList : <DataNotFound/>;
 
   return (
     <View>
-      <View style={{flexDirection: 'row', marginHorizontal: 20, marginTop: 30}}>
-        <IconBack onPress={() => navigation.navigate('Discover')} />
-        <LogoSmpHP style={{marginLeft: 200}} />
-      </View>
-      <Title2 TxtTitle="SHOPDRAWING" SubTitle="REVISION" />
+      <Header/><Title2 TxtTitle="SHOPDRAWING" SubTitle="REVISION" />
       {isLoading ? (<></>) : (<>
         <SearchBar value={searchKeyword} onChangeText={text => setSearchKeyword(text)}/>
         <PanelHeadTable/>

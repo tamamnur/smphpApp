@@ -27,20 +27,30 @@ class Discover extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      isMounted : false,  
       isDrafterOrAdmin: false,
-      isProductionOrAdmin: false
+      isProductionOrAdmin: false,
     };
   }
   componentDidMount() {
+    this.setState({isMounted: true});
     const currentUser = firebase.auth().currentUser;
-    firestore().collection('User')
+    this.unsubscribe = firestore().collection('User')
       .doc(currentUser.uid).onSnapshot(doc => {
+        if(this.state.isMounted) {
           const user = doc.data();
           const isDrafterOrAdmin = user.division === 'Drafter' || user.division === 'Admin';
           const isProductionOrAdmin = user.division === 'Production' || user.division === 'Admin';
           this.setState({isDrafterOrAdmin});
           this.setState({isProductionOrAdmin});
-        });
+        }
+      });
+  }
+  componentWillUnmount(){
+    this.setState({isMounted: false});
+    if(this.unsubscribe){
+      this.unsubscribe();
+    }
   }
 
   render() {
