@@ -6,7 +6,6 @@ const Title1 = ({TxtTitle, SubTitle}) => {
   return (
     <View>
       <Text style={styles.TxtTitle}>{TxtTitle}</Text>
-      {/* <Text style={styles.SubTitle}>{SubTitle}</Text> */}
     </View>
   );
 };
@@ -18,13 +17,6 @@ const styles = StyleSheet.create({
     marginHorizontal: 30,
     fontFamily: 'Poppins-SemiBold',
     fontSize: 20,
-    color: BiruKu,
-  },
-  SubTitle: {
-    marginBottom: 8,
-    textAlign: 'center',
-    fontFamily: 'Poppins-SemiBold',
-    fontSize: 14,
     color: BiruKu,
   },
 });

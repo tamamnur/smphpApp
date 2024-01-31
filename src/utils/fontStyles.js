@@ -2,11 +2,19 @@ import {Dimensions} from 'react-native';
 import {BiruKu} from './constant';
 const height = Dimensions.get('window').height;
 const width = Dimensions.get('window').width;
+export const BigTitle = {
+  textAlign: 'center',
+  // fontSize: 25,
+  fontSize: height * 0.033,
+  fontFamily: 'Poppins-Bold',
+  color: BiruKu,
+};
 export const title = {
   fontFamily: 'Poppins-SemiBold',
   fontSize: height * 0.024,
   paddingLeft: 3,
   color: BiruKu,
+  textAlign: 'center'
 };
 export const subTitle = {
   fontFamily: 'Poppins-MediumItalic',
@@ -83,3 +91,29 @@ export const errorTxt = {
   marginTop: -10,
   marginHorizontal: 20,
 };
+export const descOnPages = {
+  marginHorizontal: 20,
+  marginTop: 10,
+  textAlign: 'center',
+  fontSize: 16,
+  fontFamily: 'Poppins-Medium',
+  color: BiruKu,
+};
+export const wrapperOnPagePro = {
+  alignItems: 'center',
+  backgroundColor: '#E5E5E5',
+  paddingVertical: 20,
+  paddingHorizontal: 30,
+  marginHorizontal: 20,
+  borderWidth: 1.5,
+  borderRadius: 20,
+  borderColor: BiruKu,
+};
+export const wrapperOnPagePre = {
+  alignItems: 'center',
+  backgroundColor: '#E5E5E5',
+  paddingVertical: 25,
+  marginHorizontal: 5,
+  borderColor: BiruKu,
+  borderWidth: 1.5,
+}

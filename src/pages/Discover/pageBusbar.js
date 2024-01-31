@@ -1,75 +1,39 @@
-import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
-import React, { useEffect, useState } from 'react';
-import {IconBack, LogoSmpHP} from '../../assets';
+import {View, ScrollView} from 'react-native';
+import React, { useEffect, useRef, useState } from 'react';
 import {useNavigation} from '@react-navigation/native';
-import {BiruKu} from '../../utils/constant';
-import AntDesign from 'react-native-vector-icons/AntDesign';
 import InputProgress from '../../components/inputProgress';
+import Header from '../../components/HeaderToDiscover';
 import firebase from '@react-native-firebase/app';
 import firestore from '@react-native-firebase/firestore';
+import {ButtonOrder, ButtonRealized, ButtonSchedule, TitlePages} from '../../components/ButtonPages';
 
 const PageBusbar = () => {
   const navigation = useNavigation();
-  const [isDivision, setIsDivision] = useState(false)
-  const currentUser = firebase.auth().currentUser
-  useEffect(()=> {
-    firestore().collection('User').doc(currentUser.uid).onSnapshot(doc => {
-    const user = doc.data()
-    const isLogistic = user.division === 'Logistic' || user.division === 'Admin'
-    setIsDivision(isLogistic)
+  const [division, setDivision] = useState(false)
+  const isMountedRef = useRef(true);
+  useEffect(() => {
+    const currentUser = firebase.auth().currentUser;
+    const unsubscribe = firestore().collection('User').doc(currentUser.uid).onSnapshot(doc => {
+      if (isMountedRef.current) {
+        const user = doc.data();
+        const isLogistic = user.division === 'Logistic' || user.division === 'Admin'
+        setDivision(isLogistic)
+      }
     })
-  })
+    return () => {unsubscribe()}
+  },[])
+
   return (
-    <View style={{marginTop: 20}}>
-      <View style={{flexDirection: 'row'}}>
-        <IconBack onPress={() => navigation.goBack()} style={{marginTop: 10, marginLeft: 30}} />
-        <LogoSmpHP style={{marginLeft: 180}} />
-      </View>
-      <View style={{flexDirection: 'row', alignSelf: 'center', marginVertical: 50}}>
-        <Text style={styles.title}>BUSBAR Cu{'\n'}- MONITORING -</Text>
-      </View>
+    <ScrollView style={{marginTop: 20}}>
+      <Header/><TitlePages Title={'BUSBAR Cu'} Subtitle={'MONITORING'} />
       <View style={{alignSelf: 'center', flexDirection: 'row'}}>
-        <TouchableOpacity onPress={()=> navigation.navigate('BusbarOrder')}>
-          <View style={{alignItems: 'center', backgroundColor: '#E5E5E5', paddingVertical: 25, borderWidth: 1, borderColor: BiruKu}}>
-            <AntDesign name="profile" color={BiruKu} size={50} />
-            <Text style={styles.desc}>Purchase</Text>
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate('BusbarSchedule')}>
-          <View style={{alignItems: 'center', backgroundColor: '#E5E5E5', paddingVertical: 25, borderWidth: 1, borderColor: BiruKu, marginHorizontal: 10}}>
-            <AntDesign name="hourglass" color={BiruKu} size={50} />
-            <Text style={styles.desc}>Schedule</Text>
-          </View>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate('BusbarRealized')}>
-          <View style={{alignItems: 'center', backgroundColor: '#E5E5E5', paddingVertical: 25, borderWidth: 1, borderColor: BiruKu}}>
-            <AntDesign name="carryout" color={BiruKu} size={50} />
-            <Text style={styles.desc}>Realized</Text>
-          </View>
-        </TouchableOpacity>
+        <ButtonOrder onPress={() => navigation.navigate('BusbarOrder')}/>
+        <ButtonSchedule onPress={() => navigation.navigate('BusbarSchedule')}/>
+        <ButtonRealized onPress={() => navigation.navigate('BusbarRealized')}/>
       </View>
-      {isDivision && (
-        <InputProgress onPress={()=> navigation.navigate('FormPOBusbar')}/>
-      )}
-    </View>
+      {division && (<InputProgress onPress={() => navigation.navigate('FormPOBusbar')}/>)}
+    </ScrollView>
   );
 };
 
 export default PageBusbar;
-const styles = StyleSheet.create({
-  desc: {
-    marginHorizontal: 20,
-    marginTop: 10,
-    textAlign: 'center',
-    fontSize: 15,
-    fontFamily: 'Poppins-Medium',
-    color: BiruKu,
-  },
-  title: {
-    marginHorizontal: 12,
-    textAlign: 'center',
-    fontSize: 22,
-    fontFamily: 'Poppins-Bold',
-    color: BiruKu,
-  },
-});

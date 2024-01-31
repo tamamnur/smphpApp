@@ -14,7 +14,7 @@ const StagesSwitch = ({onSelect}) => {
     {title: 'Busbar Cu', icon: 'magic', component: Icon},
     {title: 'Component', icon: 'mini-sd', component: IconFull},
     {title: 'FAB Layouting', icon: 'layout', component: IconFab},
-    {title: 'FAB Mechanic', icon: 'tool', component: IconFab},
+    {title: 'FAB Mechanical', icon: 'tool', component: IconFab},
     {title: 'FAB Wiring', icon: 'fork', component: IconFab},
     {title: 'Finishing', icon: 'checksquare', component: IconFab},
   ];

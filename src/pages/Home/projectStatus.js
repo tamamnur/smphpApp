@@ -1,8 +1,6 @@
 import { Text, StyleSheet, View, ScrollView, Dimensions, } from 'react-native';
 import React, {useEffect, useState} from 'react';
-import {IconBack, LogoSmpHP} from '../../assets';
 import {BiruKu} from '../../utils/constant';
-import {useNavigation} from '@react-navigation/native';
 import firestore from '@react-native-firebase/firestore';
 import FormatDate2 from '../../components/FormatDate2';
 import LoadingComponent from '../../components/LoadingComponent';
@@ -16,15 +14,12 @@ import Title2 from '../../components/Title2'
 import SearchBar from '../../components/SearchBarOnStatus'
 
 const ProjectStatus = props => {
-  const navigation = useNavigation();
   const [isMounted, setIsMounted] = useState(true);
   const [selectedStage, setSelectedStage] = useState('Full Stages');
   const [state, setState] = useState({
     Monitoring: {Monitoring: ''},
     Project: {ProjectName: ''},
-    ListPanel: [],
-    id: '',
-    isLoading: true,
+    ListPanel: [], id: '', isLoading: true,
   });
   const [searchText, setSearchText] = useState('');
   const handleSearchText = text => {setSearchText(text)};
@@ -42,42 +37,30 @@ const ProjectStatus = props => {
               //Shopdrawing
               const Submission = await Monitoring.collection('Shopdrawing').doc('Submission').get();
               let SubmissionDate;
-              if (Submission && Submission.data()) {
-                SubmissionDate = Submission.data().DateSubmit;
-              }
+              if (Submission && Submission.data()) {SubmissionDate = Submission.data().DateSubmit};
               const Revisi = await Monitoring.collection('Shopdrawing').doc('Revision').get();
               let RevisionDate;
-              if (Revisi && Revisi.data()) {
-                RevisionDate = Revisi.data().DateRevisi;
-              }
+              if (Revisi && Revisi.data()) {RevisionDate = Revisi.data().DateRevisi};
               const Approval = await Monitoring.collection('Shopdrawing').doc('Approval').get();
               let ApprovalDate;
-              if (Approval && Approval.data()) {
-                ApprovalDate = Approval.data().DateApprove;
-              }
+              if (Approval && Approval.data()) {ApprovalDate = Approval.data().DateApprove}
               //Procurement
               const Construction = await Monitoring.collection('Procurement').doc('Construction').get();
-              let ConstPO;
-              let ConstSched;
-              let ConstReali;
+              let ConstPO; let ConstSched; let ConstReali;
               if (Construction && Construction.data()) {
                 ConstPO = Construction.data().Order;
                 ConstSched = Construction.data().Schedule;
                 ConstReali = Construction.data().Realized;
               }
               const Busbar = await Monitoring.collection('Procurement').doc('Busbar').get();
-              let BusbarPO;
-              let BusbarSched;
-              let BusbarReali;
+              let BusbarPO; let BusbarSched; let BusbarReali; 
               if (Busbar && Busbar.data()) {
                 BusbarPO = Busbar.data().Order;
                 BusbarSched = Busbar.data().Schedule;
                 BusbarReali = Busbar.data().Realized;
               }
               const Component = await Monitoring.collection('Procurement').doc('Component').get();
-              let ComponentPO;
-              let ComponentSched;
-              let ComponentReali;
+              let ComponentPO; let ComponentSched; let ComponentReali;
               if (Component && Component.data()) {
                 ComponentPO = Component.data().Order;
                 ComponentSched = Component.data().Schedule;
@@ -85,22 +68,18 @@ const ProjectStatus = props => {
               }
               //Fabrication
               const Layouting = await Monitoring.collection('Fabrication').doc('Layouting').get();
-              let LayoutStart;
-              let LayoutFinish;
+              let LayoutStart; let LayoutFinish;
               if (Layouting && Layouting.data()) {
-                LayoutStart = Layouting.data().Start;
-                LayoutFinish = Layouting.data().Finish;
+                LayoutStart = Layouting.data().Start; LayoutFinish = Layouting.data().Finish;
               }
               const Mechanic = await Monitoring.collection('Fabrication').doc('Mech').get();
-              let MechStart;
-              let MechFinish;
+              let MechStart; let MechFinish;
               if (Mechanic && Mechanic.data()) {
                 MechStart = Mechanic.data().Start;
                 MechFinish = Mechanic.data().Finish;
               }
               const Wiring = await Monitoring.collection('Fabrication').doc('Wiring').get();
-              let WiringStart;
-              let WiringFinish;
+              let WiringStart; let WiringFinish;
               if (Wiring && Wiring.data()) {
                 WiringStart = Wiring.data().Start;
                 WiringFinish = Wiring.data().Finish;
@@ -108,56 +87,33 @@ const ProjectStatus = props => {
               //Tested
               const Tested = await Monitoring.collection('End').doc('Tested').get();
               let TestedPanel;
-              if (Tested && Tested.data()) {
-                TestedPanel = Tested.data().Tested;
-              }
+              if (Tested && Tested.data()) { TestedPanel = Tested.data().Tested }
               //Sent
               const Sent = await Monitoring.collection('End').doc('Sent').get();
               let SentPanel;
-              if (Sent && Sent.data()) {
-                SentPanel = Sent.data().Sent;
-              }
+              if (Sent && Sent.data()) {SentPanel = Sent.data().Sent }
 
               const Result = {
                 SubmissionDate: SubmissionDate ? FormatDate2(SubmissionDate.toDate()) : '---',
-                RevisionDate: RevisionDate
-                  ? FormatDate2(RevisionDate.toDate()) : '---',
-                ApprovalDate: ApprovalDate
-                  ? FormatDate2(ApprovalDate.toDate()) : '---',
-                ConstPO: ConstPO 
-                  ? FormatDate2(ConstPO.toDate()) : '---',
-                ConstSched: ConstSched
-                  ? FormatDate2(ConstSched.toDate()) : '---',
-                ConstReali: ConstReali
-                  ? FormatDate2(ConstReali.toDate()) : '---',
-                BusbarPO: BusbarPO 
-                  ? FormatDate2(BusbarPO.toDate()) : '---',
-                BusbarSched: BusbarSched
-                  ? FormatDate2(BusbarSched.toDate()) : '---',
-                BusbarReali: BusbarReali
-                  ? FormatDate2(BusbarReali.toDate()) : '---',
-                ComponentPO: ComponentPO
-                  ? FormatDate2(ComponentPO.toDate()) : '---',
-                ComponentSched: ComponentSched
-                  ? FormatDate2(ComponentSched.toDate()) : '---',
-                ComponentReali: ComponentReali
-                  ? FormatDate2(ComponentReali.toDate()) : '---',
-                LayoutingStart: LayoutStart
-                  ? FormatDate2(LayoutStart.toDate()) : '---',
-                LayoutingFinish: LayoutFinish
-                  ? FormatDate2(LayoutFinish.toDate()) : '---',
-                MechanicStart: MechStart
-                  ? FormatDate2(MechStart.toDate()) : '---',
-                MechanicFinish: MechFinish
-                  ? FormatDate2(MechFinish.toDate()) : '---',
-                WiringStart: WiringStart
-                  ? FormatDate2(WiringStart.toDate()) : '---',
-                WiringFinish: WiringFinish
-                  ? FormatDate2(WiringFinish.toDate()) : '---',
-                TestedPanel: TestedPanel
-                  ? FormatDate2(TestedPanel.toDate()) : '---',
-                SentPanel: SentPanel 
-                  ? FormatDate2(SentPanel.toDate()) : '---',
+                RevisionDate: RevisionDate ? FormatDate2(RevisionDate.toDate()) : '---',
+                ApprovalDate: ApprovalDate ? FormatDate2(ApprovalDate.toDate()) : '---',
+                ConstPO: ConstPO  ? FormatDate2(ConstPO.toDate()) : '---',
+                ConstSched: ConstSched ? FormatDate2(ConstSched.toDate()) : '---',
+                ConstReali: ConstReali ? FormatDate2(ConstReali.toDate()) : '---',
+                BusbarPO: BusbarPO ? FormatDate2(BusbarPO.toDate()) : '---',
+                BusbarSched: BusbarSched ? FormatDate2(BusbarSched.toDate()) : '---',
+                BusbarReali: BusbarReali ? FormatDate2(BusbarReali.toDate()) : '---',
+                ComponentPO: ComponentPO ? FormatDate2(ComponentPO.toDate()) : '---',
+                ComponentSched: ComponentSched ? FormatDate2(ComponentSched.toDate()) : '---',
+                ComponentReali: ComponentReali ? FormatDate2(ComponentReali.toDate()) : '---',
+                LayoutingStart: LayoutStart ? FormatDate2(LayoutStart.toDate()) : '---',
+                LayoutingFinish: LayoutFinish ? FormatDate2(LayoutFinish.toDate()) : '---',
+                MechanicStart: MechStart ? FormatDate2(MechStart.toDate()) : '---',
+                MechanicFinish: MechFinish ? FormatDate2(MechFinish.toDate()) : '---',
+                WiringStart: WiringStart ? FormatDate2(WiringStart.toDate()) : '---',
+                WiringFinish: WiringFinish ? FormatDate2(WiringFinish.toDate()) : '---',
+                TestedPanel: TestedPanel ? FormatDate2(TestedPanel.toDate()) : '---',
+                SentPanel: SentPanel ? FormatDate2(SentPanel.toDate()) : '---',
               };
               return {id: item.id, ...item.data(), monitoring: Result};
             }
@@ -174,10 +130,8 @@ const ProjectStatus = props => {
           console.error('Error in useEffect', error);
         }
       });
-    // console.log('Panels',PanelNames)
-    // this.setState({id: props.route.params.id});
 
-    return () => {
+      return () => {
       subscriber();
       setIsMounted(false);
     };
@@ -196,9 +150,7 @@ const ProjectStatus = props => {
       );
     }
     if (
-      selectedStage === 'Construction' ||
-      selectedStage === 'Busbar Cu' ||
-      selectedStage === 'Component'
+      selectedStage === 'Construction' || selectedStage === 'Busbar Cu' || selectedStage === 'Component'
     ) {
       return (
         <View style={{flexDirection: 'row', marginHorizontal: 9}}>
@@ -211,9 +163,7 @@ const ProjectStatus = props => {
       );
     }
     if (
-      selectedStage === 'FAB Layouting' ||
-      selectedStage === 'FAB Mechanic' ||
-      selectedStage === 'FAB Wiring'
+      selectedStage === 'FAB Layouting' || selectedStage === 'FAB Mechanical' || selectedStage === 'FAB Wiring'
     ) {
       return (
         <View style={{flexDirection: 'row', marginHorizontal: 9}}>
@@ -237,7 +187,6 @@ const ProjectStatus = props => {
     else {
       return (
         <View style={{flexDirection: 'row', marginHorizontal: 8, width: '95.5%'}}>
-        {/* <View style={{flexDirection: 'row', marginLeft: 8, marginRight: 27}}> */}
           <Text style={styles.headTableNo}>No.</Text>
           <Text style={styles.headTablePanelName}>Panel Name</Text>
           <Text style={styles.headTableStatus}>Status</Text>
@@ -248,200 +197,120 @@ const ProjectStatus = props => {
 
   return (
     <View>
-      {/* <View style={{flexDirection: 'row', marginTop: 30, marginHorizontal: 30}}>
-        <IconBack onPress={() => navigation.navigate('Home')} />
-        <LogoSmpHP style={{marginLeft: 180}} />
-      </View> */}
-      <Header/>
-      {state.isLoading ? (
-        <LoadingComponent />
-      ) : (
-        // <View>
-        <View style={{marginTop: -18, marginBottom: 20}}>
-          <Title2 TxtTitle={state.Project.ProjectName} SubTitle={'Project Status'}/>
-          {/* <Text style={styles.title}>{state.Project.ProjectName}</Text>
-          <Text style={styles.subtitle}>Project Status</Text> */}
-          <StagesSwitch onSelect={selected => setSelectedStage(selected)} />
-          {selectedStage === 'Shopdrawing' ? (
-            <View>
-              {headerStatus()}
-              <ScrollView style={{height: '80%'}}>
-                {state.ListPanel.map((item, index) => (
-                  <StatusPre
+      <Header/>{state.isLoading ? (<LoadingComponent />) : (
+      <View style={{marginTop: -25, marginBottom: 20}}>
+        <Title2 TxtTitle={state.Project.ProjectName} SubTitle={'Project Status'}/>
+        <StagesSwitch onSelect={selected => setSelectedStage(selected)} />
+        {selectedStage === 'Shopdrawing' ||  selectedStage === 'Construction' || 
+         selectedStage === 'Busbar Cu' ||  selectedStage === 'Component' ? (
+          <View>
+            <SearchBar value={searchText} onChangeText={handleSearchText}/>
+            {headerStatus()}
+            <ScrollView>
+              {state.ListPanel.filter(item => {
+                const panelNameLower = item.pnameInput.toLowerCase();
+                const searchKeywordLower = searchText.toLowerCase()
+                return panelNameLower.includes(searchKeywordLower)
+              }).map((item, index) => (
+                <StatusPre
+                  key={item.id}
+                  nomorPanel={index + 1}
+                  panelName={item.pnameInput}
+                  first={selectedStage === 'Shopdrawing' ? item.monitoring?.SubmissionDate || '---' 
+                    : selectedStage === 'Construction' ? item.monitoring?.ConstPO || '---' 
+                    : selectedStage === 'Busbar Cu' ? item.monitoring?.BusbarPO || '---' 
+                    : selectedStage === 'Component' ? item.monitoring?.ComponentPO || '---' 
+                    : '---'}
+                  second={selectedStage === 'Shopdrawing' ? item.monitoring?.RevisionDate || '---' 
+                    : selectedStage === 'Construction' ? item.monitoring?.ConstSched || '---' 
+                    : selectedStage === 'Busbar Cu' ? item.monitoring?.BusbarSched || '---' 
+                    : selectedStage === 'Component' ? item.monitoring?.ComponentSched || '---' 
+                    : '---'}
+                  third={selectedStage === 'Shopdrawing' ? item.monitoring?.ApprovalDate || '---' 
+                    : selectedStage === 'Construction' ? item.monitoring?.ConstReali || '---' 
+                    : selectedStage === 'Busbar Cu' ? item.monitoring?.BusbarReali || '---' 
+                    : selectedStage === 'Component' ? item.monitoring?.ComponentReali || '---' 
+                    : '---'}
+                />
+              ))}
+            </ScrollView>
+            <EndOf />
+          </View>
+        ) : selectedStage === 'FAB Layouting' || selectedStage === 'FAB Mechanical' || 
+            selectedStage === 'FAB Wiring' || selectedStage === 'Finishing' ? (
+          <View>
+            <SearchBar value={searchText} onChangeText={handleSearchText}/>
+            {headerStatus()}
+            <ScrollView>
+              {state.ListPanel.filter(item => {
+                const panelNameLower = item.pnameInput.toLowerCase();
+                const searchKeywordLower = searchText.toLowerCase()
+                return panelNameLower.includes(searchKeywordLower)
+              }).map((item, index) => (
+                <StatusPro
+                  key={item.id}
+                  nomorPanel={index + 1}
+                  panelName={item.pnameInput}
+                  proSt={selectedStage === 'FAB Layouting' ? item.monitoring?.LayoutingStart || '---' 
+                    : selectedStage === 'FAB Mechanical' ? item.monitoring?.MechanicStart || '---' 
+                    : selectedStage === 'FAB Wiring' ? item.monitoring?.WiringStart || '---' 
+                    : selectedStage === 'Finishing' ? item.monitoring?.TestedPanel || '---' 
+                    : '---'}
+                  proNd={selectedStage === 'FAB Layouting' ? item.monitoring?.LayoutingFinish || '---' 
+                    : selectedStage === 'FAB Mechanical' ? item.monitoring?.MechanicFinish || '---' 
+                    : selectedStage === 'FAB Wiring' ? item.monitoring?.WiringFinish || '---' 
+                    : selectedStage === 'Finishing' ? item.monitoring?.SentPanel || '---' 
+                    : '---'}
+                />
+              ))}
+            </ScrollView>
+            <EndOf />
+          </View>
+        ) : (
+          <View>
+            <SearchBar value={searchText} onChangeText={handleSearchText}/>
+            {headerStatus()}
+            <ScrollView>
+              {state.ListPanel.filter(item => {
+                const panelNameLower = item.pnameInput.toLowerCase();
+                const searchKeywordLower = searchText.toLowerCase()
+                return panelNameLower.includes(searchKeywordLower)
+              })
+              .map((item, index) => {
+                return (
+                  <StatusFull
                     key={item.id}
                     nomorPanel={index + 1}
                     panelName={item.pnameInput}
-                    first={item.monitoring?.SubmissionDate || '---'}
-                    second={item.monitoring?.RevisionDate || '---'}
-                    third={item.monitoring?.ApprovalDate || '---'}
+                    dateSD_Submit={item.monitoring?.SubmissionDate || '---'}
+                    dateSD_Rev={item.monitoring?.RevisionDate || '---'}
+                    dateSD_Approv={item.monitoring?.ApprovalDate || '---'}
+                    datePO_Const={item.monitoring?.ConstPO || '---'}
+                    datePO_Busbar={item.monitoring?.BusbarPO || '---'}
+                    datePO_Comp={item.monitoring?.ComponentPO || '---'}
+                    sched_Busbar={item.monitoring?.BusbarSched || '---'}
+                    sched_Comp={item.monitoring?.ComponentSched || '---'}
+                    sched_Const={item.monitoring?.ConstSched || '---'}
+                    realztn_Busbar={item.monitoring?.BusbarReali || '---'}
+                    realztn_Comp={item.monitoring?.ComponentReali || '---'}
+                    realztn_Const={item.monitoring?.ConstReali || '---'}
+                    start_layout={item.monitoring?.LayoutingStart || '---'}
+                    start_mech={item.monitoring?.MechanicStart || '---'}
+                    start_wiring={item.monitoring?.WiringStart || '---'}
+                    finish_layout={item.monitoring?.LayoutingFinish || '---'}
+                    finish_mech={item.monitoring?.MechanicFinish || '---'}
+                    finish_wiring={item.monitoring?.WiringFinish || '---'}
+                    tested={item.monitoring?.TestedPanel || '---'}
+                    sentPanel={item.monitoring?.SentPanel || '---'}
                   />
-                ))}
-              </ScrollView>
-              <EndOf />
-            </View>
-          ) : selectedStage === 'Construction' ? (
-            <View>
-              {headerStatus()}
-              <ScrollView>
-                {state.ListPanel.map((item, index) => (
-                  <StatusPre
-                    key={item.id}
-                    nomorPanel={index + 1}
-                    panelName={item.pnameInput}
-                    first={item.monitoring?.ConstPO || '---'}
-                    second={item.monitoring?.ConstSched || '---'}
-                    third={item.monitoring?.ConstReali || '---'}
-                  />
-                ))}
-              </ScrollView>
-              <EndOf />
-            </View>
-          ) : selectedStage === 'Busbar Cu' ? (
-            <View>
-              {headerStatus()}
-              <ScrollView>
-                {state.ListPanel.map((item, index) => (
-                  <StatusPre
-                    key={item.id}
-                    nomorPanel={index + 1}
-                    panelName={item.pnameInput}
-                    first={item.monitoring?.BusbarPO || '---'}
-                    second={item.monitoring?.BusbarSched || '---'}
-                    third={item.monitoring?.BusbarReali || '---'}
-                  />
-                ))}
-              </ScrollView>
-              <EndOf />
-            </View>
-          ) : selectedStage === 'Component' ? (
-            <View>
-              {headerStatus()}
-              <ScrollView>
-                {state.ListPanel.map((item, index) => (
-                  <StatusPre
-                    key={item.id}
-                    nomorPanel={index + 1}
-                    panelName={item.pnameInput}
-                    first={item.monitoring?.ComponentPO || '---'}
-                    second={item.monitoring?.ComponentSched || '---'}
-                    third={item.monitoring?.ComponentReali || '---'}
-                  />
-                ))}
-              </ScrollView>
-              <EndOf />
-            </View>
-          ) : selectedStage === 'FAB Layouting' ? (
-            <View>
-              {headerStatus()}
-              <ScrollView>
-                {state.ListPanel.map((item, index) => (
-                  <StatusPro
-                    key={item.id}
-                    nomorPanel={index + 1}
-                    panelName={item.pnameInput}
-                    proSt={item.monitoring?.LayoutingStart || '---'}
-                    proNd={item.monitoring?.LayoutingFinish || '---'}
-                  />
-                ))}
-              </ScrollView>
-              <EndOf />
-            </View>
-          ) : selectedStage === 'FAB Mechanic' ? (
-            <View>
-              {headerStatus()}
-              <ScrollView>
-                {state.ListPanel.map((item, index) => (
-                  <StatusPro
-                    key={item.id}
-                    nomorPanel={index + 1}
-                    panelName={item.pnameInput}
-                    proSt={item.monitoring?.MechanicStart || '---'}
-                    proNd={item.monitoring?.MechanicFinish || '---'}
-                  />
-                ))}
-              </ScrollView>
-              <EndOf />
-            </View>
-          ) : selectedStage === 'FAB Wiring' ? (
-            <View>
-              {headerStatus()}
-              <ScrollView>
-                {state.ListPanel.map((item, index) => (
-                  <StatusPro
-                    key={item.id}
-                    nomorPanel={index + 1}
-                    panelName={item.pnameInput}
-                    proSt={item.monitoring?.WiringStart || '---'}
-                    proNd={item.monitoring?.WiringFinish || '---'}
-                  />
-                ))}
-              </ScrollView>
-              <EndOf />
-            </View>
-          ) : selectedStage === 'Finishing' ? (
-            <View>
-              {headerStatus()}
-              <ScrollView style={{height: '75%'}}>
-                {state.ListPanel.map((item, index) => (
-                  <StatusPro
-                    key={item.id}
-                    nomorPanel={index + 1}
-                    panelName={item.pnameInput}
-                    proSt={item.monitoring?.TestedPanel || '---'}
-                    proNd={item.monitoring?.SentPanel || '---'}
-                  />
-                ))}
-              <EndOf />
-
-              </ScrollView>
-              {/* <EndOf /> */}
-            </View>
-          ) : (
-            <View>
-              <SearchBar value={searchText} onChangeText={handleSearchText}/>
-              {headerStatus()}
-              <ScrollView style={{height: '75%'}}>
-                {state.ListPanel
-                .filter(item => {
-                  const panelNameLower = item.pnameInput.toLowerCase();
-                  const searchKeywordLower = searchText.toLowerCase()
-                  return panelNameLower.includes(searchKeywordLower)
-                })
-                .map((item, index) => {
-                  return (
-                    <StatusFull
-                      key={item.id}
-                      nomorPanel={index + 1}
-                      panelName={item.pnameInput}
-                      dateSD_Submit={item.monitoring?.SubmissionDate || '---'}
-                      dateSD_Rev={item.monitoring?.RevisionDate || '---'}
-                      dateSD_Approv={item.monitoring?.ApprovalDate || '---'}
-                      datePO_Const={item.monitoring?.ConstPO || '---'}
-                      datePO_Busbar={item.monitoring?.BusbarPO || '---'}
-                      datePO_Comp={item.monitoring?.ComponentPO || '---'}
-                      sched_Busbar={item.monitoring?.BusbarSched || '---'}
-                      sched_Comp={item.monitoring?.ComponentSched || '---'}
-                      sched_Const={item.monitoring?.ConstSched || '---'}
-                      realztn_Busbar={item.monitoring?.BusbarReali || '---'}
-                      realztn_Comp={item.monitoring?.ComponentReali || '---'}
-                      realztn_Const={item.monitoring?.ConstReali || '---'}
-                      start_layout={item.monitoring?.LayoutingStart || '---'}
-                      start_mech={item.monitoring?.MechanicStart || '---'}
-                      start_wiring={item.monitoring?.WiringStart || '---'}
-                      finish_layout={item.monitoring?.LayoutingFinish || '---'}
-                      finish_mech={item.monitoring?.MechanicFinish || '---'}
-                      finish_wiring={item.monitoring?.WiringFinish || '---'}
-                      tested={item.monitoring?.TestedPanel || '---'}
-                      sentPanel={item.monitoring?.SentPanel || '---'}
-                    />
-                  );
-                })}
-              </ScrollView>
-              <EndOf />
-            </View>
-          )}
-        </View>
-      )}
+                );
+              })}
+            </ScrollView>
+            <EndOf />
+          </View>
+        )}
+      </View>
+      )}  
     </View>
   );
 };
@@ -482,7 +351,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginVertical: 2,
     marginLeft: -1,
-    // paddingLeft: 10,
     color: BiruKu,
     borderWidth: 1,
     borderColor: BiruKu,
@@ -512,7 +380,6 @@ const styles = StyleSheet.create({
     color: BiruKu,
     borderWidth: 1,
     borderColor: BiruKu,
-    // width: 25,
     width: 25,
     height: 30,
     textAlign: 'center',
