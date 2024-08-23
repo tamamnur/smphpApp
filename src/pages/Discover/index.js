@@ -4,10 +4,15 @@ import {IconInput2, IconSD_Pengajuan, IconSD_Approv, IconSD_Revisi, IconKonsutru
   IconCu, IconKomponen, IconLayouting, IconMekanik, IconWiring, } from '../../assets';
 import {BiruKu, Darkred} from '../../utils/constant';
 import {useNavigation} from '@react-navigation/native';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import IconE from 'react-native-vector-icons/MaterialIcons';
 import firebase from '@react-native-firebase/app';
 import firestore from '@react-native-firebase/firestore';
+import Header from '../../components/HeaderUserInfo';
+import { BigTitle, DiscTitle, iconDisc } from '../../utils/fontStyles';
 
+const height = Dimensions.get('window').height;
+const iconSize = height*0.142;
 const Input = props => {
   const navigation = useNavigation();
   return (
@@ -39,10 +44,13 @@ class Discover extends Component {
       .doc(currentUser.uid).onSnapshot(doc => {
         if(this.state.isMounted) {
           const user = doc.data();
-          const isDrafterOrAdmin = user.division === 'Drafter' || user.division === 'Admin';
-          const isProductionOrAdmin = user.division === 'Production' || user.division === 'Admin';
-          this.setState({isDrafterOrAdmin});
-          this.setState({isProductionOrAdmin});
+          const isDrafter = user.division === 'Drafter' || user.division ==='Marketing';
+          const isProduction = user.division === 'Production';
+          const isSales = user.division === 'Marketing';
+          // const isProductionOrAdmin = user.division === 'Production' || user.division === 'Admin';
+          // this.setState({isProductionOrAdmin});
+          this.setState({isDrafter, isProduction});
+          // this.setState({isProduction});
         }
       });
   }
@@ -54,115 +62,48 @@ class Discover extends Component {
   }
 
   render() {
-    const {isDrafterOrAdmin} = this.state;
-    const {isProductionOrAdmin} = this.state;
+    const {isDrafter, isProduction} = this.state; 
+    // const {isProduction}= this.state
+    // const {isProductionOrAdmin} = this.state;
     return (
-      <View style={styles.page}>
-        <View style={{marginTop: 30, marginBottom: 10}}><Text 
-          style={styles.BigTitle}>Production Monitoring </Text></View>
+      <View style={styles.page}><Header/>
+        <Text style={[DiscTitle, {marginTop: 30}]}>Production Monitoring </Text>
         <ScrollView style={{flex: 1, alignSelf: 'center', width: '100%'}}>
-          <View style={styles.container}>
-            <View style={{marginBottom: 30}}>
-              <Text style={styles.Progress}> Shopdrawing Progress</Text>
+            <View style={styles.wrapper}>
+              <View style={styles.icon}>
+                <TouchableOpacity onPress={() => {
+                  const pageSD = isDrafter ? 'PageShopdrawing' : 'TableShopdrawing';
+                  this.props.navigation.navigate(pageSD)
+                }}>
+                  <Icon name='file-cad-box' size={iconDisc} color={'#EF476F'}/>
+                  <Text style={styles.titleIcon}>Shopdrawing</Text>
+                </TouchableOpacity>
+              </View>
+              <View style={styles.icon}>
+                <TouchableOpacity 
+                  onPress={() => {this.props.navigation.navigate('PageProcurement')}}>
+                  <Icon name='store-outline' size={iconDisc} color={'#EDAE49'}/>
+                  <Text style={styles.titleIcon}>Procurement</Text>
+                </TouchableOpacity>
+              </View>
             </View>
             <View style={styles.wrapper}>
               <View style={styles.icon}>
-                <TouchableOpacity style={{marginTop: 22}} 
-                  onPress={() => { this.props.navigation.navigate('SD_Submission')}}>
-                  <IconSD_Pengajuan style={{alignSelf: 'center', marginTop: -70}} />
-                  <Text style={styles.titleIcon}>Submission</Text>
+                <TouchableOpacity 
+                  onPress={() => {this.props.navigation.navigate('PageFabrication')}}>
+                  <IconE name='engineering' size={iconDisc} color={'#06D6A0'}/>
+                  <Text style={styles.titleIcon}>Fabrication</Text>
                 </TouchableOpacity>
               </View>
               <View style={styles.icon}>
-                <TouchableOpacity onPress={() => {this.props.navigation.navigate('SD_Revisi')}}>
-                  <IconSD_Revisi style={{alignSelf: 'center', marginTop: -50}}/>
-                  <Text style={styles.titleIcon}>Revision</Text>
+                <TouchableOpacity onPress={() => {
+                  const page = isProduction ? 'PageFinishing' : 'TableFinishing';
+                  this.props.navigation.navigate(page)}}>
+                  <Icon name='progress-check' size={iconDisc} color={'#118AB2'}/>
+                  <Text style={styles.titleIcon}>Test & Delivery</Text>
                 </TouchableOpacity>
               </View>
-              <View style={styles.icon}>
-                <TouchableOpacity onPress={() => {this.props.navigation.navigate('SD_Approval')}}>
-                  <IconSD_Approv style={{alignSelf: 'center', marginTop: -50, marginHorizontal:-12}}/>
-                  <Text style={styles.titleIcon}>Approved</Text>
-                </TouchableOpacity>
               </View>
-            </View>
-
-            {isDrafterOrAdmin && (
-              <Input title="Input Shopdrawing Progress"
-              onPress={() => this.props.navigation.navigate('FormShopdrawing')} />
-            )}
-          </View>
-          <View style={styles.container}>
-            <View><Text style={styles.Progress}> Material Procurement</Text></View>
-            <View style={styles.wrapper}>
-              <View style={styles.icon}>
-                <TouchableOpacity style={{marginHorizontal: -8}} 
-                  onPress={() => {this.props.navigation.navigate('PageConstruction')}}>
-                  <IconKonsutruksi style={{alignSelf: 'center', marginTop: -5}}/>
-                  <Text style={styles.titleIcon}>Construction</Text>
-                </TouchableOpacity>
-              </View>
-              <View style={styles.icon}>
-                <TouchableOpacity onPress={() => { this.props.navigation.navigate('PageBusbar')}}>
-                  <IconCu style={{alignSelf: 'center', marginTop: -5}} />
-                  <Text style={styles.titleIcon}>Busbar Cu</Text>
-                </TouchableOpacity>
-              </View>
-              <View style={styles.icon}>
-                <TouchableOpacity style={{marginHorizontal: -7}}
-                  onPress={() => {this.props.navigation.navigate('PageComponent')}}>
-                  <IconKomponen style={{alignSelf: 'center', marginTop: -5}} />
-                  <Text style={styles.titleIcon}>Component</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </View>
-          <View style={styles.container}>
-            <View><Text style={styles.Progress}> Fabrication Progress</Text></View>
-            <View style={styles.wrapper}>
-              <View style={styles.icon}>
-                <TouchableOpacity onPress={() => {this.props.navigation.navigate('PageLayouting')}}>
-                  <IconLayouting style={{alignSelf: 'center', marginTop: -5, marginHorizontal: 3}}/>
-                  <Text style={styles.titleIcon}>Layouting</Text>
-                </TouchableOpacity>
-              </View>
-              <View style={styles.icon}>
-                <TouchableOpacity onPress={() => {this.props.navigation.navigate('PageMechanic')}}>
-                  <IconMekanik style={{alignSelf: 'center', marginTop: -5, marginHorizontal: -3}}/>
-                  <Text style={styles.titleIcon}>Mechanic</Text>
-                </TouchableOpacity>
-              </View>
-              <View style={styles.icon}>
-                <TouchableOpacity style={{marginHorizontal: -7}} 
-                  onPress={() => {this.props.navigation.navigate('PageWiring')}}>
-                  <IconWiring style={{alignSelf: 'center',marginTop: -5,marginHorizontal: 3}}/>
-                  <Text style={styles.titleIcon}>Wiring</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </View>
-          <View style={styles.container}>
-            <View><Text style={styles.Progress}> Finishing</Text></View>
-            <View style={styles.wrapper}>
-              <View style={styles.iconEnd}>
-                <TouchableOpacity onPress={() => {this.props.navigation.navigate('TestReport')}}>
-                    <MaterialCommunityIcons name="archive-check-outline" color={'#10324A'} size={50}/>  
-                  <Text style={styles.titleIcon}>Tested</Text>
-                </TouchableOpacity>
-              </View>
-              <View style={styles.iconEnd}>
-                <TouchableOpacity style={{marginHorizontal: -7}}
-                  onPress={() => {this.props.navigation.navigate('DeliveryReport')}}>
-                    <MaterialCommunityIcons name="truck-delivery-outline" color={Darkred} size={50}/>
-                  <Text style={styles.titleIcon}>Delivery</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-            {isProductionOrAdmin && (
-              <Input title="Input Finishing Date"
-              onPress={() => this.props.navigation.navigate('FormFinishing')} />
-            )}
-          </View>
         </ScrollView>
       </View>
     );
@@ -172,59 +113,42 @@ class Discover extends Component {
 export default Discover;
 
 const styles = StyleSheet.create({
-  Progress: {
-    paddingHorizontal: 10,
-    paddingTop: 5,
-    color: BiruKu,
-    fontSize: 17,
-    fontFamily: 'Poppins-SemiBold',
-  },
-  container: {
+  wrapper: {
+    flexDirection: 'row',
     alignContent: 'center',
-    backgroundColor: '#D4D6D3',
-    marginVertical: 5,
-    paddingBottom: 15,
-    borderRadius: 20,
     justifyContent: 'space-between',
+    marginHorizontal: 10,
+    marginTop: 10,
+    marginBottom: 30,
   },
   BigTitle: {
-    textAlign: 'center',
-    fontSize: 28,
+    marginLeft: 10,
+    fontSize: 30,
     fontFamily: 'Acme-Regular',
     color: BiruKu,
+    marginBottom:10
   },
   icon: {
-    borderWidth: 3,
+    // borderWidth: 3,
+    borderWidth: height*.0035,
+    borderColor: BiruKu,
+    borderRadius: 10,
     padding: 15,
-    borderRadius: 10,
-    borderColor: BiruKu,
-  },
-  iconEnd: {
-    borderWidth: 3,
-    paddingHorizontal: '16.5%',
-    paddingBottom: 10,
-    borderRadius: 10,
-    borderColor: BiruKu,
+    paddingHorizontal: 'auto',
   },
   titleIcon: {
     fontFamily: 'Poppins-Medium',
-    fontSize: 14,
+    fontSize: height*.02,
     color: BiruKu,
     alignContent: 'center',
     alignSelf: 'center',
-    marginTop: 3,
-    marginBottom: -10,
-  },
-  wrapper: {
-    flexDirection: 'row',
-    width: '90%',
-    justifyContent: 'space-between',
-    marginHorizontal: 20,
   },
   page: {
     flex: 1,
     backgroundColor: 'white',
     justifyContent: 'space-between',
     width: '100%',
+    paddingVertical: 20,
+    paddingHorizontal: 20,
   }
 });

@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import { Picker } from '@react-native-picker/picker'
 import { BiruKu } from '../utils/constant';
 
-const StagesSD = (props) => {
+const StagesSDSales = (props) => {
     const [stages, setStages] = useState("Select an option");
 
   return (
@@ -17,14 +17,14 @@ const StagesSD = (props) => {
           props.onValueChange(label)
           }}>
             <Picker.Item style={styles.pickerItem0} label="Select an option" />
-            <Picker.Item style={styles.pickerItem} label="Submit" value ="Submit" />
-            <Picker.Item style={styles.pickerItem} label="Submit Revision" value ="Resubmit" />
+            <Picker.Item style={styles.pickerItem} label="Approve" value ="Approve" />
+            <Picker.Item style={styles.pickerItem} label="Revisi" value ="Revisi" />
       </Picker>
     </View>
   )
 }
 
-export default StagesSD
+export default StagesSDSales
 
 const styles = StyleSheet.create({
     area:{

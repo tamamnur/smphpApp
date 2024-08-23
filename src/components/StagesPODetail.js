@@ -15,11 +15,11 @@ const StagesPODetail = props => {
   return (
     <View style={styles.area}>
       <Picker
-        style={{marginTop: -13,marginLeft: -9}}
+        style={{marginTop: -12,marginLeft: -9}}
         mode="dropdown"
         selectedValue={stagesPODetail}
         onValueChange={handleValueChange}>
-        <Picker.Item style={styles.pickerItem} label="Select an option" value={null} />
+        <Picker.Item style={styles.pickerItem} label="Select a Stages" value={null} />
         <Picker.Item style={styles.pickerItem} label="Purchase Order" value="Order" />
         <Picker.Item style={styles.pickerItem} label="Schedule" value="Schedule" />
         <Picker.Item style={styles.pickerItem} label="Realization" value="Realized" />

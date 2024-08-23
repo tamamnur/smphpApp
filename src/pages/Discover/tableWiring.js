@@ -4,15 +4,14 @@ import Title2 from '../../components/Title2';
 import firestore from '@react-native-firebase/firestore';
 import FormatDate from '../../components/FormatDate2';
 import DataNotFound from '../../components/dataNotFound';
-import PanelHeadTable from '../../components/panelHeadTable';
+import { HeadFA } from '../../components/panelHeadTable';
 import LoadingComponent from '../../components/LoadingComponent';
 import EndOf from '../../components/Footer';
 import SearchBar from '../../components/SearchBar';
 import Header from '../../components/Header';
-import PanelPOList from '../../components/panelPOList';
+import PanelProList from '../../components/panelProList';
 
-const height = Dimensions.get('window').height;
-const ConstructionOrder = () => {
+const TableWiring = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [panelNameData, setPanelNameData] = useState([]);
   
@@ -41,20 +40,18 @@ const ConstructionOrder = () => {
             if (getId) {
               const idRef = firestore().collection('Monitoring');
               const id = getId.substring(12);
-              const monitoringRef = idRef.doc(id).collection('Procurement').doc('Construction');
+              const monitoringRef = idRef.doc(id).collection('Fabrication').doc('Wiring');
               const monitoringDoc = await monitoringRef.get();
               if (monitoringDoc.exists) {
                 const monitoringData = monitoringDoc.data();
-                if (monitoringData.Order) {
-                  const dateValue = monitoringData.Order;
-                  const schedule = monitoringData.Schedule? monitoringData.Schedule : '';
-                  const realized = monitoringData.Realized? monitoringData.Realized : '';
+                if (monitoringData.Start) {
+                  const dateValue = monitoringData.Start;
+                  const end = monitoringData.Finish? monitoringData.Finish : '';
                   panelNameData.push({
                     projectName: panel.projectName,
                     panelName: panel.pnameInput,
-                    order: dateValue.toDate(),
-                    schedule: schedule? schedule.toDate() : '',
-                    realized: realized? realized.toDate() : '',
+                    start: dateValue.toDate(),
+                    end: end? end.toDate() : '',
                     idProject: doc.id, monitoringId: getId
                   });
                 }
@@ -87,32 +84,31 @@ const ConstructionOrder = () => {
     );
   });
 
-  const renderedPanelList = filteredPanelData.filter(item => item.order)
-    .sort((a, b) => new Date(b.order) - new Date(a.order))
+  const renderedPanelList = filteredPanelData.filter(item => item.start)
+    .sort((a, b) => new Date(b.start) - new Date(a.start))
     .map((item, index) => {
       return(
-        <PanelPOList
+        <PanelProList
           key={index + 1}
           projectName={item.projectName}
           panelName={item.panelName}
-          order={FormatDate(item.order)}
-          schedule={item.schedule ? FormatDate(item.schedule):'--'}
-          realized={item.realized ? FormatDate(item.realized):'--'}
+          start={FormatDate(item.start)}
+          end={item.end ? FormatDate(item.end):'--'}
           idProject={item.idProject}
           monitoringId={item.monitoringId}
         />
       )
     });
-
+    
   const contenToRender = renderedPanelList.length > 0 ? renderedPanelList : <DataNotFound/>;
-
+  
+  const height = Dimensions.get('window').height;
   return (
     <View style={{marginVertical: 10}}>
-      <Header/><Title2 TxtTitle="CONSTRUCTION / BOX" SubTitle="Monitoring" />
+      <Header/><Title2 TxtTitle="WIRING" SubTitle="Monitoring" />
       {isLoading ? (<></>) : (<>
-        <SearchBar value={searchKeyword} 
-           onChangeText={text => setSearchKeyword(text)} />
-        <PanelHeadTable />
+        <SearchBar value={searchKeyword} onChangeText={text => setSearchKeyword(text)} />
+          {HeadFA()}     
       </>)}
       <ScrollView style={{marginHorizontal: 8, height:height*0.65}}>
         {isLoading ? (<LoadingComponent />) : (<>{contenToRender}<EndOf /></>)}
@@ -121,4 +117,4 @@ const ConstructionOrder = () => {
   );
 };
 
-export default ConstructionOrder;
+export default TableWiring;

@@ -4,15 +4,14 @@ import Title2 from '../../components/Title2';
 import firestore from '@react-native-firebase/firestore';
 import FormatDate from '../../components/FormatDate2';
 import DataNotFound from '../../components/dataNotFound';
-import PanelHeadTable from '../../components/panelHeadTable';
+import { HeadPO } from '../../components/panelHeadTable';
 import LoadingComponent from '../../components/LoadingComponent';
 import EndOf from '../../components/Footer';
 import SearchBar from '../../components/SearchBar';
 import Header from '../../components/Header';
 import PanelPOList from '../../components/panelPOList';
 
-const height = Dimensions.get('window').height;
-const ConstructionOrder = () => {
+const TableConstruction = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [panelNameData, setPanelNameData] = useState([]);
   
@@ -103,16 +102,16 @@ const ConstructionOrder = () => {
         />
       )
     });
-
+    
   const contenToRender = renderedPanelList.length > 0 ? renderedPanelList : <DataNotFound/>;
-
+  
+  const height = Dimensions.get('window').height;
   return (
     <View style={{marginVertical: 10}}>
       <Header/><Title2 TxtTitle="CONSTRUCTION / BOX" SubTitle="Monitoring" />
       {isLoading ? (<></>) : (<>
-        <SearchBar value={searchKeyword} 
-           onChangeText={text => setSearchKeyword(text)} />
-        <PanelHeadTable />
+        <SearchBar value={searchKeyword} onChangeText={text => setSearchKeyword(text)} />
+          {HeadPO()}     
       </>)}
       <ScrollView style={{marginHorizontal: 8, height:height*0.65}}>
         {isLoading ? (<LoadingComponent />) : (<>{contenToRender}<EndOf /></>)}
@@ -121,4 +120,4 @@ const ConstructionOrder = () => {
   );
 };
 
-export default ConstructionOrder;
+export default TableConstruction;

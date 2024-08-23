@@ -17,9 +17,7 @@ const MemoPage = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [memos, setMemos] = useState([]);
   const [searchText, setSearchText] = useState('');
-  const handleSearchText = text => {
-    setSearchText(text);
-  };
+  const handleSearchText = text => {setSearchText(text)};
   const filtered = memos.filter(item => {
     const subjectLower = item.Subject.toLowerCase();
     const fromLower = item.From.toLowerCase();
@@ -40,13 +38,11 @@ const MemoPage = () => {
           const data = doc.data();
           const Created = data.Created ? data.Created.toDate() : null;
           return {
-            id: doc.id,
-            ...data,
+            id: doc.id, ...data,
             Created: Created ? FormatDateTime(Created) : null,
           };
         });
-        setMemos(memoData);
-        setIsLoading(false);
+        setMemos(memoData); setIsLoading(false);
       });
     return () => {
       unsubscribe();
@@ -57,7 +53,9 @@ const MemoPage = () => {
     <View style={{marginTop: 20}}>
       <Header />
       <Title TxtTitle={'INTERNAL MEMO'} />
-      <SearchBar value={searchText} onChangeText={handleSearchText} />
+      <SearchBar value={searchText} 
+        placeholder={'Search by sender or recipient or topic...'}
+        onChangeText={handleSearchText} />
       {isLoading ? (<LoadingComponent />) 
       : (<View style={{height: height * 0.6}}>
           {filtered.length > 0 ? (

@@ -2,11 +2,12 @@ import React from 'react';
 import {View, TextInput} from 'react-native';
 import {BiruKu} from '../utils/constant';
 
-const SearchBar2 = ({value, onChangeText}) => {
+const SearchBar2 = ({value, onChangeText, placeholder}) => {
   return (
     <View>
       <TextInput
-        placeholder="Search by project or customer name..."
+        // placeholder="Search by project or customer name..."
+        placeholder={placeholder}
         placeholderTextColor={'grey'}
         value={value}
         onChangeText={onChangeText}

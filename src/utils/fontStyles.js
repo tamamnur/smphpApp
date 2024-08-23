@@ -2,19 +2,26 @@ import {Dimensions} from 'react-native';
 import {BiruKu} from './constant';
 const height = Dimensions.get('window').height;
 const width = Dimensions.get('window').width;
+export const DiscTitle = {
+  marginLeft: 10,
+  // fontSize: 30,
+  fontSize: height*.032,
+  fontFamily: 'Acme-Regular',
+  color: BiruKu,
+  marginBottom:10
+};
 export const BigTitle = {
   textAlign: 'center',
-  // fontSize: 25,
-  fontSize: height * 0.033,
+  fontSize: height * 0.026,
   fontFamily: 'Poppins-Bold',
   color: BiruKu,
 };
 export const title = {
   fontFamily: 'Poppins-SemiBold',
-  fontSize: height * 0.024,
+  fontSize: height * 0.022,
   paddingLeft: 3,
   color: BiruKu,
-  textAlign: 'center'
+  textAlign: 'center',
 };
 export const subTitle = {
   fontFamily: 'Poppins-MediumItalic',
@@ -92,7 +99,7 @@ export const errorTxt = {
   marginHorizontal: 20,
 };
 export const descOnPages = {
-  marginHorizontal: 20,
+  marginHorizontal: 15,
   marginTop: 10,
   textAlign: 'center',
   fontSize: 16,
@@ -112,8 +119,71 @@ export const wrapperOnPagePro = {
 export const wrapperOnPagePre = {
   alignItems: 'center',
   backgroundColor: '#E5E5E5',
-  paddingVertical: 25,
+  // paddingVertical: 15,
+  // paddingHorizontal: 10,
   marginHorizontal: 5,
   borderColor: BiruKu,
   borderWidth: 1.5,
-}
+  // width: '95%'
+};
+export const names = {
+  fontFamily: 'Poppins-Medium',
+  // fontSize: 13,
+  fontSize: height*0.015,
+  color: BiruKu,
+  textAlignVertical: 'center',
+  paddingLeft: 4,
+  marginRight: -1,
+  height: 28,
+};
+export const status = {
+  // fontFamily: 'Poppins-Regular',
+  // fontSize: 12,
+  fontSize: height*0.014,
+  color: BiruKu,
+  textAlignVertical: 'center',
+  textAlign: 'center',
+  borderWidth: 1,
+  borderColor: BiruKu,
+  height: 30,
+  width: '16%',
+};
+export const area = {
+  backgroundColor: '#EDEDED',
+  borderRadius: 5,
+  borderWidth: 1,
+  borderColor: BiruKu,
+  marginVertical: 1,
+  marginLeft: 5,
+  marginRight: -5,
+  elevation: 1,
+  height: 33,
+};
+export const pickerItem = {
+  fontSize: 16,
+  fontFamily: 'Poppins-Medium',
+  color: BiruKu,
+};
+export const titleIcon= {
+  fontFamily: 'Poppins-Medium',
+  fontSize: height * 0.02,
+  color: BiruKu,
+  alignSelf: 'center',
+};
+export const wrapper = {
+  flexDirection: 'row',
+  justifyContent: 'space-around',
+  marginHorizontal: 20,
+  marginTop: -10,
+  marginBottom: 30,
+};
+export const icon = {
+  borderWidth: height * 0.0035,
+  borderColor: BiruKu,
+  borderRadius: 10,
+  width: width*.4,
+  padding: 20,
+  marginBottom: 15
+};
+export const iconSize = height * 0.1;
+export const iconDisc = height * 0.15;

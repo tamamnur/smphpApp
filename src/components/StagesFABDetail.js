@@ -2,6 +2,7 @@ import {StyleSheet, Text, View} from 'react-native';
 import React, {useState} from 'react';
 import {Picker} from '@react-native-picker/picker';
 import {BiruKu} from '../utils/constant';
+import { area, pickerItem } from '../utils/fontStyles';
 
 const StagesFABDetail = props => {
   const [stagesFABDetail, setStagesFABDetail] = useState('');
@@ -12,15 +13,15 @@ const StagesFABDetail = props => {
     }
   }
   return (
-    <View style={styles.area}>
+    <View style={area}>
       <Picker
         style={styles.picked}
         mode="dropdown"
         selectedValue={stagesFABDetail}
         onValueChange={handleValueChange}>
-        <Picker.Item style={styles.pickerItem} label="Select an option" />
-        <Picker.Item style={styles.pickerItem} label="Start" value="Start" />
-        <Picker.Item style={styles.pickerItem} label="Finish" value="Finish" />
+        <Picker.Item style={pickerItem} label="Select an option" />
+        <Picker.Item style={pickerItem} label="Start" value="Start" />
+        <Picker.Item style={pickerItem} label="Finish" value="Finish" />
       </Picker>
     </View>
   );

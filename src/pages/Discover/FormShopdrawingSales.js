@@ -6,7 +6,7 @@ import {useNavigation} from '@react-navigation/native';
 import Title2 from '../../components/Title2';
 import firestore from '@react-native-firebase/firestore';
 import PickedDateM from '../../components/pickedDateM';
-import StagesSD from '../../components/StagesSD';
+import StagesSD from '../../components/StagesSDSales';
 import Header from '../../components/Header';
 import Button6 from '../../components/Button6'
 import LoadingComponentS from '../../components/LoadingComponentS'
@@ -14,7 +14,7 @@ import PanelWrapperOnForm from '../../components/PanelWrapperOnForm';
 import PanelItemOnForm from '../../components/PanelItemOnForm';
 import { isValidForm, updateError } from '../../components/FormValidation';
 
-const FormShopdrawing = props => {
+const FormShopdrawingSales = props => {
   const navigation = useNavigation();
   const [date, setDate] = useState();
   const [error, setError] = useState('');
@@ -24,6 +24,7 @@ const FormShopdrawing = props => {
   const [visiblePanels, setVisiblePanels] = useState([])
   const [ProjectList, setProjectList] = useState([]);
   const onDateChange = value => {setDate(value)};
+  
   const isMountedRef = useRef(true);
   useEffect(() => {isMountedRef.current = true;
     return () => {isMountedRef.current = false};
@@ -34,58 +35,48 @@ const FormShopdrawing = props => {
     projectsList: [], Panels: [],
   });
   const {projectId, projectName, stages, customer} = shopdrawingInfo;
-  
   const handleOnchangeText = async (value, fieldName) => {
-    setShopdrawingInfo(prev => ({
-        ...prev, [fieldName]: value, Panels: prev.PanelsOriginal || prev.Panels,
-    }));
-    
+    setShopdrawingInfo({...shopdrawingInfo, [fieldName]: value});
     if (fieldName === 'stages') {
-        setIsLoading(true);
-        const selectedStage = value;
-        if (!shopdrawingInfo.PanelsOriginal) {
-            setShopdrawingInfo(prev => ({
-                ...prev, PanelsOriginal: [...prev.Panels],
-            }));
-        }
-
-        const updatePanels = await Promise.all(shopdrawingInfo.Panels.map(async item => {
-          if(!isMountedRef.current) return null;
-          if (item.MonitoringID) {
-              const MonitoringID = item.MonitoringID.substring(1); 
-              const submissionDoc = await firestore().collection(MonitoringID + '/Shopdrawing').doc('Submission').get();
-              const revisionDoc = await firestore().collection(MonitoringID + '/Shopdrawing').doc('Revision').get();
-              const submitExist = submissionDoc.exists;
-              const revisionExist = revisionDoc.exists;
-              if (selectedStage === 'Submit' && !submitExist) {
-                  return {
-                      ...item, stageExist: !submitExist,
-                  };
-              } 
-              else if (selectedStage === 'Resubmit' && revisionExist) {
-                  return {
-                      ...item, stageExist: revisionExist,
-                  };
-              }
-          } 
-          else if (selectedStage === 'Submit') {
+      setIsLoading(true);
+      const selectedStage = value;
+      const updatePanels = await Promise.all(shopdrawingInfo.Panels.map(async item => {
+        if(!isMountedRef.current) return null;
+        if (item.MonitoringID) {
+          const MonitoringID = item.MonitoringID.substring(1); 
+          const submissionDoc = await firestore().collection(MonitoringID + '/Shopdrawing').doc('Submission').get();
+          const approvalDoc = await firestore().collection(MonitoringID + '/Shopdrawing').doc('Approval').get();
+          const submitExist = submissionDoc.exists;
+          let stageExist = false;
+          if (value === 'Approve' && submitExist) {
+            // const approvalDoc = await firestore().collection(MonitoringID + '/Shopdrawing').doc('Approval').get();
+            stageExist = approvalDoc.exists;
+            if (submitExist && !stageExist) {
               return {
-                  ...item, stageExist: true,
+                ...item, submitExist: submitExist, stageExist: stageExist,
               };
+            }
           }
-          return null;
-        }));
-
-        const filteredPanels = updatePanels.filter(item => item !== null);
-        setShopdrawingInfo(prev => ({
-            ...prev, Panels: filteredPanels,
-        }));
-        if (isMountedRef.current) {
-            setIsLoading(false);
-        }
+          else if (value === 'Revisi' && submitExist) {
+            // const revisionDoc = await firestore().collection(MonitoringID + '/Shopdrawing').doc('Revision').get();
+            stageExist = approvalDoc.exists;
+            return {
+              ...item, submitExist: submitExist, stageExist: stageExist,
+            };
+          }
+        }     
+        return null;
+      }));
+      const filteredPanels = updatePanels.filter(item => item !== null);
+      setShopdrawingInfo(prev => ({
+        ...prev, Panels: filteredPanels,
+      }));
+      if (isMountedRef.current) {
+        setIsLoading(false);
+      }
     }
   };
-  
+    
   const handleFormShopdrawing = async () => {
     setIsSaving(true);
     let panelSelected = false;
@@ -105,7 +96,7 @@ const FormShopdrawing = props => {
         return updateError(value.pnameInput+' is not valid. \n Ensure the selected panel has a Submission Date', setError)
       }
       if (value.selected === true) {
-        if (shopdrawingInfo.stages === 'Submit') {
+        if (shopdrawingInfo.stages === 'Approve') {
           if (value.MonitoringID) {
             MonitoringID = value.MonitoringID.split('/')[2];
           } else {
@@ -114,23 +105,23 @@ const FormShopdrawing = props => {
               });
             MonitoringID = newMonitoring.id;
           }
-          const submitData = {DateSubmit: firestore.Timestamp.fromDate(date)}
+          const submitData = {DateApprove: firestore.Timestamp.fromDate(date)}
           operations.push(
-            batch.set(Submit, submitData),
+            batch.set(Approve, submitData),
             batch.update(projectRef,{
-              status: 'Shopdrawing - Submission',
+              status: 'Shopdrawing - Approval',
               updatedAt: firestore.Timestamp.fromDate(date),
             })
           )
         }
-        else if (shopdrawingInfo.stages === 'Resubmit') {
+        else if (shopdrawingInfo.stages === 'Revisi') {
           if (!MonitoringID) {setIsSaving(false), invalidMsg(); return}
           if (!isValid) {setIsSaving(false), invalidMsg(); return}
-          const revisiData = {DateReSubmit: firestore.Timestamp.fromDate(date)}
+          const revisiData = {DateRevisi: firestore.Timestamp.fromDate(date)}
           operations.push(
-            batch.update(Revision, revisiData),
+            batch.set(Revision, revisiData),
             batch.update(projectRef, {
-              status: 'Shopdrawing - Submit Revision',
+              status: 'Shopdrawing - Revision',
               updatedAt: firestore.Timestamp.fromDate(date),
             })
           )
@@ -147,17 +138,16 @@ const FormShopdrawing = props => {
         await batch.commit()
         setIsLoading(false), setIsSaving(false);
         ToastAndroid.show('Shopdrawing Procces Updated', ToastAndroid.SHORT)
-        navigation.replace('TableShopdrawing')
-      } catch (error) {
-        setIsSaving(false); 
-      }
+        {navigation.replace('TableShopdrawing')}
+      } catch (error) {setIsSaving(false)}
     } else {
       updateError('Ensure you have chosen the right panel.', setError);
       setIsLoading(false); setIsSaving(false)
     }
   };
+
   const submitForm = () => {
-    const errorStages = {stages: 'Please memories bring back memories bring back..'}
+    const errorStages = {stages: 'Please choose a stage of Shopdrawing.'}
     const detailStage = {stagesPODetail: false}
       if (isValidForm(shopdrawingInfo, date, setError, errorStages, detailStage)) {handleFormShopdrawing()} 
       else {error}
@@ -212,7 +202,7 @@ const FormShopdrawing = props => {
     return null;
   };
   useEffect(()=> {
-    const filteredPanels = shopdrawingInfo.Panels.filter(item =>  item.stageExist);
+    const filteredPanels = shopdrawingInfo.Panels.filter(item =>  !item.stageExist);
     setVisiblePanels(filteredPanels)
   }, [shopdrawingInfo.Panels])
 
@@ -240,8 +230,7 @@ const FormShopdrawing = props => {
 
   return (
     <ScrollView style={{marginVertical: 20}}>
-      <Header/>
-      <Title2 TxtTitle="SHOP DRAWING" />
+      <Header/><Title2 TxtTitle={"SHOP DRAWING"} SubTitle={'for Marketing Division'}/>
       {error ? (<Text style={errorTxt}>{error}</Text>) : null}
       <View style={{flexDirection: 'row', marginHorizontal: 10, width: '100%'}}>
         <View style={{width: '25%'}}>
@@ -273,8 +262,7 @@ const FormShopdrawing = props => {
               ))}
             </View>
           ) : null}
-          <Text style={right}>{customer}</Text>
-          <Text style={right}>{projectId}</Text>
+          <Text style={right}>{customer}</Text><Text style={right}>{projectId}</Text>
           <View style={{width: '98%'}}>
             <StagesSD onValueChange={value => handleOnchangeText(value, 'stages')}/>
           </View>
@@ -283,24 +271,24 @@ const FormShopdrawing = props => {
           </Text>
         </View>
       </View>
-      {isLoading ? (<LoadingComponentS/>) : (<>
+      {isLoading ? (
+        <LoadingComponentS/>
+      ) : (<>
       <ScrollView style={{marginTop: 5}}>
         <PanelWrapperOnForm selectAll={selectAll} onPress={toggleSelectAll}/>
-        {visiblePanels && visiblePanels.length > 0 ? (
           <ScrollView style={{marginTop: 5}}>
-              {visiblePanels.map(item => (
-                <PanelItemOnForm
+            {visiblePanels.map(item => (
+              <PanelItemOnForm
                 key={item.id} panelId={item.id}
                 panelName={item.pnameInput}
                 selected={item.selected}
                 selectAll={selectAll}
                 onToggle={togglePanel}
-                />
-              ),
-            )}
-          </ScrollView>
-        ) : (<AllPanelsExistMessage />)}
+              />
+          ))}
+          <AllPanelsExistMessage />
         </ScrollView>
+      </ScrollView>
       </>)}
       {isSaving? (<LoadingComponentS/>):(
         <Button6 bgColor={BiruKu} fontColor={'white'} text={'Submit'} 
@@ -310,4 +298,4 @@ const FormShopdrawing = props => {
   );
 };
 
-export default FormShopdrawing;
+export default FormShopdrawingSales;

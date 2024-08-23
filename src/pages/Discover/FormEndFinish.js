@@ -126,8 +126,7 @@ const FormFinishing = props => {
           await batch.commit();
           setIsSaving(false);
           ToastAndroid.show('Production Finishing Updated',ToastAndroid.SHORT);
-          if (stages === 'Tested') {navigation.replace('TestReport')}
-          if (stages === 'Sent') {navigation.replace('DeliveryReport')}
+          {navigation.replace('TableFinishing')}
         } catch (error) {
           setIsSaving(false); console.error('Error', error);
         }

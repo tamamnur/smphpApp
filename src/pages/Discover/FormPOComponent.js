@@ -12,6 +12,7 @@ import LoadingComponentS from '../../components/LoadingComponentS';
 import PanelWrapperOnForm from '../../components/PanelWrapperOnForm';
 import PanelItemOnForm from '../../components/PanelItemOnForm';
 import Button from '../../components/Button6';
+import StagesPO from '../../components/StagesPO';
 
 const updateError = (error, stateUpdate) => {stateUpdate(error);
   setTimeout(() => {stateUpdate('')}, 3000);
@@ -33,18 +34,21 @@ const FormPOComponent = (props) => {
   }, []);
   
   const [componentInfo, setComponentInfo] = useState({
-    projectId: '', FSProjectId: '', projectName: '', stagesPODetails: '', customer: '', 
+    projectId: '', FSProjectId: '', projectName: '', customer: '',
+    stages: '',stagesPODetails: '',  
     projectsList: [], Panels: [], 
   });
   const {projectId, projectName, stagesPODetails, customer} = componentInfo;
-  const handleOnchangeText = async (value, fieldName) => {
+  const handleOnchangeText = async (value, fieldName, docName) => {
     setComponentInfo({...componentInfo, [fieldName]: value});
     if (fieldName === 'stagesPODetails') {
+      const docName = componentInfo.stages;
+      console.log(docName)
       const selectedStage = value;
       componentInfo.Panels.forEach(async item => {
         if (item.MonitoringID) {
           const MonitoringID = item.MonitoringID.substring(1);
-          const _Data = await firestore().collection(MonitoringID+'/Procurement').doc('Component').get();
+          const _Data = await firestore().collection(MonitoringID+'/Procurement').doc(docName).get();
           const isExist = _Data.exists && _Data.data() && _Data.data().hasOwnProperty(selectedStage);
           setComponentInfo(prev => ({
             ...prev,Panels: prev.Panels.map(panel => {
@@ -275,6 +279,9 @@ const FormPOComponent = (props) => {
           ) : null}
           <Text style={right}>{customer}</Text>
           <Text style={right}>{projectId}</Text>
+          <View style={{width: '98%'}}>
+            <StagesPO onValueChange={(value) => {handleOnchangeText(value, 'stages')}}/>
+          </View>
           <View style={{width: '98%'}}>
             <StagesPODetail onValueChange={(value) => {handleOnchangeText(value, 'stagesPODetails')}}/>
           </View>

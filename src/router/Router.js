@@ -55,6 +55,19 @@ import ProjectList from '../pages/Home/ProjectList'
 import MemoView from '../pages/Home/MemoView'
 import MemoEdit from '../pages/Home/MemoEdit'
 import PanelStatus from '../pages/Home/panelStatus'
+import TableShopdrawing from '../pages/Discover/tableShopdrawing.js'
+import TableConstruction from '../pages/Discover/tableConstruction.js'
+import TableBusbar from '../pages/Discover/tableBusbar.js'
+import PageShopdrawing from '../pages/Discover/pageShopdrawing.js'
+import PageProcurement from '../pages/Discover/pageProcurement.js'
+import TableComponent from '../pages/Discover/tableComponent.js'
+import PageFabrication from '../pages/Discover/pageFabrication.js'
+import PageFinishing from '../pages/Discover/pageFinishing.js'
+import TableFinishing from '../pages/Discover/tableFinishing.js'
+import TableLayout from '../pages/Discover/tableLayout.js'
+import TableWiring from '../pages/Discover/tableWiring.js'
+import TableMech from '../pages/Discover/tableMech.js'
+import FormShopdrawingSales from '../pages/Discover/FormShopdrawingSales.js'
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -83,6 +96,7 @@ const SecuredNav = () => {
       <Stack.Screen name="ProjectDetailsEdit" component={ProjectDetailsEdit} options={{ headerShown: false}}/>
       <Stack.Screen name="PanelNameInputEdit" component={PanelNameInputEdit} options={{ headerShown: false}}/>
       
+      <Stack.Screen name="FormShopdrawingSales" component={FormShopdrawingSales} options={{ headerShown: false}}/>
       <Stack.Screen name="FormShopdrawing" component={FormShopdrawing} options={{ headerShown: false}}/>
       <Stack.Screen name="FormProcurement" component={FormProcurement} options={{ headerShown: false}}/>
       <Stack.Screen name="FormFabrication" component={FormFabrication} options={{ headerShown: false}}/>
@@ -122,6 +136,20 @@ const SecuredNav = () => {
       
       <Stack.Screen name="DeliveryReport" component={DeliveryReport} options={{ headerShown: false}}/>
       <Stack.Screen name="TestReport" component={TestReport} options={{ headerShown: false}}/>
+      
+      <Stack.Screen name="TableShopdrawing" component={TableShopdrawing} options={{ headerShown: false}}/>
+      <Stack.Screen name="TableConstruction" component={TableConstruction} options={{ headerShown: false}}/>
+      <Stack.Screen name="TableBusbar" component={TableBusbar} options={{ headerShown: false}}/>
+      <Stack.Screen name="TableComponent" component={TableComponent} options={{ headerShown: false}}/>
+      <Stack.Screen name="TableLayout" component={TableLayout} options={{ headerShown: false}}/>
+      <Stack.Screen name="TableMech" component={TableMech} options={{ headerShown: false}}/>
+      <Stack.Screen name="TableWiring" component={TableWiring} options={{ headerShown: false}}/>
+      <Stack.Screen name="TableFinishing" component={TableFinishing} options={{ headerShown: false}}/>
+      
+      <Stack.Screen name="PageShopdrawing" component={PageShopdrawing} options={{ headerShown: false}}/>
+      <Stack.Screen name="PageProcurement" component={PageProcurement} options={{ headerShown: false}}/>
+      <Stack.Screen name="PageFabrication" component={PageFabrication} options={{ headerShown: false}}/>
+      <Stack.Screen name="PageFinishing" component={PageFinishing} options={{ headerShown: false}}/>
     </Stack.Navigator>
   )
 }
